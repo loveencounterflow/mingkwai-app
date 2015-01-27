@@ -26,3 +26,10 @@ node_modules
 
 # Users Environment Variables
 .lock-wscript
+
+# node-webkit executables
+mingkwai.app/Contents/Frameworks
+mingkwai.app/Contents/MacOS
+
+
+

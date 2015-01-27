@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+coffee -o ./mingkwai.app/Contents/Resources/app.nw/lib -c ./mingkwai.app/Contents/Resources/app.nw/src && \
+  stylus -o ./mingkwai.app/Contents/Resources/app.nw/lib ./mingkwai.app/Contents/Resources/app.nw/src && \
+  node --harmony ./mingkwai.app/Contents/Resources/app.nw/lib/main.js
+
+

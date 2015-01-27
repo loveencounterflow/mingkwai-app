@@ -1,0 +1,28 @@
+
+
+/* ---------------------------------------------------------------------------------------------------------
+  BOX MODEL
+  thx to http://www.paulirish.com/2012/box-sizing-border-box-ftw/ */
+html
+  box-sizing: border-box
+
+*, *:before, *:after
+  box-sizing: inherit
+
+*
+  outline-offset:         -0.5px
+
+/* ---------------------------------------------------------------------------------------------------------
+  FIXING LINE HEIGHTS / GRID
+  thx to http://webdesignandsuch.com/how-to-fix-sup-sub-line-height-problem-with-css/
+*/
+*
+  vertical-align:         bottom
+
+/* ---------------------------------------------------------------------------------------------------------
+  MINIMAL SPACING IN TEXT
+  sets word spacing to a minimum that is actually larger than zero (?)
+*/
+*
+  letter-spacing:         0ex
+  word-spacing:           0em

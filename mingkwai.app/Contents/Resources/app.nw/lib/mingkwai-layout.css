@@ -1,0 +1,94 @@
+/* ------------------------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------------------------ */
+/* ...................................................................................................... */
+/* ...................................................................................................... */
+/* ...................................................................................................... */
+/* ...................................................................................................... */
+/* ------------------------------------------------------------------------------------------------------ */
+body,
+.paper,
+.page {
+  background-color: #fff;
+}
+/* ------------------------------------------------------------------------------------------------------ */
+.paper {
+  margin: 10mm;
+  box-shadow: 10px 10px 35px 0px rgba(0,0,0,0.5);
+  width: 210mm;
+  height: 297mm;
+  padding-left: 4.5mm;
+  padding-right: 4.5mm;
+  padding-top: 3mm;
+  padding-bottom: 18mm;
+  position: relative;
+}
+/* ------------------------------------------------------------------------------------------------------ */
+.page {
+  width: 201mm;
+  height: 276mm;
+  padding-left: 15mm;
+  padding-right: 15mm;
+  padding-top: 11mm;
+  padding-bottom: 5mm;
+  margin: 0;
+  position: relative;
+}
+/* ------------------------------------------------------------------------------------------------------ */
+.grid {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+/* ------------------------------------------------------------------------------------------------------ */
+.grid-1cm {
+  background-size: 10mm 10mm;
+  background-image: repeating-linear-gradient(0deg, rgba(100,100,100,0.5), rgba(100,100,100,0.5) 0.5px, transparent 0.5px, transparent 10mm), repeating-linear-gradient(-90deg, rgba(100,100,100,0.5), rgba(100,100,100,0.5) 0.5px, transparent 0.5px, transparent 10mm);
+}
+/* ------------------------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------------------------ */
+.baseline-grid {
+  background-size: 10mm 10mm;
+  background-image: repeating-linear-gradient(0deg, #821e00, #821e00 0.1mm, transparent 0.1mm, transparent 4.9mm);
+  top: 3mm;
+}
+.ruler {
+  width: 200mm;
+  height: 10mm;
+  border: 1px solid #f00;
+}
+.ruler-block {
+  width: 10mm;
+  height: 10mm;
+  border: 1px solid #000;
+  display: inline-block;
+}
+/* ------------------------------------------------------------------------------------------------------
+ COLUMNS */
+.flex-columns-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+p.is-first,
+p.is-middle {
+  text-align: justify;
+  text-align-last: justify;
+}
+p.is-last,
+p.is-lone {
+  text-align: justify;
+  text-align-last: left;
+}
+p.is-first:after,
+p.is-middle:after,
+p.is-middle:before,
+p.is-last:before {
+  display: none;
+}
+#mytext p:last-child {
+  margin-bottom: 0;
+}

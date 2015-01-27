@@ -1,0 +1,46 @@
+{
+  "name": "mingkwai",
+  "main": "lib/index.html",
+  "version": "0.1.0",
+  "keywords": [
+    "node-webkit",
+    "typesetting",
+    "Chinese",
+    "Japanese",
+    "CJK",
+    "typography"
+  ],
+  "chromium-args": "--enable-region-based-columns --enable-webkit-text-subpixel-positioning --enable-devtools-experiments --enable-experimental-web-platform-features --enable-smooth-scrolling --disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony",
+  "single-instance": true,
+  "no-edit-menu": false,
+  "window": {
+    "x": 0,
+    "y": 0,
+    "width": 1200,
+    "height": 500,
+    "show": true,
+    "show_in_taskbar": true,
+    "toolbar": true,
+    "frame": true,
+    "icon": "./favicon.ico",
+    "position": "center",
+    "title": "眀快排字机",
+    "resizable": true
+  },
+  "js-flags": "--harmony",
+  "dependencies": {
+    "coffeenode-chr": "^0.1.4",
+    "coffeenode-suspend": "^0.1.4",
+    "coffeenode-teacup": "^0.1.2",
+    "htmlparser2": "^3.8.2",
+    "hyphenation.en-us": "^0.2.1",
+    "hypher": "^0.2.3",
+    "linebreak": "^0.2.0",
+    "lodash": "^3.0.0",
+    "pipedreams2": "^0.2.8",
+    "printer": "0.0.2",
+    "rangy": "^1.3.0-alpha.20140921",
+    "stylus": "^0.49.3",
+    "yields-k": "^0.7.0"
+  }
+}
