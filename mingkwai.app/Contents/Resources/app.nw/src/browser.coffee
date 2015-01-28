@@ -85,8 +85,10 @@ build_menu = ->
   help_menu_entry = new NW.MenuItem label: 'Help', 'submenu': help_menu
   #.........................................................................................................
   file_menu = new NW.Menu()
-  file_menu.append new NW.MenuItem label: 'about 眀快排字机'
-  file_menu.append new NW.MenuItem label: 'what you should know C', click: on_file_menu_what_you_should_know_C
+  file_menu.append new NW.MenuItem label: 'New'
+  file_menu.append new NW.MenuItem label: 'Open...', click: on_file_menu_what_you_should_know_C
+  file_menu.append new NW.MenuItem label: 'Save',             key: 's', modifiers: 'cmd', click: -> urge "saving..."
+  file_menu.append new NW.MenuItem label: 'Take Screenshot',  key: 's', modifiers: 'cmd-shift', click: -> MKTS.take_screenshot app
   file_menu_entry = new NW.MenuItem label: 'File', 'submenu': file_menu
   #.........................................................................................................
   win_menu  = new NW.Menu type: 'menubar'
@@ -96,6 +98,13 @@ build_menu = ->
   win_menu.append help_menu_entry
   win.menu  = win_menu
   # win_menu.items.push new NW.MenuItem label: 'Help', 'submenu': help_menu
+  edit_menu_item = win.menu.items[ 2 ]
+  TRM.dir edit_menu_item
+  TRM.dir edit_menu_item.submenu
+  edit_menu_item.submenu.insert ( new NW.MenuItem label: 'xxxxxxxxx' ), 1
+  debug '©RsQep', edit_menu_item.type
+  #.........................................................................................................
+  # edit_menu_item = win.menu.items[ 2 ]
   #.........................................................................................................
   return null
 
@@ -294,7 +303,7 @@ bindings =
   'meta+shift+minus':     -> MKTS.zoom app, -0.1
   'meta+p':               -> MKTS.print()
   # 'meta+r':               -> MKTS.reload()
-  'meta+s':               -> MKTS.take_screenshot()
+  # 'meta+q':               -> MKTS.take_screenshot()
   'meta+left':            -> MKTS.scroll_to_top()
   'meta+right':           -> MKTS.scroll_to_bottom()
   #.........................................................................................................

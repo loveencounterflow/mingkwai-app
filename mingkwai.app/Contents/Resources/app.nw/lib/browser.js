@@ -61,7 +61,7 @@
   };
 
   build_menu = function() {
-    var file_menu, file_menu_entry, help_menu, help_menu_entry, win_menu;
+    var edit_menu_item, file_menu, file_menu_entry, help_menu, help_menu_entry, win_menu;
     help_menu = new NW.Menu();
     help_menu.append(new NW.MenuItem({
       label: 'about 眀快排字机'
@@ -75,11 +75,27 @@
     });
     file_menu = new NW.Menu();
     file_menu.append(new NW.MenuItem({
-      label: 'about 眀快排字机'
+      label: 'New'
     }));
     file_menu.append(new NW.MenuItem({
-      label: 'what you should know C',
+      label: 'Open...',
       click: on_file_menu_what_you_should_know_C
+    }));
+    file_menu.append(new NW.MenuItem({
+      label: 'Save',
+      key: 's',
+      modifiers: 'cmd',
+      click: function() {
+        return urge("saving...");
+      }
+    }));
+    file_menu.append(new NW.MenuItem({
+      label: 'Take Screenshot',
+      key: 's',
+      modifiers: 'cmd-shift',
+      click: function() {
+        return MKTS.take_screenshot(app);
+      }
     }));
     file_menu_entry = new NW.MenuItem({
       label: 'File',
@@ -92,6 +108,13 @@
     win_menu.insert(file_menu_entry, 1);
     win_menu.append(help_menu_entry);
     win.menu = win_menu;
+    edit_menu_item = win.menu.items[2];
+    TRM.dir(edit_menu_item);
+    TRM.dir(edit_menu_item.submenu);
+    edit_menu_item.submenu.insert(new NW.MenuItem({
+      label: 'xxxxxxxxx'
+    }), 1);
+    debug('©RsQep', edit_menu_item.type);
     return null;
   };
 
@@ -281,9 +304,6 @@
     },
     'meta+p': function() {
       return MKTS.print();
-    },
-    'meta+s': function() {
-      return MKTS.take_screenshot();
     },
     'meta+left': function() {
       return MKTS.scroll_to_top();

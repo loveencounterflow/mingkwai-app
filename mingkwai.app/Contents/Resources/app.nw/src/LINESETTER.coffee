@@ -100,59 +100,6 @@ new_html_parser = ( settings, stream ) ->
   return new Htmlparser handlers, settings
 
 #-----------------------------------------------------------------------------------------------------------
-$collect_texts = ->
-  buffer = []
-  return remit ( event, send, end ) ->
-    #.......................................................................................................
-    if event?
-      [ type, tail..., ] = event
-      if type is 'text'
-        buffer.push tail[ 0 ]
-      else
-        send [ 'text', buffer.join '', ] if buffer.length > 0
-        buffer.length = 0
-        send event
-    #.......................................................................................................
-    if end?
-      send [ 'text', buffer.join '', ] if buffer.length > 0
-      end()
-
-#-----------------------------------------------------------------------------------------------------------
-$hyphenate = ->
-  return remit ( event, send ) ->
-    [ type, tail..., ] = event
-    if type is 'text'
-      send [ 'text', hyphenate tail[ 0 ], ]
-    else
-      send event
-
-#-----------------------------------------------------------------------------------------------------------
-$collect_tags = ->
-  pending_tag_buffer = []
-  #.........................................................................................................
-  return remit ( event, send ) ->
-    [ type, tail..., ] = event
-    if type is 'open-tag'
-      pending_tag_buffer.unshift tail[ 0 ][ 0 ]
-    else if type is 'close-tag'
-      pending_tag_buffer.shift()
-    unless type is 'end'
-      event.push pending_tag_buffer[ .. ]
-    send event
-
-#-----------------------------------------------------------------------------------------------------------
-$split_texts = ->
-  #.........................................................................................................
-  return remit ( event, send ) ->
-    [ type, tail..., ] = event
-    if type is 'text'
-      text  = tail[ 0 ]
-      parts = partition_text text
-      send [ 'text-parts', parts, tail[ 1 ] ]
-    else
-      send event
-
-#-----------------------------------------------------------------------------------------------------------
 $distribute_lines = ( test_line, send_line, done ) ->
   last_opener = ''
   buffer      = []
@@ -229,14 +176,71 @@ $distribute_lines = ( test_line, send_line, done ) ->
   html_parser.write source
   html_parser.end()
   stream
-    .pipe $collect_texts()
+    .pipe $join_text_nodes()
     .pipe $hyphenate()
     .pipe $collect_tags()
-    .pipe $split_texts()
     .pipe D2.$show()
-    .pipe $distribute_lines test_line, send_line, done
-    .pipe D2.$on_end ( send, end ) =>
+    # .pipe $split_texts()
+    # .pipe $distribute_lines test_line, send_line, done
+    # .pipe D2.$on_end ( send, end ) =>
+    #   end()
+
+#-----------------------------------------------------------------------------------------------------------
+$join_text_nodes = ->
+  ### Make sure that all the text content of a given range of the source is represented by a single text
+  node; in the browser, this is done using
+  [node.normalize()](https://developer.mozilla.org/en-US/docs/Web/API/Node.normalize). ###
+  buffer = []
+  return remit ( event, send, end ) ->
+    #.......................................................................................................
+    if event?
+      [ type, tail..., ] = event
+      if type is 'text'
+        buffer.push tail[ 0 ]
+      else
+        send [ 'text', buffer.join '', ] if buffer.length > 0
+        buffer.length = 0
+        send event
+    #.......................................................................................................
+    if end?
+      send [ 'text', buffer.join '', ] if buffer.length > 0
       end()
+
+#-----------------------------------------------------------------------------------------------------------
+$hyphenate = ->
+  ### TAINT must allow language settings ###
+  return remit ( event, send ) ->
+    [ type, tail..., ] = event
+    if type is 'text'
+      send [ 'text', hyphenate tail[ 0 ], ]
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+$collect_tags = ->
+  pending_tag_buffer = []
+  #.........................................................................................................
+  return remit ( event, send ) ->
+    [ type, tail..., ] = event
+    if type is 'open-tag'
+      pending_tag_buffer.unshift tail[ 0 ][ 0 ]
+    else if type is 'close-tag'
+      pending_tag_buffer.shift()
+    unless type is 'end'
+      event.push pending_tag_buffer[ .. ]
+    send event
+
+#-----------------------------------------------------------------------------------------------------------
+$split_texts = ->
+  #.........................................................................................................
+  return remit ( event, send ) ->
+    [ type, tail..., ] = event
+    if type is 'text'
+      text  = tail[ 0 ]
+      parts = partition_text text
+      send [ 'text-parts', parts, tail[ 1 ] ]
+    else
+      send event
 
 # #-----------------------------------------------------------------------------------------------------------
 # @demo = ( test_line ) ->
