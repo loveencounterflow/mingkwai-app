@@ -180,10 +180,10 @@ $distribute_lines = ( test_line, send_line, done ) ->
     .pipe $hyphenate()
     .pipe $collect_tags()
     .pipe D2.$show()
-    # .pipe $split_texts()
-    # .pipe $distribute_lines test_line, send_line, done
-    # .pipe D2.$on_end ( send, end ) =>
-    #   end()
+    .pipe $split_texts()
+    .pipe $distribute_lines test_line, send_line, done
+    .pipe D2.$on_end ( send, end ) =>
+      end()
 
 #-----------------------------------------------------------------------------------------------------------
 $join_text_nodes = ->
