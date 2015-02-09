@@ -348,8 +348,9 @@ $produce_lines = ( source, state ) ->
         # send [ 'set-line', buffer, ] if buffer.length > 0
         _buffer = LODASH.clone buffer
         buffer.length = 0
-        for _event in _buffer
-          f _event, send
+        while _buffer.length > 0
+          for _event in _buffer
+            f _event, send
         debug '©T3FHy', state[ 'next' ]
         #   source.write element
         # if state[ 'next' ]

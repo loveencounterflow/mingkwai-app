@@ -427,9 +427,11 @@
             warn('©u9dNV', last_buffer);
             _buffer = LODASH.clone(buffer);
             buffer.length = 0;
-            for (_i = 0, _len = _buffer.length; _i < _len; _i++) {
-              _event = _buffer[_i];
-              f(_event, send);
+            while (_buffer.length > 0) {
+              for (_i = 0, _len = _buffer.length; _i < _len; _i++) {
+                _event = _buffer[_i];
+                f(_event, send);
+              }
             }
             return debug('©T3FHy', state['next']);
           default:
