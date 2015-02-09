@@ -12,7 +12,7 @@ njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr.bind CND
-badge                     = '眀快排字机/browser'
+badge                     = '眀快排字机/__dev'
 log                       = CND.get_logger 'plain',   badge
 info                      = CND.get_logger 'info',    badge
 alert                     = CND.get_logger 'alert',   badge
@@ -269,39 +269,165 @@ $break_lines = ->
     send event
 
 #-----------------------------------------------------------------------------------------------------------
-$test_lines = ( state ) ->
-  buffer = []
-  xxxxx = no
-  return $ ( event, send ) =>
-    # debug '©rvekb', event
+$disperse_texts = ->
+  #.........................................................................................................
+  return $ ( event, send ) ->
+    [ type, tail..., ]  = event
+    if type is 'text-parts'
+      for text_part in tail[ 0 ]
+        send [ 'text-part', text_part, ]
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+prune_buffer = ( buffer, last_buffer_length ) ->
+  closed_tag_count = 0
+  #........................................................................................................
+  for idx in [ last_buffer_length - 1 .. 0 ] by -1
+    [ type, tail..., ] = buffer[ idx ]
+    switch type
+      #.....................................................................................................
+      when 'text-part', 'empty-tag', 'lone-tag'
+        buffer.splice idx, 1
+      #.....................................................................................................
+      when 'close-tag'
+        buffer.splice idx, 1
+        closed_tag_count += +1
+      #.....................................................................................................
+      when 'open-tag'
+        if closed_tag_count > 0
+          buffer.splice idx, 1
+          closed_tag_count += -1
+      #.....................................................................................................
+      else
+        warn "ignored event of type #{rpr type}"
+  #........................................................................................................
+  return buffer
+
+#-----------------------------------------------------------------------------------------------------------
+$produce_lines = ( source, state ) ->
+  buffer          = []
+  last_buffer     = null
+  state[ 'next' ] = no
+  #.........................................................................................................
+  f = ( event, send ) =>
     [ type, tail..., ] = event
-    return if xxxxx
+    debug '©Hbbu8', state[ 'next' ], JSON.stringify tail
+    #.......................................................................................................
+    if state[ 'next' ]
+      throw new Error "should never happen" unless last_buffer?
+      state[ 'next' ] = no
+      send [ 'set-line', last_buffer, ]
+      prune_buffer buffer, last_buffer.length
+      last_buffer     = null
     #.......................................................................................................
     switch type
       #.....................................................................................................
       when 'open-tag', 'close-tag'
         buffer.push event
       #.....................................................................................................
-      when 'text-parts'
-        [ text_parts
-          close_tags ] = tail
-        for text_part, idx in text_parts
-          # do ( text_part ) =>
-          #   setImmediate =>
-          buffer.push text_part
-          debug '©REf0J', ( JSON.stringify buffer ), state[ 'next' ]
-          break if state[ 'next' ]
-          send buffer
-      #.....................................................................................................
-      when 'empty-tag', 'lone-tag'
+      when 'lone-tag', 'empty-tag'
         buffer.push event
-        send buffer
+        last_buffer = LODASH.clone buffer
+        send [ 'test-line', buffer, ]
+      #.....................................................................................................
+      when 'text-part'
+        buffer.push event
+        last_buffer = LODASH.clone buffer
+        send [ 'test-line', buffer, ]
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, tail..., ] = event
+    #.......................................................................................................
+    switch type
+      #.....................................................................................................
+      when 'end'
+        warn '©u9dNV', buffer
+        warn '©u9dNV', last_buffer
+        # last_buffer = LODASH.clone buffer
+        # send [ 'set-line', buffer, ] if buffer.length > 0
+        _buffer = LODASH.clone buffer
+        buffer.length = 0
+        for _event in _buffer
+          f _event, send
+        debug '©T3FHy', state[ 'next' ]
+        #   source.write element
+        # if state[ 'next' ]
+        #   throw 'XXX'
+        # else
+        #   send [ 'set-line', buffer, ]
+        # send event
       #.....................................................................................................
       else
-        warn 'A', "ignored event of type #{rpr type}"
+        f event, send
+
+#-----------------------------------------------------------------------------------------------------------
+$convert_to_html = ( state ) ->
+  #.........................................................................................................
+  return $ ( meta_event, send ) =>
+    [ meta_type, buffer, ] = meta_event
     #.......................................................................................................
-    if state[ 'next' ]
-      xxxxx = true
+    switch meta_type
+      #.....................................................................................................
+      when 'test-line', 'set-line'
+        ### Note: as per
+        https://medium.com/the-javascript-collection/lets-write-fast-javascript-2b03c5575d9e#1e23, using
+        `+=` should be faster than `[].join ''`. ###
+        html      = ''
+        open_tags = []
+        #...................................................................................................
+        for event in buffer
+          [ type, tail..., ] = event
+          switch type
+            #...............................................................................................
+            when 'open-tag'
+              html += render_open_tag tail...
+              open_tags.unshift tail[ 0 ]
+            #...............................................................................................
+            when 'close-tag'
+              html += render_close_tag tail[ 0 ]
+              open_tags.shift()
+            #...............................................................................................
+            when 'lone-tag'
+              html += render_open_tag tail...
+            #...............................................................................................
+            when 'empty-tag'
+              html += render_empty_tag tail...
+            #...............................................................................................
+            when 'text-part'
+              ### TAINT escaping `<`, `>`, `&` ??? ###
+              html += tail[ 0 ]
+            #...............................................................................................
+            else
+              warn "ignored event of type #{rpr type}"
+        #...................................................................................................
+        html += render_close_tag tag_name for tag_name in open_tags
+        send [ meta_type, html, ]
+      #.....................................................................................................
+      when 'end'
+        send meta_event
+      #.....................................................................................................
+      else
+        warn "ignored event of meta-type #{rpr meta_type}"
+
+#-----------------------------------------------------------------------------------------------------------
+$consume_lines = ( state ) ->
+  #.........................................................................................................
+  return $ ( meta_event, send ) =>
+    [ meta_type, html, ] = meta_event
+    #.......................................................................................................
+    switch meta_type
+      #.....................................................................................................
+      when 'test-line'
+        if html.length > 25
+          urge '©7bm7z', html
+          state[ 'next' ] = yes
+      #.....................................................................................................
+      when 'set-line'
+        help '©cJelq', html
+      #.....................................................................................................
+      else
+        warn 'X', "ignored event of meta-type #{rpr meta_type}"
 
 ### -> LINESETTER ###
 #-----------------------------------------------------------------------------------------------------------
@@ -314,9 +440,10 @@ render_close_tag = ( name ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 render_empty_tag = ( name, attributes ) ->
-  ### NB `teacup` has a bug (IMHO) that causes it to modify the `attributes` object when rendering; to
-  prevent it from modifying buffered elements, we always pass it a copy of the `attributes` POD. ###
-  return TEACUP.render => TEACUP.TAG name, LODASH.clone attributes
+  # ### NB `teacup` has a bug (IMHO) that causes it to modify the `attributes` object when rendering; to
+  # prevent it from modifying buffered elements, we always pass it a copy of the `attributes` POD. ###
+  # return TEACUP.render => TEACUP.TAG name, LODASH.clone attributes
+  return TEACUP.render => TEACUP.TAG name, attributes
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -327,7 +454,9 @@ render_empty_tag = ( name, attributes ) ->
           everything's curious today. I think I may as well go in at once.' And in
           she &#x4e00; went."""
   text = """x <span class='x'></span> y"""
-  text = """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she explained."""
+  text = """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."""
+  text = """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly"""
+  info text
   #.........................................................................................................
   input = D2.create_throughstream()
   input
@@ -337,80 +466,15 @@ render_empty_tag = ( name, attributes ) ->
     .pipe $collect_empty_tags()
     .pipe $hyphenate()
     .pipe $break_lines()
+    .pipe $disperse_texts()
     .pipe D2.$sub ( source, sink, state ) ->
       source
-        .pipe $test_lines state
-        .pipe do =>
-          line      = []
-          return $ ( line_parts, send ) ->
-            chr_count = 0
-            open_tags = []
-            line      = []
-            last_line = null
-            if ( line_parts[ 1 ]?[ 2 ] )?
-              line_parts[ 1 ]?[ 2 ][ 'foo' ] = 'baz'
-            # warn '©QnEBe', line_parts, _XXX_id line_parts[ 1 ]?[ 2 ]
-            for line_part, idx in line_parts
-              if CND.isa_text line_part
-                line.push line_part
-                chr_count += line_part.length
-              else
-                [ type, tail..., ] = line_part
-                switch type
-                  when 'open-tag'
-                    line.push render_open_tag tail...
-                    open_tags.unshift line_part[ 1 ]
-                  when 'close-tag'
-                    line.push render_close_tag tail[ 0 ]
-                    open_tags.shift()
-                  when 'lone-tag'
-                    line.push render_open_tag tail...
-                  when 'empty-tag'
-                    # help '©WozZo', JSON.stringify line_parts
-                    line.push render_empty_tag tail...
-                  else
-                    warn 'B', "ignored event of type #{rpr type}"
-            if chr_count > 15
-              state[ 'next' ] = yes
-              source.write [ 'next', ]
-            for open_tag in open_tags
-              line.push render_close_tag open_tag
-            urge '©TNH8e', chr_count, if line? then line.join '' else '### no line yet ###'
-            # debug '©QTjvy', ( JSON.stringify line_parts ), chr_count
+        .pipe $produce_lines source, state
+        .pipe $convert_to_html state
+        .pipe $consume_lines state
         .pipe sink
-    .pipe D2.$show()
-    # .pipe D2.$sub ( source, sink ) ->
-    #   source
-    #     .pipe D2.$break_lines yes
-    #     #...................................................................................................
-    #     .pipe do =>
-    #       line      = []
-    #       chr_count = 0
-    #       return $ ( event, send ) ->
-    #         [ type, idx, part, required, position, ] = event
-    #         if type is 'line-breaker-part'
-    #           # whisper event
-    #           if part?
-    #             chr_count += part.length
-    #             if chr_count > 25
-    #               send line.join ''
-    #               line.length = 0
-    #               chr_count   = part.length
-    #             line.push part
-    #           else
-    #             if line.length > 0
-    #               send line.join ''
-    #             ### TAINT not correct with multiple texts? ###
-    #             source.end()
-    #         #...............................................................................................
-    #         else
-    #           send event
-    #     #...................................................................................................
-    #     .pipe $ ( line, send ) =>
-    #       help line.replace /\s+/g, ' '
-    #       send line
-    #     .pipe sink
-    # #.......................................................................................................
+    .pipe $ ( event, send ) =>
+      info JSON.stringify event
 
   #---------------------------------------------------------------------------------------------------------
   input.write text
