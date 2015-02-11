@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 # ./build && open mingkwai.app
 # ./build && nw ./mingkwai.app/Contents/Resources/app.nw
-./build && ./mingkwai.app/Contents/MacOS/nwjs ./mingkwai.app/Contents/Resources/app.nw
+./mingkwai.app/Contents/MacOS/nwjs ./mingkwai.app/Contents/Resources/app.nw
 
 
 

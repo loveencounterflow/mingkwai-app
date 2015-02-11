@@ -21,276 +21,365 @@ whisper                   = CND.get_logger 'whisper', badge
 help                      = CND.get_logger 'help',    badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
-# NW                        = require 'nw.gui'
-# win                       = NW.Window.get()
-#...........................................................................................................
 suspend                   = require 'coffeenode-suspend'
 step                      = suspend.step
 after                     = suspend.after
 sleep                     = suspend.sleep
 #...........................................................................................................
 D2                        = require 'pipedreams2'
-remit                     = D2.remit.bind D2
-# CHR                       = require 'coffeenode-chr'
-Htmlparser                = ( require 'htmlparser2' ).Parser
+$                         = D2.remit.bind D2
 TEACUP                    = require 'coffeenode-teacup'
+LODASH                    = require 'lodash'
 #...........................................................................................................
-### https://github.com/devongovett/linebreak ###
 LineBreaker               = require 'linebreak'
-#...........................................................................................................
-# npm install hypher hyphenation.en-us
-### https://github.com/bramstein/hypher ###
-hyphenate                   = null
-do ->
-  _Hypher                     = require 'hypher'
-  _hypher_english             = require 'hyphenation.en-us'
-  _HYPHER                     = new _Hypher _hypher_english
-  hyphenate                   = _HYPHER.hyphenateText.bind _HYPHER
-
-# #-----------------------------------------------------------------------------------------------------------
-# ### TAINT workaround to obtain web browser context;
-# see https://github.com/nwjs/nw.js/wiki/Differences-of-JavaScript-contexts ###
-# @LINESETTER = {}
 
 
+#===========================================================================================================
+# TAG RENDERING
+#-----------------------------------------------------------------------------------------------------------
+@_render_open_tag = ( name, attributes ) ->
+  return ( @_render_empty_tag name, attributes ).replace /<\/[^>]+>$/, ''
 
 #-----------------------------------------------------------------------------------------------------------
-partition_text = ( text ) ->
-  line_breaker  = new LineBreaker text
-  breakpoint    = null
-  R             = []
-  while breakpoint = line_breaker.nextBreak()
-    R.push text[ ... breakpoint.position ]
-  return R
-
-#-----------------------------------------------------------------------------------------------------------
-render_open_tag = ( name, attributes ) ->
-  return ( TEACUP.render => TEACUP.TAG name, attributes ).replace /<\/[^>]+>$/, ''
-
-#-----------------------------------------------------------------------------------------------------------
-render_close_tag = ( name ) ->
+@_render_close_tag = ( name ) ->
   return "</#{name}>"
 
 #-----------------------------------------------------------------------------------------------------------
-new_html_parser = ( settings, stream ) ->
-  lone_tags = """area base br col command embed hr img input keygen link meta param
-    source track wbr""".split /\s+/
+@_render_empty_tag = ( name, attributes ) ->
+  return TEACUP.render => TEACUP.TAG name, attributes
+
+
+#===========================================================================================================
+# UNICODE LINE BREAKING
+#-----------------------------------------------------------------------------------------------------------
+# D2.$break_lines = ( settings ) ->
+#   ### Uses the [linebreak](https://github.com/devongovett/linebreak) module to find line break opportunities
+#   in a text using the Unicode Line Breaking Algorithm (UAX #14). For each text that arrives in the stream,
+#   `$break_lines` will send out one ore more 'events' (lists) of the format
+
+#   ```
+#   [ 'line-breaker-part', idx, part, required, position, ]
+#   ```
+
+#   where the first part identifies the event type, `idx` is a running enumeration of texts that have arrived,
+#   `part` is part of the text in question, `required` indicates whether a line break after that part is
+#   optional or required, and `position` contains the index of the first character *after* the current `part`.
+
+#   When `incremental` is set to `true`, then `part` will be the next substring after which a linebreak is
+#   possible; when `incremental` is set to `false` (the default), then `part` will contain the entire
+#   text up to the breakpoint; therefore, given a text `'So. Here we go!'`, the events will be either
+#   (with `incremental` set to `false`):
+
+#   ```coffee
+#   [ 'line-breaker-part', 0, 'So. ', false, 4 ]
+#   [ 'line-breaker-part', 0, 'Here ', false, 9 ]
+#   [ 'line-breaker-part', 0, 'we ', false, 12 ]
+#   [ 'line-breaker-part', 0, 'go!', false, 15 ]
+#   [ 'line-breaker-part', 0, null, null, null ]
+#   ```
+
+#   or (with `incremental` set to `true`):
+
+#   ```coffee
+#   [ 'line-breaker-part', 0, 'So. ', false, 4 ]
+#   [ 'line-breaker-part', 0, 'So. Here ', false, 9 ]
+#   [ 'line-breaker-part', 0, 'So. Here we ', false, 12 ]
+#   [ 'line-breaker-part', 0, 'So. Here we go!', false, 15 ]
+#   [ 'line-breaker-part', 0, null, null, null ]
+#   ```
+
+#   ###
+#   #.........................................................................................................
+#   ### https://github.com/devongovett/linebreak ###
+#   LineBreaker     = require 'linebreak'
+#   idx             = -1
+#   last_position   = null
+#   incremental     = settings?[ 'incremental'  ] ? yes
+#   #.........................................................................................................
+#   return $ ( text, send ) =>
+#     idx          += +1
+#     line_breaker  = new LineBreaker text
+#     breakpoint    = null
+#     #.......................................................................................................
+#     while breakpoint = line_breaker.nextBreak()
+#       { position, required, } = breakpoint
+#       #.....................................................................................................
+#       if incremental and last_position? then  part = text[ last_position ... breakpoint.position ]
+#       else                                    part = text[               ... breakpoint.position ]
+#       last_position = position
+#       send [ 'line-breaker-part', idx, part, required, position, ]
+#     #.......................................................................................................
+#     send [ 'line-breaker-part', idx, null, null, null, ]
+
+#-----------------------------------------------------------------------------------------------------------
+@_break_lines = ( text, settings ) ->
+  text            = text.replace /\n/g, ' '
+  last_position   = null
+  incremental     = settings?[ 'incremental'  ] ? yes
+  extended        = settings?[ 'extended'     ] ? no
   #.........................................................................................................
-  handlers =
-    #.......................................................................................................
-    onopentag:  ( name, attributes )  ->
-      if name in lone_tags
-        stream.write [ 'lone-tag', [ name, attributes, ] ]
-      else
-        stream.write [ 'open-tag', [ name, attributes, ] ]
-    #.......................................................................................................
-    onclosetag: ( name ) ->
-      unless name in lone_tags
-        stream.write [ 'close-tag', name, ]
-    #.......................................................................................................
-    ontext: ( text ) ->
-      stream.write [ 'text', text, ]
-    #.......................................................................................................
-    onend: ->
-      stream.write [ 'end', ]; stream.end()
-    #.......................................................................................................
-    onerror: ( error ) ->
-      throw error
+  line_breaker    = new LineBreaker text
+  R               = []
+  #.......................................................................................................
+  while breakpoint = line_breaker.nextBreak()
+    { position, required, } = breakpoint
+    #.....................................................................................................
+    if incremental and last_position? then  part = text[ last_position ... breakpoint.position ]
+    else                                    part = text[               ... breakpoint.position ]
+    last_position = position
+    R.push if extended then [ part, required, position, ] else part
+  #.......................................................................................................
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_$break_lines = ->
   #.........................................................................................................
-  return new Htmlparser handlers, settings
-
-#-----------------------------------------------------------------------------------------------------------
-$distribute_lines = ( test_line, send_line, done ) ->
-  last_opener = ''
-  buffer      = []
-  last_idx    = 0
-  overflows   = no
-  #---------------------------------------------------------------------------------------------------------
-  return remit ( event, send, end ) =>
-    [ type, data, pending_tags, ] = event
-    switch type
-      #.....................................................................................................
-      when 'end'
-        send event
-      #.....................................................................................................
-      when 'text-parts'
-        closer  = ( render_close_tag name for name in pending_tags ).join ''
-        prefix  = last_opener.replace /\xad$/, '-'
-        idx     = -1
-        parts   = data
-        # for part, idx in data
-        loop
-          idx        += +1
-          part        = parts[ idx ]
-          break unless part?
-          ### TAINT must escape HTML-sensitive characters; NCRs? ###
-          opener      = prefix + part
-          probe_part  = part.replace /\xad$/, '-'
-          probe_part  = probe_part.replace /\x20+$/, ''
-          probe       = prefix + probe_part + closer
-          overflows   = test_line probe
-          debug '©xlcUa', parts, idx
-          if overflows
-            warn buffer[ buffer.length - 1 ]
-            # debug '©xlcUa', parts, idx
-            chr_count = parts[ idx - 1 ].length
-            parts.splice 0, idx
-            for sub_part, sub_idx in parts
-              parts[ sub_idx ] = sub_part[ chr_count .. ]
-            idx = -1
-            ### TAINT need not buffer all candidates ###
-            send_line buffer[ buffer.length - 2 ][ 6 ]
-          buffer.push [ opener, closer, part, parts, idx, overflows, probe, ]
-          last_opener = opener
-      #.....................................................................................................
-      when 'open-tag'
-        opener      = last_opener + render_open_tag data...
-        closer      = ( render_close_tag name for name in pending_tags ).join ''
-        probe       = opener + closer
-        overflows   = test_line probe
-        if overflows
-          warn buffer[ buffer.length - 1 ]
-        buffer.push [ opener, closer, null, null, null, overflows, probe, ]
-        last_opener = opener
-      #.....................................................................................................
-      when 'close-tag'
-        opener      = last_opener + render_close_tag data
-        closer      = ( render_close_tag name for name in pending_tags ).join ''
-        probe       = opener + closer
-        # buffer.push [ opener, closer, null, ]
-        last_opener = opener
-      #.....................................................................................................
-      else
-        warn "ignoring #{type}"
-    #.......................................................................................................
-    if end?
-      send_line null
-      done()
-      end()
-
-#-----------------------------------------------------------------------------------------------------------
-@set_lines = ( source, test_line, send_line, done ) ->
-  settings    = decodeEntities: yes
-  stream      = D2.create_throughstream()
-  html_parser = new_html_parser settings, stream
-  html_parser.write source
-  html_parser.end()
-  stream
-    .pipe $join_text_nodes()
-    .pipe $hyphenate()
-    .pipe $collect_tags()
-    .pipe D2.$show()
-    .pipe $split_texts()
-    .pipe $distribute_lines test_line, send_line, done
-    .pipe D2.$on_end ( send, end ) =>
-      end()
-
-#-----------------------------------------------------------------------------------------------------------
-$join_text_nodes = ->
-  ### Make sure that all the text content of a given range of the source is represented by a single text
-  node; in the browser, this is done using
-  [node.normalize()](https://developer.mozilla.org/en-US/docs/Web/API/Node.normalize). ###
-  buffer = []
-  return remit ( event, send, end ) ->
-    #.......................................................................................................
-    if event?
-      [ type, tail..., ] = event
-      if type is 'text'
-        buffer.push tail[ 0 ]
-      else
-        send [ 'text', buffer.join '', ] if buffer.length > 0
-        buffer.length = 0
-        send event
-    #.......................................................................................................
-    if end?
-      send [ 'text', buffer.join '', ] if buffer.length > 0
-      end()
-
-#-----------------------------------------------------------------------------------------------------------
-$hyphenate = ->
-  ### TAINT must allow language settings ###
-  return remit ( event, send ) ->
-    [ type, tail..., ] = event
-    if type is 'text'
-      send [ 'text', hyphenate tail[ 0 ], ]
-    else
-      send event
-
-#-----------------------------------------------------------------------------------------------------------
-$collect_tags = ->
-  pending_tag_buffer = []
-  #.........................................................................................................
-  return remit ( event, send ) ->
-    [ type, tail..., ] = event
-    if type is 'open-tag'
-      pending_tag_buffer.unshift tail[ 0 ][ 0 ]
-    else if type is 'close-tag'
-      pending_tag_buffer.shift()
-    unless type is 'end'
-      event.push pending_tag_buffer[ .. ]
+  return $ ( event, send ) =>
+    if event[ 0 ] is 'text'
+      event[ 0 ]  = 'text-parts'
+      event[ 1 ]  = @_break_lines event[ 1 ], { incremental: yes, }
     send event
 
 #-----------------------------------------------------------------------------------------------------------
-$split_texts = ->
+@_$disperse_texts = ->
   #.........................................................................................................
-  return remit ( event, send ) ->
-    [ type, tail..., ] = event
-    if type is 'text'
-      text  = tail[ 0 ]
-      parts = partition_text text
-      send [ 'text-parts', parts, tail[ 1 ] ]
+  return $ ( event, send ) =>
+    [ type, tail..., ]  = event
+    if type is 'text-parts'
+      for text_part in tail[ 0 ]
+        send [ 'text-part', text_part, ]
     else
       send event
 
-# #-----------------------------------------------------------------------------------------------------------
-# @demo = ( test_line ) ->
-#   source = """<p>The <b class='x'>Dormouse</b> <u>was <i>inexplicably</i> falling asleep</u> <i>again</i>.</p>"""
-#   source = """The <b class='x'>Dormouse</b> <u>was <i>inexplicably</i> falling asleep</u> <i>again</i>."""
-#   try_htmlparser2 source, test_line
+
+#===========================================================================================================
+# TEXT HYPHENATION
+#-----------------------------------------------------------------------------------------------------------
+@_$hyphenate = ( P... ) ->
+  hyphenate = D2.new_hyphenator P...
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    event[ 1 ] = hyphenate event[ 1 ] if event[ 0 ] is 'text'
+    send event
+
+#-----------------------------------------------------------------------------------------------------------
+@_prune_buffer = ( buffer, last_buffer_length ) ->
+  closed_tag_count = 0
+  #........................................................................................................
+  for idx in [ last_buffer_length - 1 .. 0 ] by -1
+    [ type, tail..., ] = buffer[ idx ]
+    switch type
+      #.....................................................................................................
+      when 'text-part', 'empty-tag', 'lone-tag'
+        buffer.splice idx, 1
+      #.....................................................................................................
+      when 'close-tag'
+        buffer.splice idx, 1
+        closed_tag_count += +1
+      #.....................................................................................................
+      when 'open-tag'
+        if closed_tag_count > 0
+          buffer.splice idx, 1
+          closed_tag_count += -1
+      #.....................................................................................................
+      else
+        warn "ignored event of type #{rpr type}"
+  #........................................................................................................
+  return buffer
+
+#-----------------------------------------------------------------------------------------------------------
+@_$produce_lines = ( state ) ->
+  buffer          = []
+  last_buffer     = null
+  state[ 'next' ] = no
+  #.........................................................................................................
+  f = ( event, send ) =>
+    [ type, tail..., ] = event
+    # debug '©Hbbu8', state[ 'next' ], JSON.stringify buffer
+    #.......................................................................................................
+    if state[ 'next' ]
+      throw new Error "should never happen" unless last_buffer?
+      state[ 'next' ] = no
+      send [ 'set-line', last_buffer, false, ]
+      @_prune_buffer buffer, last_buffer.length
+      last_buffer     = null
+    #.......................................................................................................
+    switch type
+      #.....................................................................................................
+      when 'open-tag', 'close-tag'
+        buffer.push event
+      #.....................................................................................................
+      when 'lone-tag', 'empty-tag'
+        buffer.push event
+        last_buffer = LODASH.clone buffer
+        send [ 'test-line', buffer, false, ]
+      #.....................................................................................................
+      when 'text-part'
+        buffer.push event
+        last_buffer = LODASH.clone buffer
+        send [ 'test-line', buffer, false, ]
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, tail..., ] = event
+    #.......................................................................................................
+    # debug '©PapQo', type
+    switch type
+      #.....................................................................................................
+      when 'end'
+        ### TAINT buffer may be empty at this point ###
+        # warn '©u9dNV', JSON.stringify buffer
+        send [ 'set-line', buffer, true, ]
+        send event
+      #.....................................................................................................
+      else
+        f event, send
+
+#-----------------------------------------------------------------------------------------------------------
+@_$convert_to_html = ->
+  #.........................................................................................................
+  return $ ( meta_event, send ) =>
+    [ meta_type, buffer, is_last, ] = meta_event
+    #.......................................................................................................
+    switch meta_type
+      #.....................................................................................................
+      when 'test-line', 'set-line'
+        ### Note: as per
+        https://medium.com/the-javascript-collection/lets-write-fast-javascript-2b03c5575d9e#1e23, using
+        `+=` should be faster than `[].join ''`. ###
+        html      = ''
+        open_tags = []
+        #...................................................................................................
+        for event in buffer
+          [ type, tail..., ] = event
+          switch type
+            #...............................................................................................
+            when 'open-tag'
+              html += @_render_open_tag tail...
+              open_tags.unshift tail[ 0 ]
+            #...............................................................................................
+            when 'close-tag'
+              html += @_render_close_tag tail[ 0 ]
+              open_tags.shift()
+            #...............................................................................................
+            when 'lone-tag'
+              html += @_render_open_tag tail...
+            #...............................................................................................
+            when 'empty-tag'
+              html += @_render_empty_tag tail...
+            #...............................................................................................
+            when 'text-part'
+              ### TAINT escaping `<`, `>`, `&` ??? ###
+              html += tail[ 0 ]
+            #...............................................................................................
+            else
+              warn "ignored event of type #{rpr type}"
+        #...................................................................................................
+        html += @_render_close_tag tag_name for tag_name in open_tags
+        send [ meta_type, html, is_last, ]
+      #.....................................................................................................
+      when 'end'
+        # debug '©weadg', 'end'
+        send meta_event
+      #.....................................................................................................
+      else
+        warn "ignored event of meta-type #{rpr meta_type}"
+
+#-----------------------------------------------------------------------------------------------------------
+@_$consume_lines = ( state, text, test_line, accept_line, handler ) ->
+  #.........................................................................................................
+  return $ ( meta_event, send ) =>
+    [ meta_type, html, is_last, ] = meta_event
+    #.......................................................................................................
+    switch meta_type
+      when 'test-line'  then state[ 'next' ] = not test_line html
+      when 'set-line'   then accept_line html, is_last
+      when 'end'        then handler null
+      else warn "ignored event of meta-type #{rpr meta_type}"
 
 
-# ############################################################################################################
-# unless module.parent?
-#   source = """A<span><b><i>B</i>C</b></span>D"""
-#   source = """foo <span><b><i>is it</i><br> &#x0061;</b>&jzr#xe000; x < y  really</span> baz"""
-#   source = """<p>The <b class='x'>Dormouse</b> <u>was <i>inexplicably</i> falling asleep</u> <i>again</i>.</p>"""
-#   try_htmlparser2 source
-
-  # text = """The Dormouse had
-  #       closed its eyes by this time, and was going off into
-  #       a doze;
-  #       """
-  #       # but, on being pinched by the Hatter, it woke up again with
-  #       # a little shriek, and went on: '—that begins with an M, such as
-  #       # mouse-traps, and the moon, and memory, and muchness—you know you say
-  #       # things are "much of a muchness"—did you ever see such a thing as a
-  #       # drawing of a muchness?'
-  # text = hyphenate text
-
-
-###
-
-foo <b><i>is it</i> really</b> baz
-
-'foo'
-'foo', ' '
-'foo', ' ', <b><i>, 'is', ⬇, ⬇
-'foo', ' ', <b><i>, 'is', ' ', ⬇, ⬇
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ⬇
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ' ', ⬇
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ' ', 'really', ⬇
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ' ', 'really', ⬇, ' '
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ' ', 'really', ⬇, ' ', 'baz'
-
-'foo'
-'foo '
-'foo <b><i>is</i></b>'
-'foo <b><i>is </i></b>'
-'foo <b><i>is it</i></b>'
-'foo <b><i>is it</i> </b>'
-'foo <b><i>is it</i> really</b>'
-'foo <b><i>is it</i> really</b> '
-'foo <b><i>is it</i> really</b> baz'
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@set_lines = ( text, test_line, accept_line, handler ) =>
+  state = next: no
+  #.........................................................................................................
+  input = D2.create_throughstream()
+  input
+    .pipe D2.HTML.$parse()
+    .pipe D2.HTML.$collect_texts()
+    # .pipe D2.HTML.$collect_closing_tags()
+    .pipe D2.HTML.$collect_empty_tags()
+    .pipe @_$hyphenate()
+    .pipe @_$break_lines()
+    .pipe @_$disperse_texts()
+    .pipe @_$produce_lines state
+    .pipe @_$convert_to_html()
+    .pipe @_$consume_lines state, text, test_line, accept_line, handler
+  #.........................................................................................................
+  input.on 'end', =>
+    whisper "input ended."
+    # handler null
+  #.........................................................................................................
+  info '©28u', rpr text
+  input.write text
+  input.end()
 
 
-###
+#===========================================================================================================
+# BALANCED COLUMNS
+#-----------------------------------------------------------------------------------------------------------
+@get_column_linecounts = ( strategy, line_count, column_count ) ->
+  ### thx to http://stackoverflow.com/a/1244369/256361 ###
+  R   = []
+  #.........................................................................................................
+  switch strategy
+    #.......................................................................................................
+    when 'even'
+      for col in [ 1 .. column_count ]
+        R.push ( line_count + column_count - col ) // column_count
+    #.......................................................................................................
+    else
+      throw new Error "unknown strategy #{rpr strategy}"
+  #.........................................................................................................
+  return R
+
+
+#===========================================================================================================
+# DEMO
+#-----------------------------------------------------------------------------------------------------------
+@_demo = ->
+  text_idx = -1
+  texts = [
+    """So."""
+    """So. Here we go!"""
+    """x <span class='x'></span> y"""
+    """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly"""
+    """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
+          leading right into it.</i> 'That's very curious!' she thought. 'But
+          everything's curious today. I think I may as well go in at once.' And in
+          she &#x4e00; went."""
+    """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."""
+    ]
+  #.........................................................................................................
+  test_line = ( html ) =>
+    ### Must return whether HTML fits into one line. ###
+    return html.length <= 25
+  #.........................................................................................................
+  accept_line = ( html, is_last ) =>
+    ### Inserts text line into document ###
+    help html, if is_last then '*' else ''
+    return null
+  #---------------------------------------------------------------------------------------------------------
+  step ( resume ) =>
+    for text in texts
+      yield @set_lines text, test_line, accept_line, resume
+  #.........................................................................................................
+  return null
+
+
+############################################################################################################
+unless module.parent?
+  @_demo()
+
+
+

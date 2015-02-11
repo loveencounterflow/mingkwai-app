@@ -42,6 +42,107 @@ LINESETTER                = require './LINESETTER'
 # require( 'trace' );
 # Error.stackTraceLimit = Infinity;
 help "app data path is #{NW.App.dataPath}"
+help "node: #{rpr process.versions[ 'node' ]}, node-webkit: #{rpr process.versions[ 'node-webkit' ]}, "
+
+
+# MKTS._TRY_balanced_columns = ->
+#   # range.surroundContents ( $ "<span class='hilite'></span>" ).get 0
+#   # range = window.getSelection().getRangeAt 0
+#   # range     = window.getSelection().getRangeAt 0
+#   # { bottom
+#   #   height
+#   #   left
+#   #   right
+#   #   top
+#   #   width } = range.getBoundingClientRect()
+#   last_left         = null
+#   focus_idx         = -1
+#   text_node         = ( $ '#box-a p' ).contents().get 0
+#   debug '©09SY6', 'content element count:', ( $ '#box-a p' ).contents().length
+#   columns           = $ '.flex-columns-wrap .column'
+#   column_count      = columns.length
+#   debug '©AT6uj', "#{column_count} columns"
+#   line_offsets      = []
+#   #.......................................................................................................
+#   ### TAINT must recompute on zoom ###
+#   hilite = ( focus, rectangle ) ->
+#     focus.offset rectangle
+#     focus.width  rectangle[ 'width'  ]
+#     focus.height rectangle[ 'height' ]
+#   #.......................................................................................................
+#   new_range = ( start ) ->
+#     throw new Error "text_node not defined" unless text_node?
+#     R         = document.createRange()
+#     R.setStart  text_node, start
+#     R.setEnd    text_node, start
+#     return R
+#   #.......................................................................................................
+#   new_focus = ->
+#     focus_idx  += +1
+#     R           = $ "<div class='focus' id='focus-#{focus_idx}'></div>"
+#     ( $ 'html' ).append R
+#     return R
+#   #.......................................................................................................
+#   new_line_offset = ->
+#     line_offsets.push R = [ null, null, ]
+#     return R
+#   #.......................................................................................................
+#   is_demo           = yes
+#   range             = new_range 0
+#   focus             = new_focus()
+#   line_offset       = new_line_offset()
+#   line_offset[ 0 ]  = 0
+#   #.......................................................................................................
+#   step ( resume ) =>
+#     #.....................................................................................................
+#     for end_idx in [ 1 .. text_node.length ]
+#       range.setEnd text_node, end_idx
+#       line_offset[ 1 ]  = end_idx
+#       rectangle         = range.getBoundingClientRect()
+#       { left }          = rectangle
+#       #...................................................................................................
+#       if last_left is 0
+#         last_left = left
+#       #...................................................................................................
+#       else if last_left? and left > last_left
+#         corrected_end_idx = end_idx - 1
+#         range.setEnd text_node, corrected_end_idx
+#         line_offset[ 1 ]  = corrected_end_idx
+#         hilite focus, range.getBoundingClientRect()
+#         debug '©pwdqt', end_idx, line_offset, rpr range.toString()
+#         range             = new_range corrected_end_idx
+#         line_offset       = new_line_offset()
+#         line_offset[ 0 ]  = corrected_end_idx
+#         line_offset[ 1 ]  = corrected_end_idx
+#         focus             = new_focus()
+#         rectangle         = range.getBoundingClientRect()
+#         if is_demo then yield after 0.05, resume
+#       #...................................................................................................
+#       last_left = rectangle[ 'left' ]
+#       hilite focus, rectangle
+#     #.....................................................................................................
+#     debug '©OE1Vx', end_idx, line_offset, rpr range.toString()
+#     line_count        = line_offsets.length
+#     column_linecounts = MKTS.get_column_linecounts 'even', line_count, column_count
+#     text              = ( $ text_node ).text()
+#     ### TAINT use jQuery? ###
+#     line_offset_idx   = 0
+#     for column_idx in [ 0 ... column_count ]
+#       column_linecount      = column_linecounts[ column_idx ]
+#       continue if column_linecount < 1
+#       # _text_node            = ( $ '.flex-columns-wrap .column' )
+#       #   .eq column_idx
+#       #   .find 'p'
+#       #   .contents().get 0
+#       _text_node            = ( ( ( $ '.flex-columns-wrap .column' ).eq column_idx ).find 'p' ).contents().get 0
+#       first_idx             = line_offsets[ line_offset_idx                         ][ 0 ]
+#       last_idx              = line_offsets[ line_offset_idx + column_linecount - 1  ][ 1 ]
+#       line_offset_idx      += column_linecount
+#       column_text           = text[ first_idx ... last_idx ]
+#       ### TAINT should mark as 'originally a soft hyphen' in case of later text re-flow? ###
+#       column_text           = column_text.replace /\u00ad$/, '-'
+#       _text_node.nodeValue  = column_text
+#       if is_demo then yield after 0.5, resume
 
 
 
@@ -99,8 +200,8 @@ build_menu = ->
   win.menu  = win_menu
   # win_menu.items.push new NW.MenuItem label: 'Help', 'submenu': help_menu
   edit_menu_item = win.menu.items[ 2 ]
-  TRM.dir edit_menu_item
-  TRM.dir edit_menu_item.submenu
+  # TRM.dir edit_menu_item
+  # TRM.dir edit_menu_item.submenu
   edit_menu_item.submenu.insert ( new NW.MenuItem label: 'xxxxxxxxx' ), 1
   debug '©RsQep', edit_menu_item.type
   #.........................................................................................................
@@ -175,49 +276,6 @@ MKTS.get_document_size = ( me ) -> [ ( $ 'html' ).outerWidth(), ( $ 'html' ).out
 MKTS.maximize = ( app ) ->
   win.moveTo   window.screen.availLeft,  window.screen.availTop
   win.resizeTo window.screen.availWidth, window.screen.availHeight
-
-#-----------------------------------------------------------------------------------------------------------
-win.on 'document-end', ->
-  step ( resume ) ->
-    # MKTS.maximize app
-    # MKTS.zoom app
-    MKTS.zoom_to app, 1.85
-    yield step.wrap ( $ 'document' ).ready, resume
-    # yield MKTS.wait resume
-    help "document ready"
-    # debug '©wVnkq', 'paper ', ( $ '.paper' ).offset(), "#{( $ '.paper' ).outerWidth()} x #{( $ '.paper' ).outerHeight()}"
-    # debug '©wVnkq', 'page  ', ( $ '.page' ).offset(), "#{( $ '.page' ).outerWidth()} x #{( $ '.page' ).outerHeight()}"
-    #.......................................................................................................
-    ( $ document ).keydown MKTS.on_keydown.bind MKTS
-    #.......................................................................................................
-    source    = """<p>The <b class='x'>Dormouse</b> <u>was <i>inexplicably</i> falling asleep</u> <i>again</i>.</p>"""
-    source    = """The <b class='x'>Dormouse</b> 眀快排字机 <u>was <i>inexplicably falling asleep</i></u> <i>again</i>."""
-    last_html = null
-    lines     = []
-    #.......................................................................................................
-    test_line = ( html ) ->
-      # urge '©M0lt9', html
-      line    = $ "<div class='mkts-lineprobe'><span class='cork'></span>#{html}<span class='cork'></span></div>"
-      corks   = line.find '.cork'
-      ( $ '#box-a p' ).append line
-      dy      = ( corks.eq 1 ).offset()[ 'top' ] - ( corks.eq 0 ).offset()[ 'top' ]
-      if dy isnt 0
-        if last_html?
-          lines.push last_html
-          return true
-        else
-          warn "line too long: #{rpr html}"
-          return null
-      last_html = html
-      return false
-    #.......................................................................................................
-    take_line = ( line ) ->
-      if line?
-        lines.push line
-      else
-        help lines
-    #.......................................................................................................
-    yield LINESETTER.set_lines source, test_line, take_line, resume
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -309,106 +367,6 @@ bindings =
   #.........................................................................................................
   'meta+y': ->
 
-
-MKTS._TRY_balanced_columns = ->
-  # range.surroundContents ( $ "<span class='hilite'></span>" ).get 0
-  # range = window.getSelection().getRangeAt 0
-  # range     = window.getSelection().getRangeAt 0
-  # { bottom
-  #   height
-  #   left
-  #   right
-  #   top
-  #   width } = range.getBoundingClientRect()
-  last_left         = null
-  focus_idx         = -1
-  text_node         = ( $ '#box-a p' ).contents().get 0
-  debug '©09SY6', 'content element count:', ( $ '#box-a p' ).contents().length
-  columns           = $ '.flex-columns-wrap .column'
-  column_count      = columns.length
-  debug '©AT6uj', "#{column_count} columns"
-  line_offsets      = []
-  #.......................................................................................................
-  ### TAINT must recompute on zoom ###
-  hilite = ( focus, rectangle ) ->
-    focus.offset rectangle
-    focus.width  rectangle[ 'width'  ]
-    focus.height rectangle[ 'height' ]
-  #.......................................................................................................
-  new_range = ( start ) ->
-    throw new Error "text_node not defined" unless text_node?
-    R         = document.createRange()
-    R.setStart  text_node, start
-    R.setEnd    text_node, start
-    return R
-  #.......................................................................................................
-  new_focus = ->
-    focus_idx  += +1
-    R           = $ "<div class='focus' id='focus-#{focus_idx}'></div>"
-    ( $ 'html' ).append R
-    return R
-  #.......................................................................................................
-  new_line_offset = ->
-    line_offsets.push R = [ null, null, ]
-    return R
-  #.......................................................................................................
-  is_demo           = yes
-  range             = new_range 0
-  focus             = new_focus()
-  line_offset       = new_line_offset()
-  line_offset[ 0 ]  = 0
-  #.......................................................................................................
-  step ( resume ) =>
-    #.....................................................................................................
-    for end_idx in [ 1 .. text_node.length ]
-      range.setEnd text_node, end_idx
-      line_offset[ 1 ]  = end_idx
-      rectangle         = range.getBoundingClientRect()
-      { left }          = rectangle
-      #...................................................................................................
-      if last_left is 0
-        last_left = left
-      #...................................................................................................
-      else if last_left? and left > last_left
-        corrected_end_idx = end_idx - 1
-        range.setEnd text_node, corrected_end_idx
-        line_offset[ 1 ]  = corrected_end_idx
-        hilite focus, range.getBoundingClientRect()
-        debug '©pwdqt', end_idx, line_offset, rpr range.toString()
-        range             = new_range corrected_end_idx
-        line_offset       = new_line_offset()
-        line_offset[ 0 ]  = corrected_end_idx
-        line_offset[ 1 ]  = corrected_end_idx
-        focus             = new_focus()
-        rectangle         = range.getBoundingClientRect()
-        if is_demo then yield after 0.05, resume
-      #...................................................................................................
-      last_left = rectangle[ 'left' ]
-      hilite focus, rectangle
-    #.....................................................................................................
-    debug '©OE1Vx', end_idx, line_offset, rpr range.toString()
-    line_count        = line_offsets.length
-    column_linecounts = MKTS.get_column_linecounts 'even', line_count, column_count
-    text              = ( $ text_node ).text()
-    ### TAINT use jQuery? ###
-    line_offset_idx   = 0
-    for column_idx in [ 0 ... column_count ]
-      column_linecount      = column_linecounts[ column_idx ]
-      continue if column_linecount < 1
-      # _text_node            = ( $ '.flex-columns-wrap .column' )
-      #   .eq column_idx
-      #   .find 'p'
-      #   .contents().get 0
-      _text_node            = ( ( ( $ '.flex-columns-wrap .column' ).eq column_idx ).find 'p' ).contents().get 0
-      first_idx             = line_offsets[ line_offset_idx                         ][ 0 ]
-      last_idx              = line_offsets[ line_offset_idx + column_linecount - 1  ][ 1 ]
-      line_offset_idx      += column_linecount
-      column_text           = text[ first_idx ... last_idx ]
-      ### TAINT should mark as 'originally a soft hyphen' in case of later text re-flow? ###
-      column_text           = column_text.replace /\u00ad$/, '-'
-      _text_node.nodeValue  = column_text
-      if is_demo then yield after 0.5, resume
-
 ###
 
 foo <b><i>is it</i> really</b> baz
@@ -436,22 +394,6 @@ foo <b><i>is it</i> really</b> baz
 
 ###
 
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.get_column_linecounts = ( strategy, line_count, column_count ) ->
-  ### thx to http://stackoverflow.com/a/1244369/256361 ###
-  R   = []
-  #.........................................................................................................
-  switch strategy
-    #.......................................................................................................
-    when 'even'
-      for col in [ 1 .. column_count ]
-        R.push ( line_count + column_count - col ) // column_count
-    #.......................................................................................................
-    else
-      throw new Error "unknown strategy #{rpr strategy}"
-  #.........................................................................................................
-  return R
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -486,3 +428,95 @@ MKTS.on_keydown = ( event ) ->
 # keyboard.on 'rsuper + equal', -> MKTS.zoom app, 1.25
 # keyboard.on  'super + dash',  -> MKTS.zoom app, 0.75
 # keyboard.on 'rsuper + dash',  -> MKTS.zoom app, 0.75
+
+
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+
+
+#-----------------------------------------------------------------------------------------------------------
+win.on 'document-end', ->
+  step ( resume ) ->
+    # MKTS.maximize app
+    # MKTS.zoom app
+    MKTS.zoom_to app, 1.85
+    yield step.wrap ( $ 'document' ).ready, resume
+    # yield MKTS.wait resume
+    help "document ready"
+    # debug '©wVnkq', 'paper ', ( $ '.paper' ).offset(), "#{( $ '.paper' ).outerWidth()} x #{( $ '.paper' ).outerHeight()}"
+    # debug '©wVnkq', 'page  ', ( $ '.page' ).offset(), "#{( $ '.page' ).outerWidth()} x #{( $ '.page' ).outerHeight()}"
+    #.......................................................................................................
+    ( $ document ).keydown MKTS.on_keydown.bind MKTS
+    # #.......................................................................................................
+    # source    = """<p>The <b class='x'>Dormouse</b> <u>was <i>inexplicably</i> falling asleep</u> <i>again</i>.</p>"""
+    # source    = """The <b class='x'>Dormouse</b> 眀快排字机 <u>was <i>inexplicably falling asleep</i></u> <i>again</i>."""
+    # last_html = null
+    # lines     = []
+    # #.......................................................................................................
+    # test_line = ( html ) ->
+    #   # urge '©M0lt9', html
+    #   line    = $ "<div class='mkts-lineprobe'><span class='cork'></span>#{html}<span class='cork'></span></div>"
+    #   corks   = line.find '.cork'
+    #   ( $ '#box-a p' ).append line
+    #   dy      = ( corks.eq 1 ).offset()[ 'top' ] - ( corks.eq 0 ).offset()[ 'top' ]
+    #   if dy isnt 0
+    #     if last_html?
+    #       lines.push last_html
+    #       return true
+    #     else
+    #       warn "line too long: #{rpr html}"
+    #       return null
+    #   last_html = html
+    #   return false
+    # #.......................................................................................................
+    # take_line = ( line ) ->
+    #   if line?
+    #     lines.push line
+    #   else
+    #     help lines
+    #.......................................................................................................
+    # yield LINESETTER.set_lines source, test_line, take_line, resume
+    ( $ '#box-b' ).html '<b>h</b>elo'
+    _demo '#box-b'
+
+#-----------------------------------------------------------------------------------------------------------
+_demo = ( target_selector ) ->
+  step ( resume ) =>
+    text_idx = -1
+    texts = [
+      """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
+            leading right into it.</i> 'That's very curious!' she thought. 'But
+            everything's curious today. I think I may as well go in at once.' And in
+            she &#x4e00; went."""
+      """So."""
+      """So. Here we go!"""
+      """x <span class='x'></span> y"""
+      """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly"""
+      """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."""
+      ]
+    text    = texts[ 0 ]
+    target  = $ target_selector
+    #.........................................................................................................
+    test_line = ( html ) =>
+      ### Must return whether HTML fits into one line. ###
+      target.html html
+      return html.length <= 25
+    #.........................................................................................................
+    accept_line = ( html, is_last ) =>
+      ### Inserts text line into document ###
+      help html, if is_last then '*' else ''
+      return null
+    # #---------------------------------------------------------------------------------------------------------
+    # step ( resume ) =>
+    #   for text in texts
+    #     yield LINESETTER.set_lines text, test_line, accept_line, resume
+    #.........................................................................................................
+    yield LINESETTER.set_lines text, test_line, accept_line, resume
+    #.........................................................................................................
+    return null
