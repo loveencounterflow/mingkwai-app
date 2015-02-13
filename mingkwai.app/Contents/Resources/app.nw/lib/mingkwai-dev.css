@@ -75,11 +75,19 @@ p.is-middle:before,
 p.is-last:before {
   display: none;
 }
+p.is-first,
+p.is-middle {
+  margin-bottom: 0;
+}
+p.is-middle,
+p.is-last {
+  margin-top: 0;
+}
 #mytext p:last-child {
   margin-bottom: 0;
 }
-xbig {
-  font-size: 200%;
+.xbig {
+  font-size: 300%;
 }
 .hilite {
   color: #821e00;
@@ -115,31 +123,27 @@ xbig {
   .flex-columns-wrap {
     outline: 1px dotted #ee82ee;
   }
-  .focus {
-    background: none;
-/* Allow click-through;
-      thx to http://stackoverflow.com/a/4839672/256361 */
-    pointer-events: none;
-    width: 10px;
-    height: 10px;
-    z-index: 1;
-  }
-  .column {
-    background-color: #dee1dd;
-  }
-  .cork {
-    display: inline-block;
-    width: 0;
-    height: 1em;
-    outline: 1px solid #f00;
-  }
-  #box-a {
-    outline: 1px solid #f00;
-  }
-  #box-b {
-    outline: 1px solid #008000;
-  }
-  #box-c {
-    outline: 1px solid #00f;
-  }
+}
+#focus {
+  background-color: rgba(100,0,0,0.25);
+}
+.column {
+  background-color: #dee1dd;
+}
+.cork {
+  display: inline-block;
+  width: 0;
+  height: 1em;
+  outline: 1px solid #f00;
+}
+/* ------------------------------------------------------------------------------------------------------
+   KW */
+#box-a {
+  outline: 1px solid #f00;
+}
+#box-b {
+  outline: 1px solid #008000;
+}
+#box-c {
+  outline: 1px solid #00f;
 }

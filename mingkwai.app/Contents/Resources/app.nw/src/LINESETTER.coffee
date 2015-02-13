@@ -10,7 +10,7 @@ njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'coffeenode-trm'
 rpr                       = CND.rpr.bind CND
-badge                     = '眀快排字机/linesetter'
+badge                     = '眀快排字机/LINESETTER'
 log                       = CND.get_logger 'plain',   badge
 info                      = CND.get_logger 'info',    badge
 alert                     = CND.get_logger 'alert',   badge
@@ -190,19 +190,28 @@ LineBreaker               = require 'linebreak'
 #-----------------------------------------------------------------------------------------------------------
 @_$produce_lines = ( state ) ->
   buffer          = []
-  last_buffer     = null
+  last_buffers    = []
   state[ 'next' ] = no
+  #.........................................................................................................
+  add_buffer = ->
+    last_buffers.push LODASH.clone buffer
+    last_buffers.shift() if last_buffers.length > 2
+    return null
   #.........................................................................................................
   f = ( event, send ) =>
     [ type, tail..., ] = event
     # debug '©Hbbu8', state[ 'next' ], JSON.stringify buffer
     #.......................................................................................................
     if state[ 'next' ]
+      last_buffer = last_buffers.shift()
+      warn '©gBgD8', 'buffer:     ', @_convert_to_html buffer
+      warn '©gBgD8', 'last_buffer:', @_convert_to_html last_buffer
+      # warn '©gBgD8', 'last_buffers:', last_buffers.length
       throw new Error "should never happen" unless last_buffer?
       state[ 'next' ] = no
       send [ 'set-line', last_buffer, false, ]
       @_prune_buffer buffer, last_buffer.length
-      last_buffer     = null
+      last_buffers.length = 0
     #.......................................................................................................
     switch type
       #.....................................................................................................
@@ -211,12 +220,12 @@ LineBreaker               = require 'linebreak'
       #.....................................................................................................
       when 'lone-tag', 'empty-tag'
         buffer.push event
-        last_buffer = LODASH.clone buffer
+        add_buffer()
         send [ 'test-line', buffer, false, ]
       #.....................................................................................................
       when 'text-part'
         buffer.push event
-        last_buffer = LODASH.clone buffer
+        add_buffer()
         send [ 'test-line', buffer, false, ]
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -235,6 +244,42 @@ LineBreaker               = require 'linebreak'
         f event, send
 
 #-----------------------------------------------------------------------------------------------------------
+@_convert_to_html = ( buffer ) ->
+  ### Note: as per
+  https://medium.com/the-javascript-collection/lets-write-fast-javascript-2b03c5575d9e#1e23, using
+  `+=` should be faster than `[].join ''`. ###
+  R         = ''
+  open_tags = []
+  #...................................................................................................
+  for event in buffer
+    [ type, tail..., ] = event
+    switch type
+      #...............................................................................................
+      when 'open-tag'
+        R += @_render_open_tag tail...
+        open_tags.unshift tail[ 0 ]
+      #...............................................................................................
+      when 'close-tag'
+        R += @_render_close_tag tail[ 0 ]
+        open_tags.shift()
+      #...............................................................................................
+      when 'lone-tag'
+        R += @_render_open_tag tail...
+      #...............................................................................................
+      when 'empty-tag'
+        R += @_render_empty_tag tail...
+      #...............................................................................................
+      when 'text-part'
+        ### TAINT escaping `<`, `>`, `&` ??? ###
+        R += tail[ 0 ]
+      #...............................................................................................
+      else
+        warn "ignored event of type #{rpr type}"
+  #...................................................................................................
+  ( R += @_render_close_tag tag_name ) for tag_name in open_tags
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
 @_$convert_to_html = ->
   #.........................................................................................................
   return $ ( meta_event, send ) =>
@@ -243,38 +288,8 @@ LineBreaker               = require 'linebreak'
     switch meta_type
       #.....................................................................................................
       when 'test-line', 'set-line'
-        ### Note: as per
-        https://medium.com/the-javascript-collection/lets-write-fast-javascript-2b03c5575d9e#1e23, using
-        `+=` should be faster than `[].join ''`. ###
-        html      = ''
-        open_tags = []
-        #...................................................................................................
-        for event in buffer
-          [ type, tail..., ] = event
-          switch type
-            #...............................................................................................
-            when 'open-tag'
-              html += @_render_open_tag tail...
-              open_tags.unshift tail[ 0 ]
-            #...............................................................................................
-            when 'close-tag'
-              html += @_render_close_tag tail[ 0 ]
-              open_tags.shift()
-            #...............................................................................................
-            when 'lone-tag'
-              html += @_render_open_tag tail...
-            #...............................................................................................
-            when 'empty-tag'
-              html += @_render_empty_tag tail...
-            #...............................................................................................
-            when 'text-part'
-              ### TAINT escaping `<`, `>`, `&` ??? ###
-              html += tail[ 0 ]
-            #...............................................................................................
-            else
-              warn "ignored event of type #{rpr type}"
-        #...................................................................................................
-        html += @_render_close_tag tag_name for tag_name in open_tags
+        html = @_convert_to_html buffer
+        # debug '©936Ly', buffer, rpr html
         send [ meta_type, html, is_last, ]
       #.....................................................................................................
       when 'end'
@@ -312,6 +327,7 @@ LineBreaker               = require 'linebreak'
     .pipe @_$hyphenate()
     .pipe @_$break_lines()
     .pipe @_$disperse_texts()
+    # .pipe D2.$throttle_items 2
     .pipe @_$produce_lines state
     .pipe @_$convert_to_html()
     .pipe @_$consume_lines state, text, test_line, accept_line, handler

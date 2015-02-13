@@ -357,29 +357,82 @@
       (yield step.wrap(($('document')).ready, resume));
       help("document ready");
       ($(document)).keydown(MKTS.on_keydown.bind(MKTS));
-      ($('#box-b')).html('<b>h</b>elo');
       return _demo('#box-b');
     });
   });
 
-  _demo = function(target_selector) {
+  _demo = function(container_selector) {
+    var new_line_fitter;
+    new_line_fitter = function() {
+      var is_first, last_height;
+      is_first = true;
+      last_height = 0;
+      whisper('©y94gs', 'new_line_fitter');
+      return function(node) {
+        var dy;
+        dy = node.height() - last_height;
+        debug('©u8H0l', 'last_height:', last_height, 'node.height():', node.height(), dy, rpr(node.html()));
+        last_height = node.height();
+        if (is_first) {
+          is_first = false;
+          return true;
+        }
+        return dy <= 0;
+      };
+    };
     return step((function(_this) {
       return function*(resume) {
-        var accept_line, target, test_line, text, text_idx, texts;
+        var accept_line, container, fits_onto_line, last_line, test_line, text, text_idx, texts;
         text_idx = -1;
-        texts = ["Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe &#x4e00; went.", "So.", "So. Here we go!", "x <span class='x'></span> y", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."];
+        texts = ["Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe &#x4e00; went.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door\nleading right into it</i>.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that", "So.", "So. Here we go!", "x <span class='x'></span> y", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."];
         text = texts[0];
-        target = $(target_selector);
+        container = $(container_selector);
+        fits_onto_line = null;
+        last_line = null;
         test_line = function(html) {
 
           /* Must return whether HTML fits into one line. */
-          target.html(html);
-          return html.length <= 25;
+          var clasz, fits, focus, line;
+          clasz = 'is-first';
+          clasz = 'is-last';
+          clasz = 'is-middle';
+          focus = $("<span id='focus'></span>");
+          line = $("<p class='" + clasz + "'></p>");
+          line.append(focus);
+          focus.html(html);
+          container.append(line);
+          if (fits_onto_line == null) {
+            fits_onto_line = new_line_fitter();
+          }
+          fits = fits_onto_line(focus);
+          if (fits) {
+            last_line = line;
+          }
+          if (fits) {
+            whisper('ok', html);
+          } else {
+            warn('X', html);
+          }
+          if (!fits) {
+            fits_onto_line = null;
+          }
+          debug('©bmWvg', fits, html);
+          line.detach();
+          return fits;
         };
         accept_line = function(html, is_last) {
 
           /* Inserts text line into document */
           help(html, is_last ? '*' : '');
+          (last_line.find('#focus')).remove();
+          last_line.html(html);
+          if (is_last) {
+
+            /* TAINT not entirely correct */
+            last_line.addClass('is-last');
+            last_line.removeClass('is-middle is-lone is-first');
+          }
+          container.append(last_line);
           return null;
         };
         (yield LINESETTER.set_lines(text, test_line, accept_line, resume));

@@ -453,64 +453,75 @@ win.on 'document-end', ->
     # debug '©wVnkq', 'page  ', ( $ '.page' ).offset(), "#{( $ '.page' ).outerWidth()} x #{( $ '.page' ).outerHeight()}"
     #.......................................................................................................
     ( $ document ).keydown MKTS.on_keydown.bind MKTS
-    # #.......................................................................................................
-    # source    = """<p>The <b class='x'>Dormouse</b> <u>was <i>inexplicably</i> falling asleep</u> <i>again</i>.</p>"""
-    # source    = """The <b class='x'>Dormouse</b> 眀快排字机 <u>was <i>inexplicably falling asleep</i></u> <i>again</i>."""
-    # last_html = null
-    # lines     = []
-    # #.......................................................................................................
-    # test_line = ( html ) ->
-    #   # urge '©M0lt9', html
-    #   line    = $ "<div class='mkts-lineprobe'><span class='cork'></span>#{html}<span class='cork'></span></div>"
-    #   corks   = line.find '.cork'
-    #   ( $ '#box-a p' ).append line
-    #   dy      = ( corks.eq 1 ).offset()[ 'top' ] - ( corks.eq 0 ).offset()[ 'top' ]
-    #   if dy isnt 0
-    #     if last_html?
-    #       lines.push last_html
-    #       return true
-    #     else
-    #       warn "line too long: #{rpr html}"
-    #       return null
-    #   last_html = html
-    #   return false
-    # #.......................................................................................................
-    # take_line = ( line ) ->
-    #   if line?
-    #     lines.push line
-    #   else
-    #     help lines
     #.......................................................................................................
-    # yield LINESETTER.set_lines source, test_line, take_line, resume
-    ( $ '#box-b' ).html '<b>h</b>elo'
     _demo '#box-b'
 
 #-----------------------------------------------------------------------------------------------------------
-_demo = ( target_selector ) ->
+_demo = ( container_selector ) ->
+  #.........................................................................................................
+  new_line_fitter = ->
+    is_first    = yes
+    last_height = 0
+    whisper '©y94gs', 'new_line_fitter'
+    return ( node ) ->
+      dy          = node.height() - last_height
+      debug '©u8H0l', 'last_height:', last_height, 'node.height():', node.height(), dy, rpr node.html()
+      last_height = node.height()
+      if is_first
+        is_first = no
+        return true
+      return dy <= 0
+  #.......................................................................................................
   step ( resume ) =>
     text_idx = -1
     texts = [
-      """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
+      """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door
             leading right into it.</i> 'That's very curious!' she thought. 'But
             everything's curious today. I think I may as well go in at once.' And in
             she &#x4e00; went."""
+      """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door
+            leading right into it</i>."""
+      """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that"""
       """So."""
       """So. Here we go!"""
       """x <span class='x'></span> y"""
       """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly"""
       """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."""
       ]
-    text    = texts[ 0 ]
-    target  = $ target_selector
+    text            = texts[ 0 ]
+    container       = $ container_selector
+    fits_onto_line  = null
+    last_line       = null
     #.........................................................................................................
     test_line = ( html ) =>
       ### Must return whether HTML fits into one line. ###
-      target.html html
-      return html.length <= 25
+      clasz           = 'is-first'
+      clasz           = 'is-last'
+      clasz           = 'is-middle'
+      focus           = $ "<span id='focus'></span>"
+      line            = $ "<p class='#{clasz}'></p>"
+      line.append focus
+      focus.html html
+      container.append line
+      fits_onto_line ?= new_line_fitter()
+      fits            = fits_onto_line focus
+      last_line       = line if fits
+      if fits then whisper 'ok', html else warn 'X', html
+      fits_onto_line  = null unless fits
+      debug '©bmWvg', fits, html
+      line.detach()
+      return fits
     #.........................................................................................................
     accept_line = ( html, is_last ) =>
       ### Inserts text line into document ###
       help html, if is_last then '*' else ''
+      ( last_line.find '#focus' ).remove()
+      last_line.html html
+      if is_last
+        ### TAINT not entirely correct ###
+        last_line.addClass 'is-last'
+        last_line.removeClass 'is-middle is-lone is-first'
+      container.append last_line
       return null
     # #---------------------------------------------------------------------------------------------------------
     # step ( resume ) =>
@@ -520,3 +531,33 @@ _demo = ( target_selector ) ->
     yield LINESETTER.set_lines text, test_line, accept_line, resume
     #.........................................................................................................
     return null
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

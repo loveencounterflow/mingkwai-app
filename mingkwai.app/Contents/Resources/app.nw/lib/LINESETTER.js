@@ -11,7 +11,7 @@
 
   rpr = CND.rpr.bind(CND);
 
-  badge = '眀快排字机/linesetter';
+  badge = '眀快排字机/LINESETTER';
 
   log = CND.get_logger('plain', badge);
 
@@ -163,22 +163,32 @@
   };
 
   this._$produce_lines = function(state) {
-    var buffer, f, last_buffer;
+    var add_buffer, buffer, f, last_buffers;
     buffer = [];
-    last_buffer = null;
+    last_buffers = [];
     state['next'] = false;
+    add_buffer = function() {
+      last_buffers.push(LODASH.clone(buffer));
+      if (last_buffers.length > 2) {
+        last_buffers.shift();
+      }
+      return null;
+    };
     f = (function(_this) {
       return function(event, send) {
-        var tail, type;
+        var last_buffer, tail, type;
         type = event[0], tail = 2 <= event.length ? __slice.call(event, 1) : [];
         if (state['next']) {
+          last_buffer = last_buffers.shift();
+          warn('©gBgD8', 'buffer:     ', _this._convert_to_html(buffer));
+          warn('©gBgD8', 'last_buffer:', _this._convert_to_html(last_buffer));
           if (last_buffer == null) {
             throw new Error("should never happen");
           }
           state['next'] = false;
           send(['set-line', last_buffer, false]);
           _this._prune_buffer(buffer, last_buffer.length);
-          last_buffer = null;
+          last_buffers.length = 0;
         }
         switch (type) {
           case 'open-tag':
@@ -187,11 +197,11 @@
           case 'lone-tag':
           case 'empty-tag':
             buffer.push(event);
-            last_buffer = LODASH.clone(buffer);
+            add_buffer();
             return send(['test-line', buffer, false]);
           case 'text-part':
             buffer.push(event);
-            last_buffer = LODASH.clone(buffer);
+            add_buffer();
             return send(['test-line', buffer, false]);
         }
       };
@@ -213,52 +223,58 @@
     })(this));
   };
 
+  this._convert_to_html = function(buffer) {
+
+    /* Note: as per
+    https://medium.com/the-javascript-collection/lets-write-fast-javascript-2b03c5575d9e#1e23, using
+    `+=` should be faster than `[].join ''`.
+     */
+    var R, event, open_tags, tag_name, tail, type, _i, _j, _len, _len1;
+    R = '';
+    open_tags = [];
+    for (_i = 0, _len = buffer.length; _i < _len; _i++) {
+      event = buffer[_i];
+      type = event[0], tail = 2 <= event.length ? __slice.call(event, 1) : [];
+      switch (type) {
+        case 'open-tag':
+          R += this._render_open_tag.apply(this, tail);
+          open_tags.unshift(tail[0]);
+          break;
+        case 'close-tag':
+          R += this._render_close_tag(tail[0]);
+          open_tags.shift();
+          break;
+        case 'lone-tag':
+          R += this._render_open_tag.apply(this, tail);
+          break;
+        case 'empty-tag':
+          R += this._render_empty_tag.apply(this, tail);
+          break;
+        case 'text-part':
+
+          /* TAINT escaping `<`, `>`, `&` ??? */
+          R += tail[0];
+          break;
+        default:
+          warn("ignored event of type " + (rpr(type)));
+      }
+    }
+    for (_j = 0, _len1 = open_tags.length; _j < _len1; _j++) {
+      tag_name = open_tags[_j];
+      R += this._render_close_tag(tag_name);
+    }
+    return R;
+  };
+
   this._$convert_to_html = function() {
     return $((function(_this) {
       return function(meta_event, send) {
-        var buffer, event, html, is_last, meta_type, open_tags, tag_name, tail, type, _i, _j, _len, _len1;
+        var buffer, html, is_last, meta_type;
         meta_type = meta_event[0], buffer = meta_event[1], is_last = meta_event[2];
         switch (meta_type) {
           case 'test-line':
           case 'set-line':
-
-            /* Note: as per
-            https://medium.com/the-javascript-collection/lets-write-fast-javascript-2b03c5575d9e#1e23, using
-            `+=` should be faster than `[].join ''`.
-             */
-            html = '';
-            open_tags = [];
-            for (_i = 0, _len = buffer.length; _i < _len; _i++) {
-              event = buffer[_i];
-              type = event[0], tail = 2 <= event.length ? __slice.call(event, 1) : [];
-              switch (type) {
-                case 'open-tag':
-                  html += _this._render_open_tag.apply(_this, tail);
-                  open_tags.unshift(tail[0]);
-                  break;
-                case 'close-tag':
-                  html += _this._render_close_tag(tail[0]);
-                  open_tags.shift();
-                  break;
-                case 'lone-tag':
-                  html += _this._render_open_tag.apply(_this, tail);
-                  break;
-                case 'empty-tag':
-                  html += _this._render_empty_tag.apply(_this, tail);
-                  break;
-                case 'text-part':
-
-                  /* TAINT escaping `<`, `>`, `&` ??? */
-                  html += tail[0];
-                  break;
-                default:
-                  warn("ignored event of type " + (rpr(type)));
-              }
-            }
-            for (_j = 0, _len1 = open_tags.length; _j < _len1; _j++) {
-              tag_name = open_tags[_j];
-              html += _this._render_close_tag(tag_name);
-            }
+            html = _this._convert_to_html(buffer);
             return send([meta_type, html, is_last]);
           case 'end':
             return send(meta_event);

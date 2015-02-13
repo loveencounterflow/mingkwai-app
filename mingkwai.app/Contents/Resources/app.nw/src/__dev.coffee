@@ -237,18 +237,18 @@ $convert_to_html = ->
           switch type
             #...............................................................................................
             when 'open-tag'
-              html += LINESETTER.render_open_tag tail...
+              html += LINESETTER._render_open_tag tail...
               open_tags.unshift tail[ 0 ]
             #...............................................................................................
             when 'close-tag'
-              html += LINESETTER.render_close_tag tail[ 0 ]
+              html += LINESETTER._render_close_tag tail[ 0 ]
               open_tags.shift()
             #...............................................................................................
             when 'lone-tag'
-              html += LINESETTER.render_open_tag tail...
+              html += LINESETTER._render_open_tag tail...
             #...............................................................................................
             when 'empty-tag'
-              html += LINESETTER.render_empty_tag tail...
+              html += LINESETTER._render_empty_tag tail...
             #...............................................................................................
             when 'text-part'
               ### TAINT escaping `<`, `>`, `&` ??? ###
@@ -257,7 +257,7 @@ $convert_to_html = ->
             else
               warn "ignored event of type #{rpr type}"
         #...................................................................................................
-        html += LINESETTER.render_close_tag tag_name for tag_name in open_tags
+        html += LINESETTER._render_close_tag tag_name for tag_name in open_tags
         send [ meta_type, html, is_last, ]
       #.....................................................................................................
       when 'end'
@@ -281,15 +281,50 @@ $consume_lines = ( state, text, test_line, accept_line, handler ) ->
 
 ### -> LINESETTER ###
 
+#-----------------------------------------------------------------------------------------------------------
+$throttle_items = ( items_per_second ) ->
+  buffer    = []
+  count     = 0
+  idx       = 0
+  _send     = null
+  timer     = null
+  has_ended = no
+  #.........................................................................................................
+  emit    = ->
+    if ( data = buffer[ idx ] ) isnt undefined
+      buffer[ idx ] = undefined
+      idx   += +1
+      count += -1
+      _send data
+    #.......................................................................................................
+    if has_ended and count < 1
+      clearInterval timer
+      _send.end()
+    #.......................................................................................................
+    return null
+  #.........................................................................................................
+  start   = ->
+    timer = setInterval emit, 1 / items_per_second * 1000
+  #---------------------------------------------------------------------------------------------------------
+  return $ ( data, send, end ) =>
+    if data?
+      unless _send?
+        _send = send
+        start()
+      buffer.push data
+      count += +1
+    #.......................................................................................................
+    if end?
+      has_ended = yes
 
 #-----------------------------------------------------------------------------------------------------------
 @demo_3 = ->
   text_idx = -1
   texts = [
-    """So."""
+    """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly"""
+    # """So."""
     # """So. Here we go!"""
     # """x <span class='x'></span> y"""
-    # """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly"""
     # """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
     #       leading right into it.</i> 'That's very curious!' she thought. 'But
     #       everything's curious today. I think I may as well go in at once.' And in
@@ -298,8 +333,8 @@ $consume_lines = ( state, text, test_line, accept_line, handler ) ->
     ]
   #.........................................................................................................
   test_line = ( html ) =>
-    ### Must return whether HTML fits into one line. ###
-    return html.length <= 25
+    ### Must return whether HTML exceeds line length. ###
+    return html.length > 25
   #.........................................................................................................
   accept_line = ( html, is_last ) =>
     help html, if is_last then '*' else ''
@@ -310,24 +345,26 @@ $consume_lines = ( state, text, test_line, accept_line, handler ) ->
     input = D2.create_throughstream()
     input
       .pipe D2.HTML.$parse()
-      .pipe D2.HTML.$collect_texts()
-      # .pipe D2.HTML.$collect_closing_tags()
-      .pipe D2.HTML.$collect_empty_tags()
-      .pipe $hyphenate()
-      .pipe $break_lines()
-      .pipe D2.$disperse_texts()
-      .pipe D2.$sub ( source, sink, state ) ->
-        source
-          # .pipe $ ( event, send ) => whisper JSON.stringify event; send event
-          .pipe $produce_lines source, state
-          .pipe $convert_to_html()
-          .pipe $consume_lines state, text, test_line, accept_line, handler
-          .pipe sink
-      # .pipe $ ( event, send ) => info '©56', JSON.stringify event; send event
+      .pipe $throttle_items 5
+      .pipe D2.$show()
+      # .pipe D2.HTML.$collect_texts()
+      # # .pipe D2.HTML.$collect_closing_tags()
+      # .pipe D2.HTML.$collect_empty_tags()
+      # .pipe $hyphenate()
+      # .pipe $break_lines()
+      # .pipe D2.$disperse_texts()
+      # .pipe D2.$sub ( source, sink, state ) ->
+      #   source
+      #     # .pipe $ ( event, send ) => whisper JSON.stringify event; send event
+      #     .pipe $produce_lines source, state
+      #     .pipe $convert_to_html()
+      #     .pipe $consume_lines state, text, test_line, accept_line, handler
+      #     .pipe sink
+      # # .pipe $ ( event, send ) => info '©56', JSON.stringify event; send event
     #.......................................................................................................
     input.on 'end', =>
       whisper "input ended."
-      # handler null
+      handler null
     #.......................................................................................................
     info '©28u', rpr text
     input.write text
@@ -336,6 +373,7 @@ $consume_lines = ( state, text, test_line, accept_line, handler ) ->
   step ( resume ) =>
     for text in texts
       yield typeset_text text, test_line, accept_line, resume
+      # debug '©7XCYz', rpr text
   #.........................................................................................................
   return null
 
