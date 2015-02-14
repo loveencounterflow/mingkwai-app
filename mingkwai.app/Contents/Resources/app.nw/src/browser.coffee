@@ -4,23 +4,19 @@
 ############################################################################################################
 njs_path                  = require 'path'
 njs_fs                    = require 'fs'
-# #...........................................................................................................
-# TEXT                      = require 'coffeenode-text'
-# TYPES                     = require 'coffeenode-types'
-# BNP                       = require 'coffeenode-bitsnpieces'
 #...........................................................................................................
-TRM                       = require 'coffeenode-trm'
-rpr                       = TRM.rpr.bind TRM
+CND                       = require 'cnd'
+rpr                       = CND.rpr.bind CND
 badge                     = '眀快排字机/browser'
-log                       = TRM.get_logger 'plain',   badge
-info                      = TRM.get_logger 'info',    badge
-alert                     = TRM.get_logger 'alert',   badge
-debug                     = TRM.get_logger 'debug',   badge
-warn                      = TRM.get_logger 'warn',    badge
-urge                      = TRM.get_logger 'urge',    badge
-whisper                   = TRM.get_logger 'whisper', badge
-help                      = TRM.get_logger 'help',    badge
-echo                      = TRM.echo.bind TRM
+log                       = CND.get_logger 'plain',   badge
+info                      = CND.get_logger 'info',    badge
+alert                     = CND.get_logger 'alert',   badge
+debug                     = CND.get_logger 'debug',   badge
+warn                      = CND.get_logger 'warn',    badge
+urge                      = CND.get_logger 'urge',    badge
+whisper                   = CND.get_logger 'whisper', badge
+help                      = CND.get_logger 'help',    badge
+echo                      = CND.echo.bind CND
 #...........................................................................................................
 NW                        = require 'nw.gui'
 win                       = NW.Window.get()
@@ -41,9 +37,6 @@ LINESETTER                = require './LINESETTER'
 # require( 'clarify' );
 # require( 'trace' );
 # Error.stackTraceLimit = Infinity;
-help "app data path is #{NW.App.dataPath}"
-help "node: #{rpr process.versions[ 'node' ]}, node-webkit: #{rpr process.versions[ 'node-webkit' ]}, "
-
 
 # MKTS._TRY_balanced_columns = ->
 #   # range.surroundContents ( $ "<span class='hilite'></span>" ).get 0
@@ -147,7 +140,7 @@ help "node: #{rpr process.versions[ 'node' ]}, node-webkit: #{rpr process.versio
 
 
 # PRINTER                   = require 'printer'
-# TRM.dir PRINTER
+# CND.dir PRINTER
 # help printer[ 'name' ] for printer in PRINTER.getPrinters()
 # help PRINTER.getSupportedPrintFormats()
 
@@ -200,8 +193,8 @@ build_menu = ->
   win.menu  = win_menu
   # win_menu.items.push new NW.MenuItem label: 'Help', 'submenu': help_menu
   edit_menu_item = win.menu.items[ 2 ]
-  # TRM.dir edit_menu_item
-  # TRM.dir edit_menu_item.submenu
+  # CND.dir edit_menu_item
+  # CND.dir edit_menu_item.submenu
   edit_menu_item.submenu.insert ( new NW.MenuItem label: 'xxxxxxxxx' ), 1
   debug '©RsQep', edit_menu_item.type
   #.........................................................................................................
@@ -213,7 +206,7 @@ build_menu = ->
 build_menu()
 
 # help '©5t3', document.visibilityState
-# TRM.dir win
+# CND.dir win
 # help ( name for name of window).join ' '
 
 win.show()
@@ -475,7 +468,10 @@ _demo = ( container_selector ) ->
   step ( resume ) =>
     text_idx = -1
     texts = [
-      """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door
+      """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
+            leading right into it.</i> 'That's very curious!' she thought. 'But
+            everything's curious."""
+      """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
             leading right into it.</i> 'That's very curious!' she thought. 'But
             everything's curious today. I think I may as well go in at once.' And in
             she &#x4e00; went."""

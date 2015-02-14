@@ -3,12 +3,8 @@
 ############################################################################################################
 njs_path                  = require 'path'
 njs_fs                    = require 'fs'
-# #...........................................................................................................
-# TEXT                      = require 'coffeenode-text'
-# TYPES                     = require 'coffeenode-types'
-# BNP                       = require 'coffeenode-bitsnpieces'
 #...........................................................................................................
-CND                       = require 'coffeenode-trm'
+CND                       = require 'cnd'
 rpr                       = CND.rpr.bind CND
 badge                     = '眀快排字机/LINESETTER'
 log                       = CND.get_logger 'plain',   badge
@@ -280,6 +276,33 @@ LineBreaker               = require 'linebreak'
   return R
 
 #-----------------------------------------------------------------------------------------------------------
+@_$correct_hyphens_etc = ->
+  #.........................................................................................................
+  return $ ( meta_event, send ) =>
+    [ meta_type, buffer, is_last, ] = meta_event
+    #.......................................................................................................
+    switch meta_type
+      #.....................................................................................................
+      when 'test-line', 'set-line'
+        ### TAINT consider to move the buffer cloning to an earlier transformer. ###
+        buffer          = LODASH.clone buffer
+        meta_event[ 1 ] = buffer
+        is_last         = yes
+        for idx in [ buffer.length - 1 .. 0 ] by -1
+          [ type, text, ] = part = buffer[ idx ]
+          continue unless part[ 0 ] is 'text-part'
+          replacement     = if is_last then '-' else ''
+          text            = text.replace /\xad$/, replacement
+          text            = text.replace /\s+$/, '' if is_last
+          text            = text.replace /&/g, '&amp;'
+          text            = text.replace /</g, '&lt;'
+          text            = text.replace />/g, '&gt;'
+          is_last         = no
+          buffer[ idx ]   = [ 'text-part', text, ]
+    #.......................................................................................................
+    send meta_event
+
+#-----------------------------------------------------------------------------------------------------------
 @_$convert_to_html = ->
   #.........................................................................................................
   return $ ( meta_event, send ) =>
@@ -292,12 +315,8 @@ LineBreaker               = require 'linebreak'
         # debug '©936Ly', buffer, rpr html
         send [ meta_type, html, is_last, ]
       #.....................................................................................................
-      when 'end'
-        # debug '©weadg', 'end'
-        send meta_event
-      #.....................................................................................................
       else
-        warn "ignored event of meta-type #{rpr meta_type}"
+        send meta_event
 
 #-----------------------------------------------------------------------------------------------------------
 @_$consume_lines = ( state, text, test_line, accept_line, handler ) ->
@@ -329,6 +348,8 @@ LineBreaker               = require 'linebreak'
     .pipe @_$disperse_texts()
     # .pipe D2.$throttle_items 2
     .pipe @_$produce_lines state
+    .pipe @_$correct_hyphens_etc()
+    .pipe D2.$show()
     .pipe @_$convert_to_html()
     .pipe @_$consume_lines state, text, test_line, accept_line, handler
   #.........................................................................................................

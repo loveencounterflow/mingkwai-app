@@ -5,17 +5,17 @@
 njs_path                  = require 'path'
 njs_fs                    = require 'fs'
 #...........................................................................................................
-TRM                       = require 'coffeenode-trm'
-rpr                       = TRM.rpr.bind TRM
+CND                       = require 'cnd'
+rpr                       = CND.rpr.bind CND
 badge                     = '眀快排字机/TEMPLATES'
-log                       = TRM.get_logger 'plain',     badge
-info                      = TRM.get_logger 'info',      badge
-whisper                   = TRM.get_logger 'whisper',   badge
-alert                     = TRM.get_logger 'alert',     badge
-debug                     = TRM.get_logger 'debug',     badge
-warn                      = TRM.get_logger 'warn',      badge
-help                      = TRM.get_logger 'help',      badge
-urge                      = TRM.get_logger 'urge',      badge
+log                       = CND.get_logger 'plain',     badge
+info                      = CND.get_logger 'info',      badge
+whisper                   = CND.get_logger 'whisper',   badge
+alert                     = CND.get_logger 'alert',     badge
+debug                     = CND.get_logger 'debug',     badge
+warn                      = CND.get_logger 'warn',      badge
+help                      = CND.get_logger 'help',      badge
+urge                      = CND.get_logger 'urge',      badge
 #...........................................................................................................
 # MKTS                      = require './main'
 TEACUP                    = require 'coffeenode-teacup'
@@ -34,7 +34,7 @@ TEACUP                    = require 'coffeenode-teacup'
 #   hyphenate                   = _HYPHER.hyphenateText.bind _HYPHER
 
 # # debug '©y5vhC', hyphenate
-# # # TRM.dir h
+# # # CND.dir h
 # # # // returns ['hy', 'phen', 'ation']
 # # debug '©T7WlC', hyphenate 'hyphenation is awesome'
 # # # debug '©T7WlC', h.hyphenateText 'hyphenation is awesome'
@@ -198,37 +198,35 @@ for name_ of TEACUP
             # DIV '.grid.grid-1cm'
             # DIV '.grid.baseline-grid'
             H1 "眀快排字机"
-            DIV """here & there"""
-            # DIV '#mytext.columns-5.justify', => ( ( P => RAW paragraph ) for paragraph in _XXX_paragraphs )
-            # DIV '.circle', """Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-            # tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            # exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-            # reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-            # occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."""
-            DIV '.clear-float'
-            DIV =>
-              SPAN => '〇'
-              SPAN '.jzr-babel', '〇'
-            DIV """"""
-            DIV """"""
-            DIV """"""
-            DIV """"""
-            DIV """"""
-            DIV """"""
-            DIV """𠀀 𠀁 𠀂 𠀃 𠀄 𠀅 𠀆 𠀇 𠀈 𠀉 𠀊 𠀋 𠀌 𠀍 𠀎 𠀏 𠀐 𠀑 𠀒 𠀓 𠀔 𠀕 𠀖 𠀗 𠀘 𠀙 𠀚 𠀛 𠀜 𠀝 𠀞 𠀟 𠀠 𠀡 𠀢 𠀣 𠀤 𠀥 𠀦 𠀧 𠀨 𠀩 𠀪 𠀫 𠀬 𠀭 𠀮 𠀯 𠀰"""
+            # DIV """here & there"""
+            # # DIV '#mytext.columns-5.justify', => ( ( P => RAW paragraph ) for paragraph in _XXX_paragraphs )
+            # # DIV '.circle', """Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+            # # tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            # # exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+            # # reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+            # # occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."""
+            # DIV '.clear-float'
+            # DIV =>
+            #   SPAN => '〇'
+            #   SPAN '.jzr-babel', '〇'
+            # DIV """"""
+            # DIV """"""
+            # DIV """"""
+            # DIV """"""
+            # DIV """"""
+            # DIV """"""
+            # DIV """𠀀 𠀁 𠀂 𠀃 𠀄 𠀅 𠀆 𠀇 𠀈 𠀉 𠀊 𠀋 𠀌 𠀍 𠀎 𠀏 𠀐 𠀑 𠀒 𠀓 𠀔 𠀕 𠀖 𠀗 𠀘 𠀙 𠀚 𠀛 𠀜 𠀝 𠀞 𠀟 𠀠 𠀡 𠀢 𠀣 𠀤 𠀥 𠀦 𠀧 𠀨 𠀩 𠀪 𠀫 𠀬 𠀭 𠀮 𠀯 𠀰"""
             #.............................................................................................
             # DIV '#column-test', contenteditable: 'true', =>
             #   RAW "dor-mouse much-ness me-mo-ry <span class='balken'></span>".replace /-/g, '\u00ad'
             #.............................................................................................
             DIV '.flex-columns-wrap', =>
-              DIV '#box-a.column.filled-with-id-content', =>
-                P '.is-first', contenteditable: 'true', 'xxx' # => RAW _XXX_paragraphs[ 0 ]
-              DIV '#box-b.column.filled-with-id-content', =>
-                P '.is-middle', contenteditable: 'true', 'xxx'
-              DIV '#box-c.column.filled-with-id-content', =>
-                P '.is-last', contenteditable: 'true', =>
-                  TEXT 'xxx'
-                  SPAN '.cork'
+              DIV '#box-a.column.filled-with-id-content'
+              DIV '#box-b.column.filled-with-id-content'
+              DIV '#box-c.column.filled-with-id-content'
+                # P '.is-first', contenteditable: 'true'
+                # P '.is-last', contenteditable: 'true'
+              #   P '.is-middle', contenteditable: 'true'
         # #---------------------------------------------------------------------------------------------------
         # DIV '#content', => ( ( P => RAW paragraph ) for paragraph in _XXX_paragraphs )
         #---------------------------------------------------------------------------------------------------

@@ -7,7 +7,7 @@
 
   njs_fs = require('fs');
 
-  CND = require('coffeenode-trm');
+  CND = require('cnd');
 
   rpr = CND.rpr.bind(CND);
 
@@ -266,6 +266,41 @@
     return R;
   };
 
+  this._$correct_hyphens_etc = function() {
+    return $((function(_this) {
+      return function(meta_event, send) {
+        var buffer, idx, is_last, meta_type, part, replacement, text, type, _i, _ref, _ref1;
+        meta_type = meta_event[0], buffer = meta_event[1], is_last = meta_event[2];
+        switch (meta_type) {
+          case 'test-line':
+          case 'set-line':
+
+            /* TAINT consider to move the buffer cloning to an earlier transformer. */
+            buffer = LODASH.clone(buffer);
+            meta_event[1] = buffer;
+            is_last = true;
+            for (idx = _i = _ref = buffer.length - 1; _i >= 0; idx = _i += -1) {
+              _ref1 = part = buffer[idx], type = _ref1[0], text = _ref1[1];
+              if (part[0] !== 'text-part') {
+                continue;
+              }
+              replacement = is_last ? '-' : '';
+              text = text.replace(/\xad$/, replacement);
+              if (is_last) {
+                text = text.replace(/\s+$/, '');
+              }
+              text = text.replace(/&/g, '&amp;');
+              text = text.replace(/</g, '&lt;');
+              text = text.replace(/>/g, '&gt;');
+              is_last = false;
+              buffer[idx] = ['text-part', text];
+            }
+        }
+        return send(meta_event);
+      };
+    })(this));
+  };
+
   this._$convert_to_html = function() {
     return $((function(_this) {
       return function(meta_event, send) {
@@ -276,10 +311,8 @@
           case 'set-line':
             html = _this._convert_to_html(buffer);
             return send([meta_type, html, is_last]);
-          case 'end':
-            return send(meta_event);
           default:
-            return warn("ignored event of meta-type " + (rpr(meta_type)));
+            return send(meta_event);
         }
       };
     })(this));
@@ -311,7 +344,7 @@
         next: false
       };
       input = D2.create_throughstream();
-      input.pipe(D2.HTML.$parse()).pipe(D2.HTML.$collect_texts()).pipe(D2.HTML.$collect_empty_tags()).pipe(_this._$hyphenate()).pipe(_this._$break_lines()).pipe(_this._$disperse_texts()).pipe(_this._$produce_lines(state)).pipe(_this._$convert_to_html()).pipe(_this._$consume_lines(state, text, test_line, accept_line, handler));
+      input.pipe(D2.HTML.$parse()).pipe(D2.HTML.$collect_texts()).pipe(D2.HTML.$collect_empty_tags()).pipe(_this._$hyphenate()).pipe(_this._$break_lines()).pipe(_this._$disperse_texts()).pipe(_this._$produce_lines(state)).pipe(_this._$correct_hyphens_etc()).pipe(D2.$show()).pipe(_this._$convert_to_html()).pipe(_this._$consume_lines(state, text, test_line, accept_line, handler));
       input.on('end', function() {
         return whisper("input ended.");
       });

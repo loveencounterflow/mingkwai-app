@@ -29,17 +29,14 @@
   },
   "js-flags": "--harmony",
   "dependencies": {
+    "cnd": "^0.1.5",
     "coffeenode-chr": "^0.1.4",
     "coffeenode-suspend": "^0.1.4",
     "coffeenode-teacup": "^0.1.2",
     "guy-trace": "^0.1.2",
-    "jsoid": "^1.0.4",
     "linebreak": "^0.2.0",
     "lodash": "^3.1.0",
     "pipedreams2": "^0.2.8",
-    "printer": "0.0.2",
-    "rangy": "^1.3.0-alpha.20140921",
-    "stylus": "^0.49.3",
-    "yields-k": "^0.7.0"
+    "stylus": "^0.49.3"
   }
 }
