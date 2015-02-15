@@ -110,7 +110,6 @@
     edit_menu_item.submenu.insert(new NW.MenuItem({
       label: 'xxxxxxxxx'
     }), 1);
-    debug('©RsQep', edit_menu_item.type);
     return null;
   };
 
@@ -217,6 +216,12 @@
   MKTS.foo = function(event) {
     return debug('©9HvgT', 'xxxx');
   };
+
+
+  /* TAINT should live in its own module */
+
+
+  /* TAINT cosider using e.g. https://www.npmjs.com/package/combokeys */
 
   keyboard = new Map();
 
@@ -363,11 +368,9 @@
       var is_first, last_height;
       is_first = true;
       last_height = 0;
-      whisper('©y94gs', 'new_line_fitter');
       return function(node) {
         var dy;
         dy = node.height() - last_height;
-        debug('©u8H0l', 'last_height:', last_height, 'node.height():', node.height(), dy, rpr(node.html()));
         last_height = node.height();
         if (is_first) {
           is_first = false;
@@ -380,7 +383,7 @@
       return function*(resume) {
         var accept_line, container, fits_onto_line, last_line, test_line, text, text_idx, texts;
         text_idx = -1;
-        texts = ["Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious.", "Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe &#x4e00; went.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door\nleading right into it</i>.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that", "So.", "So. Here we go!", "x <span class='x'></span> y", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."];
+        texts = ["had happened lately,\nthat Alice had begun to think that very few things indeed were really\nimpossible.", "Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe &#x4e00; went.\nAlice opened the door and found that it led into a small passage, not\nmuch larger than a rat-hole: she knelt down and looked along the passage\ninto the loveliest garden you ever saw. How she longed to get out of\nthat dark hall, and wander about among those beds of bright flowers and\nthose cool fountains, but she could not even get her head through the\ndoorway; 'and even if my head would go through,' thought poor Alice, 'it\nwould be of very little use without my shoulders. <span class='xbig'>愛麗絲</span> Oh, how I wish I could\nshut up like a telescope! I think I could, if I only knew how to begin.'\nFor, you see, so many out-of-the-way things had happened lately,\nthat Alice had begun to think that very few things indeed were really\nimpossible.", "Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door\nleading right into it</i>.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that", "So.", "So. Here we go!", "x <span class='x'></span> y", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."];
         text = texts[0];
         container = $(container_selector);
         fits_onto_line = null;
@@ -404,15 +407,9 @@
           if (fits) {
             last_line = line;
           }
-          if (fits) {
-            whisper('ok', html);
-          } else {
-            warn('X', html);
-          }
           if (!fits) {
             fits_onto_line = null;
           }
-          debug('©bmWvg', fits, html);
           line.detach();
           return fits;
         };

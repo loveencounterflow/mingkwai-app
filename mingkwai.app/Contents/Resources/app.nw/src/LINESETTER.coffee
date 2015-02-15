@@ -195,18 +195,22 @@ LineBreaker               = require 'linebreak'
     return null
   #.........................................................................................................
   f = ( event, send ) =>
+    debug '©8Ijx0', event, state[ 'next']
     [ type, tail..., ] = event
     # debug '©Hbbu8', state[ 'next' ], JSON.stringify buffer
     #.......................................................................................................
     if state[ 'next' ]
       last_buffer = last_buffers.shift()
-      warn '©gBgD8', 'buffer:     ', @_convert_to_html buffer
-      warn '©gBgD8', 'last_buffer:', @_convert_to_html last_buffer
+      # warn '©gBgD8', 'buffer:     ', @_convert_to_html buffer
+      # warn '©gBgD8', 'last_buffer:', @_convert_to_html last_buffer
       # warn '©gBgD8', 'last_buffers:', last_buffers.length
       throw new Error "should never happen" unless last_buffer?
       state[ 'next' ] = no
       send [ 'set-line', last_buffer, false, ]
       @_prune_buffer buffer, last_buffer.length
+      # if buffer.length > 0
+      #   warn '©FLfln', buffer.length
+      #   return true
       last_buffers.length = 0
     #.......................................................................................................
     switch type
@@ -223,21 +227,32 @@ LineBreaker               = require 'linebreak'
         buffer.push event
         add_buffer()
         send [ 'test-line', buffer, false, ]
+    #.......................................................................................................
+    return false
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, tail..., ] = event
     #.......................................................................................................
     # debug '©PapQo', type
+    debug '©skZ5C', 'called'
     switch type
       #.....................................................................................................
       when 'end'
         ### TAINT buffer may be empty at this point ###
-        # warn '©u9dNV', JSON.stringify buffer
+        warn '©u9dNV', JSON.stringify buffer
         send [ 'set-line', buffer, true, ]
         send event
       #.....................................................................................................
       else
-        f event, send
+        if f event, send
+          null
+          # ### TAINT necessary to copy buffer? ###
+          # _buffer       = LODASH.clone buffer
+          # # debug '©a5DvO', 'buffer', buffer
+          # buffer.length = 0
+          # for event in _buffer
+          #   debug '©skZ5C', 'resending', JSON.stringify _buffer
+          #   f event, send
 
 #-----------------------------------------------------------------------------------------------------------
 @_convert_to_html = ( buffer ) ->
@@ -349,8 +364,8 @@ LineBreaker               = require 'linebreak'
     # .pipe D2.$throttle_items 2
     .pipe @_$produce_lines state
     .pipe @_$correct_hyphens_etc()
-    .pipe D2.$show()
     .pipe @_$convert_to_html()
+    .pipe D2.$show()
     .pipe @_$consume_lines state, text, test_line, accept_line, handler
   #.........................................................................................................
   input.on 'end', =>

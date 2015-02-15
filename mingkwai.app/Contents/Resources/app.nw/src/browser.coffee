@@ -196,7 +196,7 @@ build_menu = ->
   # CND.dir edit_menu_item
   # CND.dir edit_menu_item.submenu
   edit_menu_item.submenu.insert ( new NW.MenuItem label: 'xxxxxxxxx' ), 1
-  debug '©RsQep', edit_menu_item.type
+  # debug '©RsQep', edit_menu_item.type
   #.........................................................................................................
   # edit_menu_item = win.menu.items[ 2 ]
   #.........................................................................................................
@@ -331,6 +331,8 @@ MKTS._capture = ( win, handler ) ->
 MKTS.foo = ( event ) ->
   debug '©9HvgT', 'xxxx'
 
+### TAINT should live in its own module ###
+### TAINT cosider using e.g. https://www.npmjs.com/package/combokeys ###
 #-----------------------------------------------------------------------------------------------------------
 keyboard = new Map()
 keyboard.set 187, 'plus'
@@ -455,10 +457,10 @@ _demo = ( container_selector ) ->
   new_line_fitter = ->
     is_first    = yes
     last_height = 0
-    whisper '©y94gs', 'new_line_fitter'
+    # whisper '©y94gs', 'new_line_fitter'
     return ( node ) ->
       dy          = node.height() - last_height
-      debug '©u8H0l', 'last_height:', last_height, 'node.height():', node.height(), dy, rpr node.html()
+      # debug '©u8H0l', 'last_height:', last_height, 'node.height():', node.height(), dy, rpr node.html()
       last_height = node.height()
       if is_first
         is_first = no
@@ -468,13 +470,30 @@ _demo = ( container_selector ) ->
   step ( resume ) =>
     text_idx = -1
     texts = [
-      """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
-            leading right into it.</i> 'That's very curious!' she thought. 'But
-            everything's curious."""
+      """had happened lately,
+            that Alice had begun to think that very few things indeed were really
+            impossible.
+            """
       """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
             leading right into it.</i> 'That's very curious!' she thought. 'But
             everything's curious today. I think I may as well go in at once.' And in
-            she &#x4e00; went."""
+            she &#x4e00; went.
+            Alice opened the door and found that it led into a small passage, not
+            much larger than a rat-hole: she knelt down and looked along the passage
+            into the loveliest garden you ever saw. How she longed to get out of
+            that dark hall, and wander about among those beds of bright flowers and
+            those cool fountains, but she could not even get her head through the
+            doorway; 'and even if my head would go through,' thought poor Alice, 'it
+            would be of very little use without my shoulders. <span class='xbig'>愛麗絲</span> Oh, how I wish I could
+            shut up like a telescope! I think I could, if I only knew how to begin.'
+            For, you see, so many out-of-the-way things had happened lately,
+            that Alice had begun to think that very few things indeed were really
+            impossible.
+            """
+            # yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
+      """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
+            leading right into it.</i> 'That's very curious!' she thought. 'But
+            everything's curious."""
       """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door
             leading right into it</i>."""
       """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that"""
@@ -502,9 +521,9 @@ _demo = ( container_selector ) ->
       fits_onto_line ?= new_line_fitter()
       fits            = fits_onto_line focus
       last_line       = line if fits
-      if fits then whisper 'ok', html else warn 'X', html
+      # if fits then whisper 'ok', html else warn 'X', html
       fits_onto_line  = null unless fits
-      debug '©bmWvg', fits, html
+      # debug '©bmWvg', fits, html
       line.detach()
       return fits
     #.........................................................................................................

@@ -177,11 +177,10 @@
     f = (function(_this) {
       return function(event, send) {
         var last_buffer, tail, type;
+        debug('©8Ijx0', event, state['next']);
         type = event[0], tail = 2 <= event.length ? __slice.call(event, 1) : [];
         if (state['next']) {
           last_buffer = last_buffers.shift();
-          warn('©gBgD8', 'buffer:     ', _this._convert_to_html(buffer));
-          warn('©gBgD8', 'last_buffer:', _this._convert_to_html(last_buffer));
           if (last_buffer == null) {
             throw new Error("should never happen");
           }
@@ -193,31 +192,38 @@
         switch (type) {
           case 'open-tag':
           case 'close-tag':
-            return buffer.push(event);
+            buffer.push(event);
+            break;
           case 'lone-tag':
           case 'empty-tag':
             buffer.push(event);
             add_buffer();
-            return send(['test-line', buffer, false]);
+            send(['test-line', buffer, false]);
+            break;
           case 'text-part':
             buffer.push(event);
             add_buffer();
-            return send(['test-line', buffer, false]);
+            send(['test-line', buffer, false]);
         }
+        return false;
       };
     })(this);
     return $((function(_this) {
       return function(event, send) {
         var tail, type;
         type = event[0], tail = 2 <= event.length ? __slice.call(event, 1) : [];
+        debug('©skZ5C', 'called');
         switch (type) {
           case 'end':
 
             /* TAINT buffer may be empty at this point */
+            warn('©u9dNV', JSON.stringify(buffer));
             send(['set-line', buffer, true]);
             return send(event);
           default:
-            return f(event, send);
+            if (f(event, send)) {
+              return null;
+            }
         }
       };
     })(this));
@@ -344,7 +350,7 @@
         next: false
       };
       input = D2.create_throughstream();
-      input.pipe(D2.HTML.$parse()).pipe(D2.HTML.$collect_texts()).pipe(D2.HTML.$collect_empty_tags()).pipe(_this._$hyphenate()).pipe(_this._$break_lines()).pipe(_this._$disperse_texts()).pipe(_this._$produce_lines(state)).pipe(_this._$correct_hyphens_etc()).pipe(D2.$show()).pipe(_this._$convert_to_html()).pipe(_this._$consume_lines(state, text, test_line, accept_line, handler));
+      input.pipe(D2.HTML.$parse()).pipe(D2.HTML.$collect_texts()).pipe(D2.HTML.$collect_empty_tags()).pipe(_this._$hyphenate()).pipe(_this._$break_lines()).pipe(_this._$disperse_texts()).pipe(_this._$produce_lines(state)).pipe(_this._$correct_hyphens_etc()).pipe(_this._$convert_to_html()).pipe(D2.$show()).pipe(_this._$consume_lines(state, text, test_line, accept_line, handler));
       input.on('end', function() {
         return whisper("input ended.");
       });
