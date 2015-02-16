@@ -421,17 +421,14 @@ LineBreaker               = require 'linebreak'
     else
       send event
 
-
 #-----------------------------------------------------------------------------------------------------------
 @demo_4 = ->
-  text = """a bbbbbbbbbbbb c d e ff g h"""
-  # text_parts = """a b c d e f g""".split /\s+/
   input = D2.create_throughstream()
   state =
     fits: true
   #---------------------------------------------------------------------------------------------------------
   prune_buffer = ( buffer ) ->
-    ### TAINT in reality more complicated; could store last good buffer length ###
+    ### TAINT in reality more complicated; should store last good buffer length ###
     R = buffer.splice 0, Math.max 1, buffer.length - 1
     return R
   #---------------------------------------------------------------------------------------------------------
@@ -469,7 +466,7 @@ LineBreaker               = require 'linebreak'
           send [ 'set-line', ok_buffer, ]
           if buffer.length > 0
             send [ 'test-line', buffer, ]
-            # buffer is only one lement long: if it doesn't fit, it must still be typeset on
+            # buffer is only one element long: if it doesn't fit, it must still be typeset on
             # a line of its own:
             unless length = ( buffer.length is 1 )
               throw new Error "expected buffer of length 1, is #{length}"
@@ -499,60 +496,92 @@ LineBreaker               = require 'linebreak'
     #.......................................................................................................
     .pipe D2.$show()
   #---------------------------------------------------------------------------------------------------------
-  # for text_part in text_parts
-  #   input.write [ 'text-part', text_part, ]
+  text = """a bbbbbbbbbbbb c d e ff g h"""
+  input.write [ 'text', text, ]
+  input.write [ 'end', ]
+  input.end()
+
+#-----------------------------------------------------------------------------------------------------------
+@demo_5 = ->
+  input = D2.create_throughstream()
+  state =
+    fits: true
+  #---------------------------------------------------------------------------------------------------------
+  prune_buffer = ( buffer ) ->
+    ### TAINT in reality more complicated; should store last good buffer length ###
+    R = buffer.splice 0, Math.max 1, buffer.length - 1
+    return R
+  #---------------------------------------------------------------------------------------------------------
+  test_line = ( line ) ->
+    return line.length < 7
+  #---------------------------------------------------------------------------------------------------------
+  input
+    .pipe @_$break_lines()
+    .pipe @_$disperse_texts()
+    #.......................................................................................................
+    .pipe do =>
+      ### assemble buffer ###
+      buffer = []
+      return $ ( event, send ) =>
+        [ type, text, ] = event
+        switch type
+          #.................................................................................................
+          when 'text-part'
+            buffer.push text
+            send [ 'test-line', buffer, ]
+            # help '©xrm5T', state[ 'fits' ], buffer.join ''
+          #.................................................................................................
+          when 'end'
+            if buffer.length isnt 0
+              send [ 'set-line', buffer, ]
+              buffer.length = 0
+              send event
+          else
+            warn "ignored event of type #{rpr type}"
+        #...................................................................................................
+        # warn '©xrm5T', state[ 'fits' ], buffer.join ''
+        unless state[ 'fits' ]
+          state[ 'fits' ]   = true # necessary?
+          ok_buffer         = prune_buffer buffer
+          send [ 'set-line', ok_buffer, ]
+          if buffer.length > 0
+            send [ 'test-line', buffer, ]
+            # buffer is only one element long: if it doesn't fit, it must still be typeset on
+            # a line of its own:
+            unless length = ( buffer.length is 1 )
+              throw new Error "expected buffer of length 1, is #{length}"
+            unless state[ 'fits' ]
+              ok_buffer = prune_buffer buffer
+              send [ 'set-line', ok_buffer, ]
+    #.......................................................................................................
+    .pipe do =>
+      ### build line ###
+      return $ ( event, send ) =>
+        [ type, buffer, ] = event
+        if type is 'test-line'
+          send [ 'test-line', buffer.join '', ]
+          # urge '©xrm5T', state[ 'fits' ], buffer.join ''
+        else
+          send event
+    #.......................................................................................................
+    .pipe do =>
+      ### test line ###
+      return $ ( event, send ) =>
+        [ type, line, ] = event
+        if type is 'test-line'
+          state[ 'fits' ] = test_line line
+          # debug '©j8nTB', fits, rpr line
+        else
+          send event
+    #.......................................................................................................
+    .pipe D2.$show()
+  #---------------------------------------------------------------------------------------------------------
+  text = """a bbbbbbbbbbbb c d e ff g h"""
   input.write [ 'text', text, ]
   input.write [ 'end', ]
   input.end()
 
 
-#-----------------------------------------------------------------------------------------------------------
-@demo_5 = ->
-  #.........................................................................................................
-  add_prefix = $ ( event, send ) =>
-    if CND.isa_text ( text = event[ 1 ] )
-      event[ 1 ] = '*' + text
-    send event
-  #.........................................................................................................
-  add_suffix = $ ( event, send ) =>
-    if CND.isa_text ( text = event[ 1 ] )
-      event[ 1 ] = text + '*'
-    send event
-  #.........................................................................................................
-  f = ( transforms, text ) =>
-    input = D2.create_throughstream()
-    i = input
-    #---------------------------------------------------------------------------------------------------------
-    i = i.pipe @_$break_lines()
-    i = i.pipe @_$disperse_texts()
-      # .pipe add_prefix
-      # .pipe add_suffix
-    for transform in transforms
-      i = i.pipe transform
-    i
-      .pipe D2.$show()
-    #---------------------------------------------------------------------------------------------------------
-    input.write [ 'text', text, ]
-    input.write [ 'end', ]
-    input.end()
-  # #.........................................................................................................
-  # transform = do =>
-  #   return $ ( event, send ) =>
-  #   #   [ type, line, ] = event
-  #   #   if type is 'test-line'
-  #   #     state[ 'fits' ] = test_line line
-  #   #     # debug '©j8nTB', fits, rpr line
-  #   #   else
-  #     send event
-  #.........................................................................................................
-  text  = """a bbbbbbbbbbbb c d e ff g h"""
-  f [ add_prefix, add_suffix, ], text
-
-#-----------------------------------------------------------------------------------------------------------
-D2.$concatenate = ( transforms ) =>
-  R = i = @create_throughstream()
-  i = i.pipe transform for transform in transforms
-  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @demo_6 = ->
@@ -570,15 +599,15 @@ D2.$concatenate = ( transforms ) =>
   text  = """a bbbbbbbbbbbb c d e ff g h"""
   transforms = [
     @_$break_lines()
-    add_prefix
     @_$disperse_texts()
-    # add_suffix
+    add_prefix
+    add_suffix
     D2.$show()
     ]
   #---------------------------------------------------------------------------------------------------------
   input = D2.create_throughstream()
   input
-    .pipe D2.$concatenate transforms
+    .pipe D2.$link transforms
     .pipe $ ( data, send ) ->
       urge data
       send data
@@ -591,11 +620,8 @@ D2.$concatenate = ( transforms ) =>
 
 ############################################################################################################
 unless module.parent?
-  # @demo_1()
-  # @demo_2()
-  # @demo_4()
-  # @demo_5()
-  @demo_6()
+  @demo_4()
+  # @demo_6()
 
 
 

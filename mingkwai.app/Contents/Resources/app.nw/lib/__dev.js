@@ -108,14 +108,13 @@
 
   this.demo_4 = function() {
     var input, prune_buffer, state, test_line, text;
-    text = "a bbbbbbbbbbbb c d e ff g h";
     input = D2.create_throughstream();
     state = {
       fits: true
     };
     prune_buffer = function(buffer) {
 
-      /* TAINT in reality more complicated; could store last good buffer length */
+      /* TAINT in reality more complicated; should store last good buffer length */
       var R;
       R = buffer.splice(0, Math.max(1, buffer.length - 1));
       return R;
@@ -130,7 +129,7 @@
         var buffer;
         buffer = [];
         return $(function(event, send) {
-          var length, ok_buffer, type;
+          var length, ok_buffer, text, type;
           type = event[0], text = event[1];
           switch (type) {
             case 'text-part':
@@ -193,63 +192,103 @@
         });
       };
     })(this)()).pipe(D2.$show());
+    text = "a bbbbbbbbbbbb c d e ff g h";
     input.write(['text', text]);
     input.write(['end']);
     return input.end();
   };
 
   this.demo_5 = function() {
-    var add_prefix, add_suffix, f, text;
-    add_prefix = $((function(_this) {
-      return function(event, send) {
-        var text;
-        if (CND.isa_text((text = event[1]))) {
-          event[1] = '*' + text;
-        }
-        return send(event);
-      };
-    })(this));
-    add_suffix = $((function(_this) {
-      return function(event, send) {
-        var text;
-        if (CND.isa_text((text = event[1]))) {
-          event[1] = text + '*';
-        }
-        return send(event);
-      };
-    })(this));
-    f = (function(_this) {
-      return function(transforms, text) {
-        var i, input, transform, _i, _len;
-        input = D2.create_throughstream();
-        i = input;
-        i = i.pipe(_this._$break_lines());
-        i = i.pipe(_this._$disperse_texts());
-        for (_i = 0, _len = transforms.length; _i < _len; _i++) {
-          transform = transforms[_i];
-          i = i.pipe(transform);
-        }
-        i.pipe(D2.$show());
-        input.write(['text', text]);
-        input.write(['end']);
-        return input.end();
-      };
-    })(this);
-    text = "a bbbbbbbbbbbb c d e ff g h";
-    return f([add_prefix, add_suffix], text);
-  };
+    var input, prune_buffer, state, test_line, text;
+    input = D2.create_throughstream();
+    state = {
+      fits: true
+    };
+    prune_buffer = function(buffer) {
 
-  D2.$concatenate = (function(_this) {
-    return function(transforms) {
-      var R, i, transform, _i, _len;
-      R = i = _this.create_throughstream();
-      for (_i = 0, _len = transforms.length; _i < _len; _i++) {
-        transform = transforms[_i];
-        i = i.pipe(transform);
-      }
+      /* TAINT in reality more complicated; should store last good buffer length */
+      var R;
+      R = buffer.splice(0, Math.max(1, buffer.length - 1));
       return R;
     };
-  })(this);
+    test_line = function(line) {
+      return line.length < 7;
+    };
+    input.pipe(this._$break_lines()).pipe(this._$disperse_texts()).pipe((function(_this) {
+      return function() {
+
+        /* assemble buffer */
+        var buffer;
+        buffer = [];
+        return $(function(event, send) {
+          var length, ok_buffer, text, type;
+          type = event[0], text = event[1];
+          switch (type) {
+            case 'text-part':
+              buffer.push(text);
+              send(['test-line', buffer]);
+              break;
+            case 'end':
+              if (buffer.length !== 0) {
+                send(['set-line', buffer]);
+                buffer.length = 0;
+                send(event);
+              }
+              break;
+            default:
+              warn("ignored event of type " + (rpr(type)));
+          }
+          if (!state['fits']) {
+            state['fits'] = true;
+            ok_buffer = prune_buffer(buffer);
+            send(['set-line', ok_buffer]);
+            if (buffer.length > 0) {
+              send(['test-line', buffer]);
+              if (!(length = buffer.length === 1)) {
+                throw new Error("expected buffer of length 1, is " + length);
+              }
+              if (!state['fits']) {
+                ok_buffer = prune_buffer(buffer);
+                return send(['set-line', ok_buffer]);
+              }
+            }
+          }
+        });
+      };
+    })(this)()).pipe((function(_this) {
+      return function() {
+
+        /* build line */
+        return $(function(event, send) {
+          var buffer, type;
+          type = event[0], buffer = event[1];
+          if (type === 'test-line') {
+            return send(['test-line', buffer.join('')]);
+          } else {
+            return send(event);
+          }
+        });
+      };
+    })(this)()).pipe((function(_this) {
+      return function() {
+
+        /* test line */
+        return $(function(event, send) {
+          var line, type;
+          type = event[0], line = event[1];
+          if (type === 'test-line') {
+            return state['fits'] = test_line(line);
+          } else {
+            return send(event);
+          }
+        });
+      };
+    })(this)()).pipe(D2.$show());
+    text = "a bbbbbbbbbbbb c d e ff g h";
+    input.write(['text', text]);
+    input.write(['end']);
+    return input.end();
+  };
 
   this.demo_6 = function() {
     var add_prefix, add_suffix, input, text, transforms;
@@ -272,9 +311,9 @@
       };
     })(this));
     text = "a bbbbbbbbbbbb c d e ff g h";
-    transforms = [this._$break_lines(), add_prefix, this._$disperse_texts(), D2.$show()];
+    transforms = [this._$break_lines(), this._$disperse_texts(), add_prefix, add_suffix, D2.$show()];
     input = D2.create_throughstream();
-    input.pipe(D2.$concatenate(transforms)).pipe($(function(data, send) {
+    input.pipe(D2.$link(transforms)).pipe($(function(data, send) {
       urge(data);
       return send(data);
     }));
@@ -284,7 +323,7 @@
   };
 
   if (module.parent == null) {
-    this.demo_6();
+    this.demo_4();
   }
 
 }).call(this);
