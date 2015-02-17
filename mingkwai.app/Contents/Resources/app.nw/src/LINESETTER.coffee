@@ -22,8 +22,8 @@ step                      = suspend.step
 after                     = suspend.after
 sleep                     = suspend.sleep
 #...........................................................................................................
-D2                        = require 'pipedreams2'
-$                         = D2.remit.bind D2
+D                         = require 'pipedreams2'
+$                         = D.remit.bind D
 TEACUP                    = require 'coffeenode-teacup'
 LODASH                    = require 'lodash'
 #...........................................................................................................
@@ -48,7 +48,7 @@ LineBreaker               = require 'linebreak'
 #===========================================================================================================
 # UNICODE LINE BREAKING
 #-----------------------------------------------------------------------------------------------------------
-# D2.$break_lines = ( settings ) ->
+# D.$break_lines = ( settings ) ->
 #   ### Uses the [linebreak](https://github.com/devongovett/linebreak) module to find line break opportunities
 #   in a text using the Unicode Line Breaking Algorithm (UAX #14). For each text that arrives in the stream,
 #   `$break_lines` will send out one ore more 'events' (lists) of the format
@@ -152,7 +152,7 @@ LineBreaker               = require 'linebreak'
 # TEXT HYPHENATION
 #-----------------------------------------------------------------------------------------------------------
 @_$hyphenate = ( P... ) ->
-  hyphenate = D2.new_hyphenator P...
+  hyphenate = D.new_hyphenator P...
   #.........................................................................................................
   return $ ( event, send ) =>
     event[ 1 ] = hyphenate event[ 1 ] if event[ 0 ] is 'text'
@@ -303,9 +303,11 @@ LineBreaker               = require 'linebreak'
         buffer          = LODASH.clone buffer
         meta_event[ 1 ] = buffer
         is_last         = yes
+        first_idx       = null
         for idx in [ buffer.length - 1 .. 0 ] by -1
           [ type, text, ] = part = buffer[ idx ]
           continue unless part[ 0 ] is 'text-part'
+          first_idx       = idx
           replacement     = if is_last then '-' else ''
           text            = text.replace /\xad$/, replacement
           text            = text.replace /\s+$/, '' if is_last
@@ -314,6 +316,8 @@ LineBreaker               = require 'linebreak'
           text            = text.replace />/g, '&gt;'
           is_last         = no
           buffer[ idx ]   = [ 'text-part', text, ]
+        if first_idx?
+          buffer[ first_idx ][ 1 ] = buffer[ first_idx ][ 1 ].replace /^\s+/
     #.......................................................................................................
     send meta_event
 
@@ -352,21 +356,21 @@ LineBreaker               = require 'linebreak'
 @set_lines = ( text, test_line, accept_line, handler ) =>
   state = next: no
   #.........................................................................................................
-  input = D2.create_throughstream()
+  input = D.create_throughstream()
   input
-    .pipe D2.HTML.$parse()
-    .pipe D2.HTML.$collect_texts()
-    # .pipe D2.HTML.$collect_closing_tags()
-    .pipe D2.HTML.$collect_empty_tags()
+    .pipe D.HTML.$parse()
+    .pipe D.HTML.$collect_texts()
+    # .pipe D.HTML.$collect_closing_tags()
+    .pipe D.HTML.$collect_empty_tags()
     .pipe @_$hyphenate()
     .pipe @_$break_lines()
     .pipe @_$disperse_texts()
-    # .pipe D2.$throttle_items 2
+    # .pipe D.$throttle_items 2
     .pipe @_$produce_lines state
-    .pipe @_$correct_hyphens_etc()
-    .pipe @_$convert_to_html()
-    .pipe D2.$show()
-    .pipe @_$consume_lines state, text, test_line, accept_line, handler
+    # .pipe @_$correct_hyphens_etc()
+    # .pipe @_$convert_to_html()
+    .pipe D.$show()
+    # .pipe @_$consume_lines state, text, test_line, accept_line, handler
   #.........................................................................................................
   input.on 'end', =>
     whisper "input ended."

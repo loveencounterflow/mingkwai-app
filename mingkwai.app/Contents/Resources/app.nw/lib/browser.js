@@ -149,7 +149,7 @@
   };
 
   MKTS.zoom = function(me, delta) {
-    var base_zoom_level, zoom_percent;
+    var base_zoom_level, mms_per_pixel, zoom_percent;
     base_zoom_level = -0.15;
     if (delta != null) {
       if ((delta > 0 && win.zoomLevel <= 8.8) || (delta < 0 && win.zoomLevel >= -7.5)) {
@@ -160,6 +160,9 @@
     }
     zoom_percent = (win.zoomLevel - base_zoom_level) * 1.2 * 100;
     echo("zoomed to level " + win.zoomLevel + " (" + (zoom_percent.toFixed(0)) + "%)");
+    debug('©zVBdI', ($('.flex-columns-wrap')).height());
+    mms_per_pixel = 50 / 189;
+    debug('©zVBdI', ($('.flex-columns-wrap')).height() * mms_per_pixel, 'mm');
     return win.zoomLevel;
   };
 

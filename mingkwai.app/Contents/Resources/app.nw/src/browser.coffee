@@ -291,6 +291,9 @@ MKTS.zoom = ( me, delta ) ->
     win.zoomLevel = base_zoom_level
   zoom_percent = ( win.zoomLevel - base_zoom_level ) * 1.2 * 100
   echo "zoomed to level #{win.zoomLevel} (#{zoom_percent.toFixed 0}%)"
+  debug '©zVBdI', ( $ '.flex-columns-wrap' ).height()
+  mms_per_pixel = 50 / 189
+  debug '©zVBdI', ( $ '.flex-columns-wrap' ).height() * mms_per_pixel, 'mm'
   return win.zoomLevel
 
 #-----------------------------------------------------------------------------------------------------------

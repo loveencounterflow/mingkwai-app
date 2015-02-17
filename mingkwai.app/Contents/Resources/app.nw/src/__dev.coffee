@@ -28,17 +28,16 @@ step                      = suspend.step
 after                     = suspend.after
 sleep                     = suspend.sleep
 #...........................................................................................................
-D2                        = require 'pipedreams2'
-# D                         = require 'pipedreams'
-$                         = D2.remit.bind D2
-# TEACUP                    = require 'coffeenode-teacup'
-# _XXX_id                   = ( require 'jsoid' ).new_jsoid()
+D                        = require 'pipedreams2'
+$                         = D.remit.bind D
+TEACUP                    = require 'coffeenode-teacup'
 LODASH                    = require 'lodash'
 LINESETTER                = require './LINESETTER'
+LineBreaker               = require 'linebreak'
 
 
 # #-----------------------------------------------------------------------------------------------------------
-# D2.$break_lines = ( settings ) ->
+# D.$break_lines = ( settings ) ->
 #   ### Uses the [linebreak](https://github.com/devongovett/linebreak) module to find line break opportunities
 #   in a text using the Unicode Line Breaking Algorithm (UAX #14). For each text that arrives in the stream,
 #   `$break_lines` will send out one ore more 'events' (lists) of the format
@@ -98,7 +97,7 @@ LINESETTER                = require './LINESETTER'
 #     send [ 'line-breaker-part', idx, null, null, null, ]
 
 # #-----------------------------------------------------------------------------------------------------------
-# D2.break_lines = ( text, settings ) ->
+# D.break_lines = ( text, settings ) ->
 #   LineBreaker     = require 'linebreak'
 #   last_position   = null
 #   incremental     = settings?[ 'incremental'  ] ? yes
@@ -123,11 +122,11 @@ LINESETTER                = require './LINESETTER'
 #   return $ ( event, send ) ->
 #     if event[ 0 ] is 'text'
 #       event[ 0 ]  = 'text-parts'
-#       event[ 1 ]  = D2.break_lines event[ 1 ], { incremental: yes, }
+#       event[ 1 ]  = D.break_lines event[ 1 ], { incremental: yes, }
 #     send event
 
 # #-----------------------------------------------------------------------------------------------------------
-# D2.$disperse_texts = ->
+# D.$disperse_texts = ->
 #   #.........................................................................................................
 #   return $ ( event, send ) ->
 #     [ type, tail..., ]  = event
@@ -139,7 +138,7 @@ LINESETTER                = require './LINESETTER'
 
 # #-----------------------------------------------------------------------------------------------------------
 # $hyphenate = ( P... ) ->
-#   hyphenate = D2.new_hyphenator P...
+#   hyphenate = D.new_hyphenator P...
 #   #.........................................................................................................
 #   return $ ( event, send ) ->
 #     event[ 1 ] = hyphenate event[ 1 ] if event[ 0 ] is 'text'
@@ -342,18 +341,18 @@ LINESETTER                = require './LINESETTER'
 #   #---------------------------------------------------------------------------------------------------------
 #   typeset_text = ( text, test_line, accept_line, handler ) =>
 #     #.......................................................................................................
-#     input = D2.create_throughstream()
+#     input = D.create_throughstream()
 #     input
-#       .pipe D2.HTML.$parse()
+#       .pipe D.HTML.$parse()
 #       .pipe $throttle_items 5
-#       .pipe D2.$show()
-#       # .pipe D2.HTML.$collect_texts()
-#       # # .pipe D2.HTML.$collect_closing_tags()
-#       # .pipe D2.HTML.$collect_empty_tags()
+#       .pipe D.$show()
+#       # .pipe D.HTML.$collect_texts()
+#       # # .pipe D.HTML.$collect_closing_tags()
+#       # .pipe D.HTML.$collect_empty_tags()
 #       # .pipe $hyphenate()
 #       # .pipe $break_lines()
-#       # .pipe D2.$disperse_texts()
-#       # .pipe D2.$sub ( source, sink, state ) ->
+#       # .pipe D.$disperse_texts()
+#       # .pipe D.$sub ( source, sink, state ) ->
 #       #   source
 #       #     # .pipe $ ( event, send ) => whisper JSON.stringify event; send event
 #       #     .pipe $produce_lines source, state
@@ -377,8 +376,139 @@ LINESETTER                = require './LINESETTER'
 #   #.........................................................................................................
 #   return null
 
-LineBreaker               = require 'linebreak'
 
+# #-----------------------------------------------------------------------------------------------------------
+# @demo_4 = ->
+#   input = D.create_throughstream()
+#   state =
+#     fits: true
+#   #---------------------------------------------------------------------------------------------------------
+#   prune_buffer = ( buffer ) ->
+#     ### TAINT in reality more complicated; should store last good buffer length ###
+#     R = buffer.splice 0, Math.max 1, buffer.length - 1
+#     return R
+#   #---------------------------------------------------------------------------------------------------------
+#   test_line = ( line ) ->
+#     return line.length < 7
+#   #---------------------------------------------------------------------------------------------------------
+#   input
+#     .pipe @_$break_lines()
+#     .pipe @_$disperse_texts()
+#     #.......................................................................................................
+#     .pipe do =>
+#       ### assemble buffer ###
+#       buffer = []
+#       return $ ( event, send ) =>
+#         [ type, text, ] = event
+#         switch type
+#           #.................................................................................................
+#           when 'text-part'
+#             buffer.push text
+#             send [ 'test-line', buffer, ]
+#             # help '©xrm5T', state[ 'fits' ], buffer.join ''
+#           #.................................................................................................
+#           when 'end'
+#             if buffer.length isnt 0
+#               send [ 'set-line', buffer, ]
+#               buffer.length = 0
+#               send event
+#           else
+#             warn "ignored event of type #{rpr type}"
+#         #...................................................................................................
+#         # warn '©xrm5T', state[ 'fits' ], buffer.join ''
+#         unless state[ 'fits' ]
+#           state[ 'fits' ]   = true # necessary?
+#           ok_buffer         = prune_buffer buffer
+#           send [ 'set-line', ok_buffer, ]
+#           if buffer.length > 0
+#             send [ 'test-line', buffer, ]
+#             # buffer is only one element long: if it doesn't fit, it must still be typeset on
+#             # a line of its own:
+#             unless length = ( buffer.length is 1 )
+#               throw new Error "expected buffer of length 1, is #{length}"
+#             unless state[ 'fits' ]
+#               ok_buffer = prune_buffer buffer
+#               send [ 'set-line', ok_buffer, ]
+#     #.......................................................................................................
+#     .pipe do =>
+#       ### build line ###
+#       return $ ( event, send ) =>
+#         [ type, buffer, ] = event
+#         if type is 'test-line'
+#           send [ 'test-line', buffer.join '', ]
+#           # urge '©xrm5T', state[ 'fits' ], buffer.join ''
+#         else
+#           send event
+#     #.......................................................................................................
+#     .pipe do =>
+#       ### test line ###
+#       return $ ( event, send ) =>
+#         [ type, line, ] = event
+#         if type is 'test-line'
+#           state[ 'fits' ] = test_line line
+#           # debug '©j8nTB', fits, rpr line
+#         else
+#           send event
+#     #.......................................................................................................
+#     .pipe D.$show()
+#   #---------------------------------------------------------------------------------------------------------
+#   text = """a bbbbbbbbbbbb c d e ff g h"""
+#   input.write [ 'text', text, ]
+#   input.write [ 'end', ]
+#   input.end()
+
+# #-----------------------------------------------------------------------------------------------------------
+# @demo_6 = ->
+#   #.........................................................................................................
+#   add_prefix = $ ( event, send ) =>
+#     if CND.isa_text ( text = event[ 1 ] )
+#       event[ 1 ] = '*' + text
+#     send event
+#   #.........................................................................................................
+#   add_suffix = $ ( event, send ) =>
+#     if CND.isa_text ( text = event[ 1 ] )
+#       event[ 1 ] = text + '*'
+#     send event
+#   #.........................................................................................................
+#   text  = """a bbbbbbbbbbbb c d e ff g h"""
+#   transforms = [
+#     @_$break_lines()
+#     @_$disperse_texts()
+#     add_prefix
+#     add_suffix
+#     D.$show()
+#     ]
+#   #---------------------------------------------------------------------------------------------------------
+#   input = D.create_throughstream()
+#   input
+#     .pipe D.$link transforms
+#     .pipe $ ( data, send ) ->
+#       urge data
+#       send data
+#   input.write [ 'text', text, ]
+#   input.write [ 'end', ]
+#   input.end()
+
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### Unchanged ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+
+
+#===========================================================================================================
+# TAG RENDERING
+#-----------------------------------------------------------------------------------------------------------
+@_render_open_tag = ( name, attributes ) ->
+  return ( @_render_empty_tag name, attributes ).replace /<\/[^>]+>$/, ''
+
+#-----------------------------------------------------------------------------------------------------------
+@_render_close_tag = ( name ) ->
+  return "</#{name}>"
+
+#-----------------------------------------------------------------------------------------------------------
+@_render_empty_tag = ( name, attributes ) ->
+  return TEACUP.render => TEACUP.TAG name, attributes
 
 #-----------------------------------------------------------------------------------------------------------
 @_break_lines = ( text, settings ) ->
@@ -422,209 +552,266 @@ LineBreaker               = require 'linebreak'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@demo_4 = ->
-  input = D2.create_throughstream()
-  state =
-    fits: true
-  #---------------------------------------------------------------------------------------------------------
-  prune_buffer = ( buffer ) ->
-    ### TAINT in reality more complicated; should store last good buffer length ###
-    R = buffer.splice 0, Math.max 1, buffer.length - 1
-    return R
-  #---------------------------------------------------------------------------------------------------------
-  test_line = ( line ) ->
-    return line.length < 7
-  #---------------------------------------------------------------------------------------------------------
-  input
-    .pipe @_$break_lines()
-    .pipe @_$disperse_texts()
+@_$correct_hyphens_etc = ->
+  #.........................................................................................................
+  return $ ( meta_event, send ) =>
+    [ meta_type, buffer, is_last, ] = meta_event
     #.......................................................................................................
-    .pipe do =>
-      ### assemble buffer ###
-      buffer = []
-      return $ ( event, send ) =>
-        [ type, text, ] = event
-        switch type
-          #.................................................................................................
-          when 'text-part'
-            buffer.push text
-            send [ 'test-line', buffer, ]
-            # help '©xrm5T', state[ 'fits' ], buffer.join ''
-          #.................................................................................................
-          when 'end'
-            if buffer.length isnt 0
-              send [ 'set-line', buffer, ]
-              buffer.length = 0
-              send event
+    switch meta_type
+      #.....................................................................................................
+      when 'test-line', 'set-line'
+        ### TAINT consider to move the buffer cloning to an earlier transformer. ###
+        meta_event[ 1 ] = buffer = LODASH.clone buffer
+        is_last         = yes
+        first_idx       = null
+        # debug '©QJQXu', first_idx, ( JSON.stringify buffer )
+        for idx in [ buffer.length - 1 .. 0 ] by -1
+          [ type, text, ]   = part = buffer[ idx ]
+          if part[ 0 ] is 'text-part'
+            first_idx       = idx
+            replacement     = if is_last then '-' else ''
+            text            = text.replace /\xad$/, replacement
+            text            = text.replace /\s+$/, '' if is_last
+            text            = text.replace /&/g, '&amp;'
+            text            = text.replace /</g, '&lt;'
+            text            = text.replace />/g, '&gt;'
+            buffer[ idx ]   = [ 'text-part', text, ]
+          is_last         = no
+        if first_idx?
+          # debug '©QJQXu', first_idx, JSON.stringify buffer
+          buffer[ first_idx ][ 1 ] = buffer[ first_idx ][ 1 ].replace /^\s+/, ''
+    #.......................................................................................................
+    send meta_event
+
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### Changed ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+
+
+
+
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+
+#-----------------------------------------------------------------------------------------------------------
+@_prune_buffer = ( buffer, last_good_buffer_length ) ->
+  closed_tag_count  = 0
+  R                 = buffer[ ... last_good_buffer_length ]
+  R.pop() while R.length > 0 and R[ R.length - 1 ][ 0 ] in [ 'open-tag', 'close-tag', ]
+  #........................................................................................................
+  last_good_buffer_length = Math.min last_good_buffer_length, buffer.length
+  for idx in [ last_good_buffer_length - 1 .. 0 ] by -1
+    [ type, tail..., ] = buffer[ idx ]
+    switch type
+      #.....................................................................................................
+      when 'text-part', 'empty-tag', 'lone-tag'
+        buffer.splice idx, 1
+      #.....................................................................................................
+      when 'close-tag'
+        buffer.splice idx, 1
+        closed_tag_count += +1
+      #.....................................................................................................
+      when 'open-tag'
+        if closed_tag_count > 0
+          buffer.splice idx, 1
+          closed_tag_count += -1
+      #.....................................................................................................
+      else
+        warn "1 ignored event of type #{rpr type}"
+  #........................................................................................................
+  debug '©HbYgl', R
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_$assemble_buffer = ( state ) =>
+  buffer                  = []
+  last_good_buffer_length = null
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, tail..., ] = event
+    #.......................................................................................................
+    switch type
+      #.....................................................................................................
+      when 'open-tag', 'close-tag'
+        buffer.push event
+      #.....................................................................................................
+      when 'text-part'
+        buffer.push event
+        send [ 'test-line', buffer, ]
+        # help '©xrm5T', state[ 'fits' ], buffer.join ''
+      #.....................................................................................................
+      when 'lone-tag', 'empty-tag'
+        buffer.push event
+        send [ 'test-line', buffer, false, ]
+      #.....................................................................................................
+      when 'end'
+        if buffer.length isnt 0
+          send [ 'set-line', buffer, ]
+          buffer.length = 0
+          send event
+      else
+        warn "2 ignored event of type #{rpr type}"
+    #.......................................................................................................
+    # warn '©xrm5T', state[ 'fits' ], buffer.join ''
+    if state[ 'fits' ]
+      last_good_buffer_length = buffer.length
+      # debug '©GErvU', 'last_good_buffer_length:', last_good_buffer_length, JSON.stringify buffer
+    else
+      state[ 'fits' ]   = true # necessary?
+      good_buffer       = @_prune_buffer buffer, last_good_buffer_length
+      warn '©FCIOb', good_buffer, buffer
+      if good_buffer.length > 0
+        send [ 'set-line', good_buffer, ]
+        if buffer.length > 0
+          send [ 'test-line', buffer, ]
+          # buffer is only one element long: if it doesn't fit, it must still be typeset on
+          # a line of its own:
+          # unless length = ( buffer.length is 1 )
+          #   throw new Error "expected buffer of length 1, is #{length}"
+          if state[ 'fits' ]
+            last_good_buffer_length = buffer.length
+            # debug '©GErvU', 'last_good_buffer_length:', last_good_buffer_length, JSON.stringify buffer
           else
-            warn "ignored event of type #{rpr type}"
-        #...................................................................................................
-        # warn '©xrm5T', state[ 'fits' ], buffer.join ''
-        unless state[ 'fits' ]
-          state[ 'fits' ]   = true # necessary?
-          ok_buffer         = prune_buffer buffer
-          send [ 'set-line', ok_buffer, ]
-          if buffer.length > 0
-            send [ 'test-line', buffer, ]
-            # buffer is only one element long: if it doesn't fit, it must still be typeset on
-            # a line of its own:
-            unless length = ( buffer.length is 1 )
-              throw new Error "expected buffer of length 1, is #{length}"
-            unless state[ 'fits' ]
-              ok_buffer = prune_buffer buffer
-              send [ 'set-line', ok_buffer, ]
+            good_buffer = @_prune_buffer buffer, last_good_buffer_length
+            if good_buffer.length > 0
+              send [ 'set-line', good_buffer, ]
+      else
+        ### TAINT necessary to copy buffer? ###
+        # send [ 'set-line', LODASH.clone buffer, ]
+        send [ 'set-line', buffer, ]
+        @_prune_buffer buffer, buffer.length
+
+# #-----------------------------------------------------------------------------------------------------------
+# @_$build_line = ( state ) =>
+#   return $ ( event, send ) =>
+#     [ type, buffer, ] = event
+#     if type is 'test-line'
+#       send [ 'test-line', buffer.join '', ]
+#       # urge '©xrm5T', state[ 'fits' ], buffer.join ''
+#     else
+#       send event
+
+#-----------------------------------------------------------------------------------------------------------
+@_convert_to_html = ( buffer ) ->
+  ### Note: as per
+  https://medium.com/the-javascript-collection/lets-write-fast-javascript-2b03c5575d9e#1e23, using
+  `+=` should be faster than `[].join ''`. ###
+  R         = ''
+  open_tags = []
+  #...................................................................................................
+  for event in buffer
+    [ type, tail..., ] = event
+    switch type
+      #...............................................................................................
+      when 'open-tag'
+        R += @_render_open_tag tail...
+        open_tags.unshift tail[ 0 ]
+      #...............................................................................................
+      when 'close-tag'
+        R += @_render_close_tag tail[ 0 ]
+        open_tags.shift()
+      #...............................................................................................
+      when 'lone-tag'
+        R += @_render_open_tag tail...
+      #...............................................................................................
+      when 'empty-tag'
+        R += @_render_empty_tag tail...
+      #...............................................................................................
+      when 'text-part'
+        ### TAINT escaping `<`, `>`, `&` ??? ###
+        R += tail[ 0 ]
+      #...............................................................................................
+      else
+        warn "3 ignored event of type #{rpr type}"
+  #...................................................................................................
+  ( R += @_render_close_tag tag_name ) for tag_name in open_tags
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_$convert_to_html = ( state ) ->
+  #.........................................................................................................
+  return $ ( meta_event, send ) =>
+    [ meta_type, buffer, is_last, ] = meta_event
     #.......................................................................................................
-    .pipe do =>
-      ### build line ###
-      return $ ( event, send ) =>
-        [ type, buffer, ] = event
-        if type is 'test-line'
-          send [ 'test-line', buffer.join '', ]
-          # urge '©xrm5T', state[ 'fits' ], buffer.join ''
-        else
-          send event
-    #.......................................................................................................
-    .pipe do =>
-      ### test line ###
-      return $ ( event, send ) =>
-        [ type, line, ] = event
-        if type is 'test-line'
-          state[ 'fits' ] = test_line line
-          # debug '©j8nTB', fits, rpr line
-        else
-          send event
-    #.......................................................................................................
-    .pipe D2.$show()
-  #---------------------------------------------------------------------------------------------------------
-  text = """a bbbbbbbbbbbb c d e ff g h"""
-  input.write [ 'text', text, ]
-  input.write [ 'end', ]
-  input.end()
+    switch meta_type
+      #.....................................................................................................
+      when 'test-line', 'set-line'
+        html = @_convert_to_html buffer
+        # debug '©936Ly', buffer, rpr html
+        send [ meta_type, html, is_last, ]
+      #.....................................................................................................
+      else
+        send meta_event
+
+#-----------------------------------------------------------------------------------------------------------
+@_$test_line = ( state, test_line ) =>
+  ### test line ###
+  return $ ( event, send ) =>
+    [ type, line, ] = event
+    if type is 'test-line'
+      state[ 'fits' ] = test_line line
+      # debug '©j8nTB', fits, rpr line
+    send event
 
 #-----------------------------------------------------------------------------------------------------------
 @demo_5 = ->
-  input = D2.create_throughstream()
+  input = D.create_throughstream()
   state =
-    fits: true
+    fits:           true
+    is_first_line:  yes
+    is_last_line:   no
   #---------------------------------------------------------------------------------------------------------
-  prune_buffer = ( buffer ) ->
-    ### TAINT in reality more complicated; should store last good buffer length ###
-    R = buffer.splice 0, Math.max 1, buffer.length - 1
-    return R
+  set_lines = ( text, test_line, set_line ) =>
+    input
+      .pipe D.HTML.$parse()
+      .pipe D.HTML.$collect_texts()
+      # .pipe D.HTML.$collect_closing_tags()
+      .pipe D.HTML.$collect_empty_tags()
+      .pipe @_$break_lines()
+      .pipe @_$disperse_texts()
+      .pipe @_$assemble_buffer  state
+      .pipe @_$correct_hyphens_etc()
+      .pipe @_$convert_to_html  state
+      # .pipe D.$show()
+      .pipe @_$test_line        state, test_line
+      .pipe $ ( event, send ) =>
+        [ type, line, ] = event
+        switch type
+          when 'test-line'
+            if state[ 'fits' ]
+              urge line
+            else
+              warn line
+          when 'set-line'
+            help line
+        send event
+    #---------------------------------------------------------------------------------------------------------
+    input.write text
+    # input.write [ 'end', ]
+    input.end()
   #---------------------------------------------------------------------------------------------------------
   test_line = ( line ) ->
-    return line.length < 7
+    return line.length < 12
   #---------------------------------------------------------------------------------------------------------
-  input
-    .pipe @_$break_lines()
-    .pipe @_$disperse_texts()
-    #.......................................................................................................
-    .pipe do =>
-      ### assemble buffer ###
-      buffer = []
-      return $ ( event, send ) =>
-        [ type, text, ] = event
-        switch type
-          #.................................................................................................
-          when 'text-part'
-            buffer.push text
-            send [ 'test-line', buffer, ]
-            # help '©xrm5T', state[ 'fits' ], buffer.join ''
-          #.................................................................................................
-          when 'end'
-            if buffer.length isnt 0
-              send [ 'set-line', buffer, ]
-              buffer.length = 0
-              send event
-          else
-            warn "ignored event of type #{rpr type}"
-        #...................................................................................................
-        # warn '©xrm5T', state[ 'fits' ], buffer.join ''
-        unless state[ 'fits' ]
-          state[ 'fits' ]   = true # necessary?
-          ok_buffer         = prune_buffer buffer
-          send [ 'set-line', ok_buffer, ]
-          if buffer.length > 0
-            send [ 'test-line', buffer, ]
-            # buffer is only one element long: if it doesn't fit, it must still be typeset on
-            # a line of its own:
-            unless length = ( buffer.length is 1 )
-              throw new Error "expected buffer of length 1, is #{length}"
-            unless state[ 'fits' ]
-              ok_buffer = prune_buffer buffer
-              send [ 'set-line', ok_buffer, ]
-    #.......................................................................................................
-    .pipe do =>
-      ### build line ###
-      return $ ( event, send ) =>
-        [ type, buffer, ] = event
-        if type is 'test-line'
-          send [ 'test-line', buffer.join '', ]
-          # urge '©xrm5T', state[ 'fits' ], buffer.join ''
-        else
-          send event
-    #.......................................................................................................
-    .pipe do =>
-      ### test line ###
-      return $ ( event, send ) =>
-        [ type, line, ] = event
-        if type is 'test-line'
-          state[ 'fits' ] = test_line line
-          # debug '©j8nTB', fits, rpr line
-        else
-          send event
-    #.......................................................................................................
-    .pipe D2.$show()
+  set_line = ( line, is_first, is_last ) ->
+    urge line
+    return null
   #---------------------------------------------------------------------------------------------------------
-  text = """a bbbbbbbbbbbb c d e ff g h"""
-  input.write [ 'text', text, ]
-  input.write [ 'end', ]
-  input.end()
+  # text = """<i><b class='x'>a bbbbbbbbbbbb</b> foo bar</i> <img src='x.jpg'> baz oomph"""
+  text = """<i>a <b>b</b> c d</i> e <img src='x.jpg'> f g h"""
+  set_lines text, test_line, set_line
 
 
-
-#-----------------------------------------------------------------------------------------------------------
-@demo_6 = ->
-  #.........................................................................................................
-  add_prefix = $ ( event, send ) =>
-    if CND.isa_text ( text = event[ 1 ] )
-      event[ 1 ] = '*' + text
-    send event
-  #.........................................................................................................
-  add_suffix = $ ( event, send ) =>
-    if CND.isa_text ( text = event[ 1 ] )
-      event[ 1 ] = text + '*'
-    send event
-  #.........................................................................................................
-  text  = """a bbbbbbbbbbbb c d e ff g h"""
-  transforms = [
-    @_$break_lines()
-    @_$disperse_texts()
-    add_prefix
-    add_suffix
-    D2.$show()
-    ]
-  #---------------------------------------------------------------------------------------------------------
-  input = D2.create_throughstream()
-  input
-    .pipe D2.$link transforms
-    .pipe $ ( data, send ) ->
-      urge data
-      send data
-  input.write [ 'text', text, ]
-  input.write [ 'end', ]
-  input.end()
 
 
 
 
 ############################################################################################################
 unless module.parent?
-  @demo_4()
+  # @demo_4()
+  @demo_5()
   # @demo_6()
-
-
-
 
 
 
