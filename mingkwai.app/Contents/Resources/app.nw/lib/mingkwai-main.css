@@ -1,5 +1,6 @@
 p:before {
-  content: '❡ ';
+/* ### NB fixed-width space used here; see e.g. https://www.cs.tut.fi/~jkorpela/chars/spaces.html. ### */
+  content: '❡ ';
   color: #008000;
 }
 p {

@@ -357,7 +357,8 @@
 
   win.on('document-end', function() {
     return step(function*(resume) {
-      MKTS.zoom_to(app, 1.85);
+      MKTS.maximize(app);
+      MKTS.zoom_to(app, -2);
       (yield step.wrap(($('document')).ready, resume));
       help("document ready");
       ($(document)).keydown(MKTS.on_keydown.bind(MKTS));
@@ -366,75 +367,80 @@
   });
 
   _demo = function(container_selector) {
-    var new_line_fitter;
-    new_line_fitter = function() {
-      var is_first, last_height;
-      is_first = true;
-      last_height = 0;
-      return function(node) {
-        var dy;
-        dy = node.height() - last_height;
-        last_height = node.height();
-        if (is_first) {
-          is_first = false;
-          return true;
-        }
-        return dy <= 0;
-      };
+    var container, ends_with_shy, fits_onto_line, get_class, set_line, test_line, text, text_idx, texts;
+    text_idx = -1;
+    texts = ["https://www.google.de/search?q=a+very+long+URL&ie=utf-8&oe=utf-8&gws_rd=cr&ei=4TjpVP3AC8GcPPq1gfgE", "had happened lately,\nthat Alice had begun to think that very few things indeed were really\nimpossible.", "Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe &#x4e00; went.\nAlice opened the door and found that it led into a small passage, not\nmuch larger than a rat-hole: she knelt down and looked along the passage\ninto the loveliest garden you ever saw. How she longed to get out of\nthat dark hall, and wander about among those beds of bright flowers and\nthose cool fountains, but she could not even get her head through the\ndoorway; 'and even if my head would go through,' thought poor Alice, 'it\nwould be of very little use without my shoulders. <span class='xbig'>愛麗絲</span> Oh, how I wish I could\nshut up like a telescope! I think I could, if I only knew how to begin.'\nFor, you see, so many out-of-the-way things had happened lately,\nthat Alice had begun to think that very few things indeed were really\nimpossible.", "Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door\nleading right into it</i>.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that", "So.", "So. Here we go!", "x <span class='x'></span> y", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."];
+    text = texts[0];
+    container = $(container_selector);
+    fits_onto_line = null;
+    ends_with_shy = function(hotml) {
+      return (CND.last_of((CND.last_of(hotml))[1])) === '\u00ad';
     };
-    return step((function(_this) {
-      return function*(resume) {
-        var accept_line, container, fits_onto_line, last_line, test_line, text, text_idx, texts;
-        text_idx = -1;
-        texts = ["had happened lately,\nthat Alice had begun to think that very few things indeed were really\nimpossible.", "Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe &#x4e00; went.\nAlice opened the door and found that it led into a small passage, not\nmuch larger than a rat-hole: she knelt down and looked along the passage\ninto the loveliest garden you ever saw. How she longed to get out of\nthat dark hall, and wander about among those beds of bright flowers and\nthose cool fountains, but she could not even get her head through the\ndoorway; 'and even if my head would go through,' thought poor Alice, 'it\nwould be of very little use without my shoulders. <span class='xbig'>愛麗絲</span> Oh, how I wish I could\nshut up like a telescope! I think I could, if I only knew how to begin.'\nFor, you see, so many out-of-the-way things had happened lately,\nthat Alice had begun to think that very few things indeed were really\nimpossible.", "Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door\nleading right into it.</i> 'That's very curious!' she thought. 'But\neverything's curious.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door\nleading right into it</i>.", "Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that", "So.", "So. Here we go!", "x <span class='x'></span> y", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly", "<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."];
-        text = texts[0];
-        container = $(container_selector);
-        fits_onto_line = null;
-        last_line = null;
-        test_line = function(html) {
+    get_class = function(is_first, is_last) {
+      if (is_first) {
+        if (is_last) {
+          return 'is-lone';
+        }
+        return 'is-first';
+      }
+      if (is_last) {
+        return 'is-last';
+      }
+      return 'is-middle';
+    };
+    test_line = (function(_this) {
+      return function(html, is_first, is_last, hotml) {
 
-          /* Must return whether HTML fits into one line. */
-          var clasz, fits, focus, line;
-          clasz = 'is-first';
-          clasz = 'is-last';
-          clasz = 'is-middle';
-          focus = $("<span id='focus'></span>");
-          line = $("<p class='" + clasz + "'></p>");
-          line.append(focus);
-          focus.html(html);
-          container.append(line);
-          if (fits_onto_line == null) {
-            fits_onto_line = new_line_fitter();
-          }
-          fits = fits_onto_line(focus);
-          if (fits) {
-            last_line = line;
-          }
-          if (!fits) {
-            fits_onto_line = null;
-          }
-          line.detach();
-          return fits;
-        };
-        accept_line = function(html, is_last) {
+        /* Must return whether HTML fits into one line. */
 
-          /* Inserts text line into document */
-          help(html, is_last ? '*' : '');
-          (last_line.find('#focus')).remove();
-          last_line.html(html);
-          if (is_last) {
+        /* TAINT code duplication */
+        var R, clasz, left_cork, line, right_cork;
+        clasz = get_class(is_first, is_last);
+        if (ends_with_shy(hotml)) {
+          clasz += ' hangs-right-05ex';
+        }
+        line = $("<p class='" + clasz + "'></p>");
+        left_cork = $("<span class='cork'></span>");
+        right_cork = $("<span class='cork'></span>");
+        line.html(html);
+        line.prepend(left_cork);
+        line.append(right_cork);
+        container.append(line);
+        R = left_cork.offset()['top'] === right_cork.offset()['top'];
+        line.detach();
+        return R;
+      };
+    })(this);
+    set_line = (function(_this) {
+      return function(html, is_first, is_last, hotml) {
 
-            /* TAINT not entirely correct */
-            last_line.addClass('is-last');
-            last_line.removeClass('is-middle is-lone is-first');
-          }
-          container.append(last_line);
-          return null;
-        };
-        (yield LINESETTER.set_lines(text, test_line, accept_line, resume));
+        /* Inserts text line into document */
+
+        /* TAINT code duplication */
+        var clasz, line;
+        clasz = get_class(is_first, is_last);
+        if (ends_with_shy(hotml)) {
+          clasz += ' hangs-right-05ex';
+        }
+        line = $("<p class='" + clasz + "'></p>");
+        line.html(html);
+        container.append(line);
         return null;
       };
+    })(this);
+    step((function(_this) {
+      return function*(resume) {
+        var lines, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = texts.length; _i < _len; _i++) {
+          text = texts[_i];
+          (yield MKTS.wait(resume));
+          _results.push(lines = (yield LINESETTER.HOTMETAL.break_lines(text, test_line, set_line, resume)));
+        }
+        return _results;
+      };
     })(this));
+    return null;
   };
 
 }).call(this);

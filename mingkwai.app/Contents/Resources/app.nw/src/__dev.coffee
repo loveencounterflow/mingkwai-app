@@ -28,7 +28,7 @@ step                      = suspend.step
 after                     = suspend.after
 sleep                     = suspend.sleep
 #...........................................................................................................
-D                        = require 'pipedreams2'
+D                         = require 'pipedreams2'
 $                         = D.remit.bind D
 TEACUP                    = require 'coffeenode-teacup'
 LODASH                    = require 'lodash'

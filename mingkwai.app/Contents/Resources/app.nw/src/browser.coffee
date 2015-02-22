@@ -441,9 +441,10 @@ MKTS.on_keydown = ( event ) ->
 #-----------------------------------------------------------------------------------------------------------
 win.on 'document-end', ->
   step ( resume ) ->
-    # MKTS.maximize app
+    MKTS.maximize app
     # MKTS.zoom app
-    MKTS.zoom_to app, 1.85
+    # MKTS.zoom_to app, 1.85
+    MKTS.zoom_to app, -2
     yield step.wrap ( $ 'document' ).ready, resume
     # yield MKTS.wait resume
     help "document ready"
@@ -456,99 +457,94 @@ win.on 'document-end', ->
 
 #-----------------------------------------------------------------------------------------------------------
 _demo = ( container_selector ) ->
-  #.........................................................................................................
-  new_line_fitter = ->
-    is_first    = yes
-    last_height = 0
-    # whisper '©y94gs', 'new_line_fitter'
-    return ( node ) ->
-      dy          = node.height() - last_height
-      # debug '©u8H0l', 'last_height:', last_height, 'node.height():', node.height(), dy, rpr node.html()
-      last_height = node.height()
-      if is_first
-        is_first = no
-        return true
-      return dy <= 0
   #.......................................................................................................
-  step ( resume ) =>
-    text_idx = -1
-    texts = [
-      """had happened lately,
-            that Alice had begun to think that very few things indeed were really
-            impossible.
-            """
-      """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
-            leading right into it.</i> 'That's very curious!' she thought. 'But
-            everything's curious today. I think I may as well go in at once.' And in
-            she &#x4e00; went.
-            Alice opened the door and found that it led into a small passage, not
-            much larger than a rat-hole: she knelt down and looked along the passage
-            into the loveliest garden you ever saw. How she longed to get out of
-            that dark hall, and wander about among those beds of bright flowers and
-            those cool fountains, but she could not even get her head through the
-            doorway; 'and even if my head would go through,' thought poor Alice, 'it
-            would be of very little use without my shoulders. <span class='xbig'>愛麗絲</span> Oh, how I wish I could
-            shut up like a telescope! I think I could, if I only knew how to begin.'
-            For, you see, so many out-of-the-way things had happened lately,
-            that Alice had begun to think that very few things indeed were really
-            impossible.
-            """
-            # yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-      """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
-            leading right into it.</i> 'That's very curious!' she thought. 'But
-            everything's curious."""
-      """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door
-            leading right into it</i>."""
-      """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that"""
-      """So."""
-      """So. Here we go!"""
-      """x <span class='x'></span> y"""
-      """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly"""
-      """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."""
-      ]
-    text            = texts[ 0 ]
-    container       = $ container_selector
-    fits_onto_line  = null
-    last_line       = null
-    #.........................................................................................................
-    test_line = ( html ) =>
-      ### Must return whether HTML fits into one line. ###
-      clasz           = 'is-first'
-      clasz           = 'is-last'
-      clasz           = 'is-middle'
-      focus           = $ "<span id='focus'></span>"
-      line            = $ "<p class='#{clasz}'></p>"
-      line.append focus
-      focus.html html
-      container.append line
-      fits_onto_line ?= new_line_fitter()
-      fits            = fits_onto_line focus
-      last_line       = line if fits
-      # if fits then whisper 'ok', html else warn 'X', html
-      fits_onto_line  = null unless fits
-      # debug '©bmWvg', fits, html
-      line.detach()
-      return fits
-    #.........................................................................................................
-    accept_line = ( html, is_last ) =>
-      ### Inserts text line into document ###
-      help html, if is_last then '*' else ''
-      ( last_line.find '#focus' ).remove()
-      last_line.html html
-      if is_last
-        ### TAINT not entirely correct ###
-        last_line.addClass 'is-last'
-        last_line.removeClass 'is-middle is-lone is-first'
-      container.append last_line
-      return null
-    # #---------------------------------------------------------------------------------------------------------
-    # step ( resume ) =>
-    #   for text in texts
-    #     yield LINESETTER.set_lines text, test_line, accept_line, resume
-    #.........................................................................................................
-    yield LINESETTER.set_lines text, test_line, accept_line, resume
-    #.........................................................................................................
+  # step ( resume ) =>
+  text_idx = -1
+  texts = [
+    """https://www.google.de/search?q=a+very+long+URL&ie=utf-8&oe=utf-8&gws_rd=cr&ei=4TjpVP3AC8GcPPq1gfgE"""
+    """had happened lately,
+          that Alice had begun to think that very few things indeed were really
+          impossible.
+          """
+    """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
+          leading right into it.</i> 'That's very curious!' she thought. 'But
+          everything's curious today. I think I may as well go in at once.' And in
+          she &#x4e00; went.
+          Alice opened the door and found that it led into a small passage, not
+          much larger than a rat-hole: she knelt down and looked along the passage
+          into the loveliest garden you ever saw. How she longed to get out of
+          that dark hall, and wander about among those beds of bright flowers and
+          those cool fountains, but she could not even get her head through the
+          doorway; 'and even if my head would go through,' thought poor Alice, 'it
+          would be of very little use without my shoulders. <span class='xbig'>愛麗絲</span> Oh, how I wish I could
+          shut up like a telescope! I think I could, if I only knew how to begin.'
+          For, you see, so many out-of-the-way things had happened lately,
+          that Alice had begun to think that very few things indeed were really
+          impossible.
+          """
+          # yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
+    """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
+          leading right into it.</i> 'That's very curious!' she thought. 'But
+          everything's curious."""
+    """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door
+          leading right into it</i>."""
+    """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that"""
+    """So."""
+    """So. Here we go!"""
+    """x <span class='x'></span> y"""
+    """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly"""
+    """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."""
+    ]
+  text            = texts[ 0 ]
+  container       = $ container_selector
+  fits_onto_line  = null
+  #.........................................................................................................
+  ends_with_shy = ( hotml ) ->
+    return ( CND.last_of ( CND.last_of hotml )[ 1 ] ) is '\u00ad'
+  #.........................................................................................................
+  get_class = ( is_first, is_last ) ->
+    if is_first
+      return 'is-lone' if is_last
+      return 'is-first'
+    return 'is-last' if is_last
+    return 'is-middle'
+  #.........................................................................................................
+  test_line = ( html, is_first, is_last, hotml ) =>
+    ### Must return whether HTML fits into one line. ###
+    ### TAINT code duplication ###
+    clasz           = get_class is_first, is_last
+    clasz          += ' hangs-right-05ex' if ends_with_shy hotml
+    line            = $ "<p class='#{clasz}'></p>"
+    left_cork       = $ "<span class='cork'></span>"
+    right_cork      = $ "<span class='cork'></span>"
+    line.html html
+    line.prepend left_cork
+    line.append  right_cork
+    container.append line
+    R               = left_cork.offset()[ 'top' ] == right_cork.offset()[ 'top' ]
+    line.detach()
+    return R
+  #.........................................................................................................
+  set_line = ( html, is_first, is_last, hotml ) =>
+    ### Inserts text line into document ###
+    ### TAINT code duplication ###
+    clasz           = get_class is_first, is_last
+    clasz          += ' hangs-right-05ex' if ends_with_shy hotml
+    line            = $ "<p class='#{clasz}'></p>"
+    line.html html
+    container.append line
     return null
+  #---------------------------------------------------------------------------------------------------------
+  step ( resume ) =>
+    for text in texts
+      yield MKTS.wait resume
+      lines = yield LINESETTER.HOTMETAL.break_lines text, test_line, set_line, resume
+      # debug '©CiDAF', lines
+    # hyphenate   = D2.new_hyphenate()
+    # debug '©u2NsL', hyphenate 'illustrative'
+    # debug '©u2NsL', hyphenate 'leading'
+  #.........................................................................................................
+  return null
 
 
 

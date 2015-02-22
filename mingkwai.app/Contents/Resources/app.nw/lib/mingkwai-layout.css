@@ -13,7 +13,6 @@ body,
 /* ------------------------------------------------------------------------------------------------------ */
 .paper {
   margin: 10mm;
-  box-shadow: 10px 10px 35px 0px rgba(0,0,0,0.5);
   width: 210mm;
   height: 297mm;
   padding-left: 4.5mm;
@@ -96,6 +95,9 @@ p.is-middle {
 p.is-middle,
 p.is-last {
   margin-top: 0;
+}
+p.hangs-right-05ex {
+  margin-right: -0.5ex;
 }
 #mytext p:last-child {
   margin-bottom: 0;
