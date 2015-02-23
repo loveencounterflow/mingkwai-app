@@ -167,6 +167,7 @@ MKTS = {}
 #-----------------------------------------------------------------------------------------------------------
 app =
   'zoom-level':   0
+  'mm-per-px':    50 / 189
 
 #-----------------------------------------------------------------------------------------------------------
 on_file_menu_what_you_should_know_C = ->
@@ -294,8 +295,7 @@ MKTS.zoom = ( me, delta ) ->
   zoom_percent = ( win.zoomLevel - base_zoom_level ) * 1.2 * 100
   echo "zoomed to level #{win.zoomLevel} (#{zoom_percent.toFixed 0}%)"
   debug '©zVBdI', ( $ '.flex-columns-wrap' ).height()
-  mms_per_pixel = 50 / 189
-  debug '©zVBdI', ( $ '.flex-columns-wrap' ).height() * mms_per_pixel, 'mm'
+  debug '©zVBdI', ( $ '.flex-columns-wrap' ).height() * me[ 'mm-per-px' ], 'mm'
   return win.zoomLevel
 
 #-----------------------------------------------------------------------------------------------------------
@@ -510,6 +510,7 @@ _demo = ( container_selector ) ->
     # Through the Looking-Glass
 
     That's very *good* she said, not knowing that she would still have to climb the mountain.
+    xxxxxxxxxx yyyyyyyyyyyy zzzzzzzzzz ppppppppppppppppppppppppppppppppppppppp qqqqqqqqqqqqqqqqqqqqqqqq.
 
     It's a pleasure."""
   #.........................................................................................................
@@ -528,34 +529,78 @@ _demo = ( container_selector ) ->
     return 'is-last' if is_last
     return 'is-middle'
   #.........................................................................................................
+  get_line = ( hotml, is_first, is_last ) ->
+    R = $ D.HOTMETAL.as_html hotml
+    R.addClass get_class is_first, is_last
+    R.addClass ' hangs-right-05ex' if has_hanging_margin hotml
+    return R
+  #.........................................................................................................
   test_line = ( hotml, is_first, is_last ) =>
     ### Must return whether HTML fits into one line. ###
-    ### TAINT code duplication ###
-    line            = $ D.HOTMETAL.as_html hotml
-    block           = line.closest '*'
-    clasz           = get_class is_first, is_last
-    block.addClass clasz
-    block.addClass ' hangs-right-05ex' if has_hanging_margin hotml
+    line            = get_line hotml, is_first, is_last
     left_cork       = $ "<span class='cork'></span>"
     right_cork      = $ "<span class='cork'></span>"
-    block.prepend     left_cork
-    block.append      right_cork
+    line.prepend     left_cork
+    line.append      right_cork
     container.append  line
     R               = left_cork.offset()[ 'top' ] == right_cork.offset()[ 'top' ]
-    debug '©YPs8M', left_cork.offset()[ 'top' ], right_cork.offset()[ 'top' ], line.outerHTML()
+    # debug '©YPs8M', left_cork.offset()[ 'top' ], right_cork.offset()[ 'top' ], line.outerHTML()
     # debug '©YPs8M', line.outerHTML()
     line.detach()
     return R
   #.........................................................................................................
   set_line = ( hotml, is_first, is_last ) =>
     ### Inserts text line into document ###
-    ### TAINT code duplication ###
-    html            = D.HOTMETAL.as_html hotml
-    clasz           = get_class is_first, is_last
-    clasz          += ' hangs-right-05ex' if has_hanging_margin hotml
-    line            = $ "<p class='#{clasz}'></p>"
-    line.html html
-    container.append line
+    #.......................................................................................................
+    for chunk, chunk_idx in hotml
+      [ open_tags, text, close_tags, ] = chunk
+      continue if text[ 0 ] is '<'
+      is_last_chunk = chunk_idx >= hotml.length - 1
+      text          = text.replace /^(\s+)/, """<span class='mkts-lws'>$1</span>""" unless chunk_idx is 0
+      text          = text.replace /(\s+)$/, """<span class='mkts-lws'>$1</span>""" unless is_last_chunk
+      ### TAINT not a good implementation ###
+      if ( text.indexOf """<span class='mkts-lws'>""" ) is -1
+        text = """<span class='mkts-material'>#{text}</span>"""
+      chunk[ 1 ]    = text
+    #.......................................................................................................
+    line            = get_line hotml, is_first, is_last
+    container.append  line
+    #.......................................................................................................
+    ###
+    http://stackoverflow.com/a/16072668/256361:
+    ( ( lws.get idx ).getBoundingClientRect().width for idx in [ 0 .. lws.length - 1 ] )
+    http://stackoverflow.com/a/16072449/256361:
+    window.getComputedStyle(element).width
+    ###
+    #.......................................................................................................
+    line_width_px     = line.width()
+    lws               = line.find '.mkts-lws'
+    debug()
+    debug '©RwY5D', line.text()
+    if lws.length > 0
+      lws_width_px      = 0
+      lws_width_px     += ( lws.eq idx ).width() for idx in [ 0 .. lws.length - 1 ]
+      lws_width_px_avg  = lws_width_px / lws.length
+      avg_lws_ratio_pc  = a = lws_width_px_avg / line_width_px * 100
+      color             = if a < 10 then 'green' else ( if a < 20 then 'orange' else 'red' )
+      # lws_width_mm      = lws_width_px  * app[ 'mm-per-px' ]
+      # line_width_mm     = line.width()  * app[ 'mm-per-px' ]
+      # debug '©sHu8j', ( ( lws.eq idx ).width() for idx in [ 0 .. lws.length - 1 ] )
+      # debug '©VTLl9', ( ( line_width_mm ).toFixed 1 ), ( ( lws_width_mm ).toFixed 1 )
+      # debug 'Ratio of all     inter-word spaces to column width:', ( ( lws_width_px     / line_width_px * 100 ).toFixed 1 ) + '% '
+      debug 'Ratio of average inter word spaces to column width:', ( avg_lws_ratio_pc.toFixed 1 ) + '% ', CND[ color ] '█'
+    else
+      material          = line.find '.mkts-material'
+      if material.length is 0
+        warn "no LWS, no material found for line #{rpr line.outerHTML()}"
+      else
+        material_width_px = material.width()
+        # debug '©zOqsw', material_width_px
+        material_ratio_pc = material_width_px / line_width_px * 100 - 100
+        a                 = Math.abs material_ratio_pc
+        color             = if a < 10 then 'green' else ( if a < 20 then 'orange' else 'red' )
+        debug 'Ratio of material                  to column width:', ( material_ratio_pc.toFixed 1 ) + '% ', CND[ color ] '█'
+    #.......................................................................................................
     return null
   #---------------------------------------------------------------------------------------------------------
   input = D.create_throughstream()
@@ -566,17 +611,17 @@ _demo = ( container_selector ) ->
     .pipe D.TYPO.$dashes()
     .pipe D.HTML.$parse()
     .pipe D.HTML.$slice_toplevel_tags()
-    #.......................................................................................................
-    .pipe D$ ( data, send, end ) =>
-      if data?
-        urge data
-        send data
-      if end?
-        warn 'ended'
-        end()
+    # #.......................................................................................................
+    # .pipe D$ ( data, send, end ) =>
+    #   if data?
+    #     urge data
+    #     send data
+    #   if end?
+    #     warn 'ended'
+    #     end()
     #.......................................................................................................
     .pipe D$ ( block_hotml, send ) =>
-      urge D.HOTMETAL.as_html block_hotml
+      # urge D.HOTMETAL.as_html block_hotml
       send block_hotml
     #.......................................................................................................
     .pipe do =>
@@ -589,7 +634,9 @@ _demo = ( container_selector ) ->
           line_count += lines.length
           send block_hotml
         if end?
+          column_linecounts = D.HOTMETAL.get_column_linecounts 'even', line_count, 3
           help "line count: #{line_count}"
+          help "column line counts: #{column_linecounts}"
           warn 'ended'
   #.........................................................................................................
   input.write md

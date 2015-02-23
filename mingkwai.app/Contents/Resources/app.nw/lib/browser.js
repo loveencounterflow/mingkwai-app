@@ -55,7 +55,8 @@
   MKTS = {};
 
   app = {
-    'zoom-level': 0
+    'zoom-level': 0,
+    'mm-per-px': 50 / 189
   };
 
   on_file_menu_what_you_should_know_C = function() {
@@ -153,7 +154,7 @@
   };
 
   MKTS.zoom = function(me, delta) {
-    var base_zoom_level, mms_per_pixel, zoom_percent;
+    var base_zoom_level, zoom_percent;
     base_zoom_level = -0.15;
     if (delta != null) {
       if ((delta > 0 && win.zoomLevel <= 8.8) || (delta < 0 && win.zoomLevel >= -7.5)) {
@@ -165,8 +166,7 @@
     zoom_percent = (win.zoomLevel - base_zoom_level) * 1.2 * 100;
     echo("zoomed to level " + win.zoomLevel + " (" + (zoom_percent.toFixed(0)) + "%)");
     debug('©zVBdI', ($('.flex-columns-wrap')).height());
-    mms_per_pixel = 50 / 189;
-    debug('©zVBdI', ($('.flex-columns-wrap')).height() * mms_per_pixel, 'mm');
+    debug('©zVBdI', ($('.flex-columns-wrap')).height() * me['mm-per-px'], 'mm');
     return win.zoomLevel;
   };
 
@@ -370,9 +370,9 @@
   });
 
   _demo = function(container_selector) {
-    var container, get_class, has_hanging_margin, input, md, set_line, test_line;
+    var container, get_class, get_line, has_hanging_margin, input, md, set_line, test_line;
     md = "# Through the Looking-Glass\n\n'Really, now you ask me,' said Alice, very much confused, 'I don't\nthink—'\n\n'Then you shouldn't talk,' said the Hatter.\n\nThis piece of rudeness was more than Alice could bear: she got up in\ngreat disgust, and walked off; the Dormouse fell asleep instantly, and\nneither of the others took the least notice of her going, though she\nlooked back once or twice, half hoping that they would call after her:\nthe last time she saw them, they were trying to put the Dormouse into\nthe teapot.\n\n'At any rate I'll never go THERE again!' said Alice as she picked her\nway through the wood. 'It's the stupidest tea-party I ever was at in all\nmy life!'\n\nJust as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe went.\n\nOnce more she found herself in the long hall, and close to the little\nglass table. 'Now, I'll manage better this time,' she said to herself,\nand began by taking the little golden key, and unlocking the door that\nled into the garden. Then she went to work nibbling at the mushroom (she\nhad kept a piece of it in her pocket) till she was about a foot high:\nthen she walked down the little passage: and THEN—she found herself at\nlast in the beautiful garden, among the bright flower-beds and the cool\nfountains.\n\n\nAlice opened the door and found that it led into a small passage, not\nmuch larger than a rat-hole: she knelt down and looked along the passage\ninto the loveliest garden you ever saw. How she longed to get out of\nthat dark hall, and wander about among those beds of bright flowers and\nthose cool fountains, but she could not even get her head through the\ndoorway; 'and even if my head would go through,' thought poor Alice, 'it\nwould be of very little use without my shoulders. **愛麗絲** Oh, how I wish I could\nshut up like a telescope! I think I could, if I only knew how to begin.'\nFor, you see, so many out-of-the-way things had happened lately,\nthat Alice had begun to think that very few things indeed were really\nimpossible.";
-    md = "# Through the Looking-Glass\n\nThat's very *good* she said, not knowing that she would still have to climb the mountain.\n\nIt's a pleasure.";
+    md = "# Through the Looking-Glass\n\nThat's very *good* she said, not knowing that she would still have to climb the mountain.\nxxxxxxxxxx yyyyyyyyyyyy zzzzzzzzzz ppppppppppppppppppppppppppppppppppppppp qqqqqqqqqqqqqqqqqqqqqqqq.\n\nIt's a pleasure.";
     container = $(container_selector);
     has_hanging_margin = function(hotml) {
       var last_chr;
@@ -391,27 +391,27 @@
       }
       return 'is-middle';
     };
+    get_line = function(hotml, is_first, is_last) {
+      var R;
+      R = $(D.HOTMETAL.as_html(hotml));
+      R.addClass(get_class(is_first, is_last));
+      if (has_hanging_margin(hotml)) {
+        R.addClass(' hangs-right-05ex');
+      }
+      return R;
+    };
     test_line = (function(_this) {
       return function(hotml, is_first, is_last) {
 
         /* Must return whether HTML fits into one line. */
-
-        /* TAINT code duplication */
-        var R, block, clasz, left_cork, line, right_cork;
-        line = $(D.HOTMETAL.as_html(hotml));
-        block = line.closest('*');
-        clasz = get_class(is_first, is_last);
-        block.addClass(clasz);
-        if (has_hanging_margin(hotml)) {
-          block.addClass(' hangs-right-05ex');
-        }
+        var R, left_cork, line, right_cork;
+        line = get_line(hotml, is_first, is_last);
         left_cork = $("<span class='cork'></span>");
         right_cork = $("<span class='cork'></span>");
-        block.prepend(left_cork);
-        block.append(right_cork);
+        line.prepend(left_cork);
+        line.append(right_cork);
         container.append(line);
         R = left_cork.offset()['top'] === right_cork.offset()['top'];
-        debug('©YPs8M', left_cork.offset()['top'], right_cork.offset()['top'], line.outerHTML());
         line.detach();
         return R;
       };
@@ -420,35 +420,67 @@
       return function(hotml, is_first, is_last) {
 
         /* Inserts text line into document */
+        var a, avg_lws_ratio_pc, chunk, chunk_idx, close_tags, color, idx, is_last_chunk, line, line_width_px, lws, lws_width_px, lws_width_px_avg, material, material_ratio_pc, material_width_px, open_tags, text, _i, _j, _len, _ref;
+        for (chunk_idx = _i = 0, _len = hotml.length; _i < _len; chunk_idx = ++_i) {
+          chunk = hotml[chunk_idx];
+          open_tags = chunk[0], text = chunk[1], close_tags = chunk[2];
+          if (text[0] === '<') {
+            continue;
+          }
+          is_last_chunk = chunk_idx >= hotml.length - 1;
+          if (chunk_idx !== 0) {
+            text = text.replace(/^(\s+)/, "<span class='mkts-lws'>$1</span>");
+          }
+          if (!is_last_chunk) {
+            text = text.replace(/(\s+)$/, "<span class='mkts-lws'>$1</span>");
+          }
 
-        /* TAINT code duplication */
-        var clasz, html, line;
-        html = D.HOTMETAL.as_html(hotml);
-        clasz = get_class(is_first, is_last);
-        if (has_hanging_margin(hotml)) {
-          clasz += ' hangs-right-05ex';
+          /* TAINT not a good implementation */
+          if ((text.indexOf("<span class='mkts-lws'>")) === -1) {
+            text = "<span class='mkts-material'>" + text + "</span>";
+          }
+          chunk[1] = text;
         }
-        line = $("<p class='" + clasz + "'></p>");
-        line.html(html);
+        line = get_line(hotml, is_first, is_last);
         container.append(line);
+
+        /*
+        http://stackoverflow.com/a/16072668/256361:
+        ( ( lws.get idx ).getBoundingClientRect().width for idx in [ 0 .. lws.length - 1 ] )
+        http://stackoverflow.com/a/16072449/256361:
+        window.getComputedStyle(element).width
+         */
+        line_width_px = line.width();
+        lws = line.find('.mkts-lws');
+        debug();
+        debug('©RwY5D', line.text());
+        if (lws.length > 0) {
+          lws_width_px = 0;
+          for (idx = _j = 0, _ref = lws.length - 1; 0 <= _ref ? _j <= _ref : _j >= _ref; idx = 0 <= _ref ? ++_j : --_j) {
+            lws_width_px += (lws.eq(idx)).width();
+          }
+          lws_width_px_avg = lws_width_px / lws.length;
+          avg_lws_ratio_pc = a = lws_width_px_avg / line_width_px * 100;
+          color = a < 10 ? 'green' : (a < 20 ? 'orange' : 'red');
+          debug('Ratio of average inter word spaces to column width:', (avg_lws_ratio_pc.toFixed(1)) + '% ', CND[color]('█'));
+        } else {
+          material = line.find('.mkts-material');
+          if (material.length === 0) {
+            warn("no LWS, no material found for line " + (rpr(line.outerHTML())));
+          } else {
+            material_width_px = material.width();
+            material_ratio_pc = material_width_px / line_width_px * 100 - 100;
+            a = Math.abs(material_ratio_pc);
+            color = a < 10 ? 'green' : (a < 20 ? 'orange' : 'red');
+            debug('Ratio of material                  to column width:', (material_ratio_pc.toFixed(1)) + '% ', CND[color]('█'));
+          }
+        }
         return null;
       };
     })(this);
     input = D.create_throughstream();
     input.pipe(D.MD.$as_html()).pipe(D.TYPO.$quotes()).pipe(D.TYPO.$dashes()).pipe(D.HTML.$parse()).pipe(D.HTML.$slice_toplevel_tags()).pipe(D$((function(_this) {
-      return function(data, send, end) {
-        if (data != null) {
-          urge(data);
-          send(data);
-        }
-        if (end != null) {
-          warn('ended');
-          return end();
-        }
-      };
-    })(this))).pipe(D$((function(_this) {
       return function(block_hotml, send) {
-        urge(D.HOTMETAL.as_html(block_hotml));
         return send(block_hotml);
       };
     })(this))).pipe((function(_this) {
@@ -456,14 +488,16 @@
         var line_count;
         line_count = 0;
         return D$(function(block_hotml, send, end) {
-          var lines;
+          var column_linecounts, lines;
           if (block_hotml != null) {
             lines = D.HOTMETAL.break_lines(block_hotml, test_line, set_line);
             line_count += lines.length;
             send(block_hotml);
           }
           if (end != null) {
+            column_linecounts = D.HOTMETAL.get_column_linecounts('even', line_count, 3);
             help("line count: " + line_count);
+            help("column line counts: " + column_linecounts);
             return warn('ended');
           }
         });

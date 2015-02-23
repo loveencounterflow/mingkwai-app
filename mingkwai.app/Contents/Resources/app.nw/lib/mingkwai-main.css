@@ -111,6 +111,10 @@ div {
   font-family: 'cjk', 'cjk-xb', 'jzr', 'Ampersand', 'EB Garamond 12', 'Georgia';
   font-weight: 200;
 }
+h1 {
+  font-size: 200%;
+  line-height: 100%;
+}
 .jzr-babel {
   font-family: 'BabelStone Han', 'Georgia';
 }
