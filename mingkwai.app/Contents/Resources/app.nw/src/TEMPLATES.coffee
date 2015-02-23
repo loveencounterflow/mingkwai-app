@@ -182,6 +182,7 @@ for name_ of TEACUP
         LINK rel: 'stylesheet', href: './mingkwai-main.css?v6'
         LINK rel: 'stylesheet', href: './mingkwai-dev.css?v6'
         SCRIPT type: 'text/javascript', src: './jquery-2.1.3.js'
+        SCRIPT type: 'text/javascript', src: './outerHTML-2.1.0.js'
         # ### https://github.com/FremyCompany/css-regions-polyfill/ ###
         # SCRIPT type: 'text/javascript', src: './css-regions-polyfill.min.js'
         SCRIPT type: 'text/javascript', src: './blaidddrwg.js'
@@ -194,10 +195,10 @@ for name_ of TEACUP
         DIV '.paper', =>
           DIV '.mingkwai-dev-page-marker', =>
           DIV '.page', =>
-            DIV '.ruler', => ( DIV '.ruler-block' for idx in [ 0 .. 20 ] )
-            # DIV '.grid.grid-1cm'
-            # DIV '.grid.baseline-grid'
-            H1 "眀快排字机"
+            # DIV '.ruler', => ( DIV '.ruler-block' for idx in [ 0 .. 20 ] )
+            # # DIV '.grid.grid-1cm'
+            # # DIV '.grid.baseline-grid'
+            # H1 "眀快排字机"
             # DIV """here & there"""
             # # DIV '#mytext.columns-5.justify', => ( ( P => RAW paragraph ) for paragraph in _XXX_paragraphs )
             # # DIV '.circle', """Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod

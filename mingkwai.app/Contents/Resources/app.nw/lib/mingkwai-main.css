@@ -21,7 +21,7 @@ p {
 .filled-with-id-content {
   flow-from: article;
   width: 31%;
-  height: 50mm;
+  height: 100%;
 }
 .clear-float {
   clear: both;

@@ -23,10 +23,12 @@ win                       = NW.Window.get()
 #...........................................................................................................
 suspend                   = require 'coffeenode-suspend'
 step                      = suspend.step
+immediately               = suspend.immediately
 after                     = suspend.after
 sleep                     = suspend.sleep
 #...........................................................................................................
-D2                        = require 'pipedreams2'
+D                         = require 'pipedreams2'
+D$                        = D.remit.bind D
 CHR                       = require 'coffeenode-chr'
 #...........................................................................................................
 # ### must be loaded by HTML page; see
@@ -441,66 +443,83 @@ MKTS.on_keydown = ( event ) ->
 #-----------------------------------------------------------------------------------------------------------
 win.on 'document-end', ->
   step ( resume ) ->
-    MKTS.maximize app
-    # MKTS.zoom app
-    # MKTS.zoom_to app, 1.85
-    MKTS.zoom_to app, -2
-    yield step.wrap ( $ 'document' ).ready, resume
+    # MKTS.zoom_to app, -2
     # yield MKTS.wait resume
-    help "document ready"
     # debug '©wVnkq', 'paper ', ( $ '.paper' ).offset(), "#{( $ '.paper' ).outerWidth()} x #{( $ '.paper' ).outerHeight()}"
     # debug '©wVnkq', 'page  ', ( $ '.page' ).offset(), "#{( $ '.page' ).outerWidth()} x #{( $ '.page' ).outerHeight()}"
+    # MKTS.zoom app
+    # MKTS.maximize app
+    MKTS.zoom_to app, 1.85
+    yield step.wrap ( $ 'document' ).ready, resume
+    help "document ready"
     #.......................................................................................................
     ( $ document ).keydown MKTS.on_keydown.bind MKTS
     #.......................................................................................................
-    _demo '#box-b'
+    _demo '#box-a'
 
 #-----------------------------------------------------------------------------------------------------------
 _demo = ( container_selector ) ->
   #.......................................................................................................
-  # step ( resume ) =>
-  text_idx = -1
-  texts = [
-    """https://www.google.de/search?q=a+very+long+URL&ie=utf-8&oe=utf-8&gws_rd=cr&ei=4TjpVP3AC8GcPPq1gfgE"""
-    """had happened lately,
-          that Alice had begun to think that very few things indeed were really
-          impossible.
-          """
-    """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
-          leading right into it.</i> 'That's very curious!' she thought. 'But
-          everything's curious today. I think I may as well go in at once.' And in
-          she &#x4e00; went.
-          Alice opened the door and found that it led into a small passage, not
-          much larger than a rat-hole: she knelt down and looked along the passage
-          into the loveliest garden you ever saw. How she longed to get out of
-          that dark hall, and wander about among those beds of bright flowers and
-          those cool fountains, but she could not even get her head through the
-          doorway; 'and even if my head would go through,' thought poor Alice, 'it
-          would be of very little use without my shoulders. <span class='xbig'>愛麗絲</span> Oh, how I wish I could
-          shut up like a telescope! I think I could, if I only knew how to begin.'
-          For, you see, so many out-of-the-way things had happened lately,
-          that Alice had begun to think that very few things indeed were really
-          impossible.
-          """
-          # yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-    """Just as she <b><i>said</i></b> this, she noticed that <i>one of the trees had a door
-          leading right into it.</i> 'That's very curious!' she thought. 'But
-          everything's curious."""
-    """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that <i>one of the trees had a door
-          leading right into it</i>."""
-    """Just as she <b><i>said</i></b> <span class='xbig'>this</span>, she noticed that"""
-    """So."""
-    """So. Here we go!"""
-    """x <span class='x'></span> y"""
-    """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, exasperated, and certainly"""
-    """<i>It's <b>very</b> supercalifragilistic</i>, http://<wbr>x.com <span class='x'></span>she said, period."""
-    ]
-  text            = texts[ 0 ]
-  container       = $ container_selector
-  fits_onto_line  = null
+  md = """
+    # Through the Looking-Glass
+
+    'Really, now you ask me,' said Alice, very much confused, 'I don't
+    think—'
+
+    'Then you shouldn't talk,' said the Hatter.
+
+    This piece of rudeness was more than Alice could bear: she got up in
+    great disgust, and walked off; the Dormouse fell asleep instantly, and
+    neither of the others took the least notice of her going, though she
+    looked back once or twice, half hoping that they would call after her:
+    the last time she saw them, they were trying to put the Dormouse into
+    the teapot.
+
+    'At any rate I'll never go THERE again!' said Alice as she picked her
+    way through the wood. 'It's the stupidest tea-party I ever was at in all
+    my life!'
+
+    Just as she said this, she noticed that one of the trees had a door
+    leading right into it. 'That's very curious!' she thought. 'But
+    everything's curious today. I think I may as well go in at once.' And in
+    she went.
+
+    Once more she found herself in the long hall, and close to the little
+    glass table. 'Now, I'll manage better this time,' she said to herself,
+    and began by taking the little golden key, and unlocking the door that
+    led into the garden. Then she went to work nibbling at the mushroom (she
+    had kept a piece of it in her pocket) till she was about a foot high:
+    then she walked down the little passage: and THEN—she found herself at
+    last in the beautiful garden, among the bright flower-beds and the cool
+    fountains.
+
+
+    Alice opened the door and found that it led into a small passage, not
+    much larger than a rat-hole: she knelt down and looked along the passage
+    into the loveliest garden you ever saw. How she longed to get out of
+    that dark hall, and wander about among those beds of bright flowers and
+    those cool fountains, but she could not even get her head through the
+    doorway; 'and even if my head would go through,' thought poor Alice, 'it
+    would be of very little use without my shoulders. **愛麗絲** Oh, how I wish I could
+    shut up like a telescope! I think I could, if I only knew how to begin.'
+    For, you see, so many out-of-the-way things had happened lately,
+    that Alice had begun to think that very few things indeed were really
+    impossible."""
   #.........................................................................................................
-  ends_with_shy = ( hotml ) ->
-    return ( CND.last_of ( CND.last_of hotml )[ 1 ] ) is '\u00ad'
+  md = """
+    # Through the Looking-Glass
+
+    That's very *good* she said, not knowing that she would still have to climb the mountain.
+
+    It's a pleasure."""
+  #.........................................................................................................
+  container       = $ container_selector
+  # $end            = Symbol '$end'
+  #.........................................................................................................
+  has_hanging_margin = ( hotml ) ->
+    # debug '©mnhYJ',  ( CND.last_of ( CND.last_of hotml )[ 1 ] ), ( CND.last_of ( CND.last_of hotml )[ 1 ] ) in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ]
+    last_chr = CND.last_of ( CND.last_of hotml )[ 1 ].replace /\s+$/, ''
+    return last_chr in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ]
   #.........................................................................................................
   get_class = ( is_first, is_last ) ->
     if is_first
@@ -509,40 +528,77 @@ _demo = ( container_selector ) ->
     return 'is-last' if is_last
     return 'is-middle'
   #.........................................................................................................
-  test_line = ( html, is_first, is_last, hotml ) =>
+  test_line = ( hotml, is_first, is_last ) =>
     ### Must return whether HTML fits into one line. ###
     ### TAINT code duplication ###
+    line            = $ D.HOTMETAL.as_html hotml
+    block           = line.closest '*'
     clasz           = get_class is_first, is_last
-    clasz          += ' hangs-right-05ex' if ends_with_shy hotml
-    line            = $ "<p class='#{clasz}'></p>"
+    block.addClass clasz
+    block.addClass ' hangs-right-05ex' if has_hanging_margin hotml
     left_cork       = $ "<span class='cork'></span>"
     right_cork      = $ "<span class='cork'></span>"
-    line.html html
-    line.prepend left_cork
-    line.append  right_cork
-    container.append line
+    block.prepend     left_cork
+    block.append      right_cork
+    container.append  line
     R               = left_cork.offset()[ 'top' ] == right_cork.offset()[ 'top' ]
+    debug '©YPs8M', left_cork.offset()[ 'top' ], right_cork.offset()[ 'top' ], line.outerHTML()
+    # debug '©YPs8M', line.outerHTML()
     line.detach()
     return R
   #.........................................................................................................
-  set_line = ( html, is_first, is_last, hotml ) =>
+  set_line = ( hotml, is_first, is_last ) =>
     ### Inserts text line into document ###
     ### TAINT code duplication ###
+    html            = D.HOTMETAL.as_html hotml
     clasz           = get_class is_first, is_last
-    clasz          += ' hangs-right-05ex' if ends_with_shy hotml
+    clasz          += ' hangs-right-05ex' if has_hanging_margin hotml
     line            = $ "<p class='#{clasz}'></p>"
     line.html html
     container.append line
     return null
   #---------------------------------------------------------------------------------------------------------
-  step ( resume ) =>
-    for text in texts
-      yield MKTS.wait resume
-      lines = yield LINESETTER.HOTMETAL.break_lines text, test_line, set_line, resume
-      # debug '©CiDAF', lines
-    # hyphenate   = D2.new_hyphenate()
-    # debug '©u2NsL', hyphenate 'illustrative'
-    # debug '©u2NsL', hyphenate 'leading'
+  input = D.create_throughstream()
+  #.........................................................................................................
+  input
+    .pipe D.MD.$as_html()
+    .pipe D.TYPO.$quotes()
+    .pipe D.TYPO.$dashes()
+    .pipe D.HTML.$parse()
+    .pipe D.HTML.$slice_toplevel_tags()
+    #.......................................................................................................
+    .pipe D$ ( data, send, end ) =>
+      if data?
+        urge data
+        send data
+      if end?
+        warn 'ended'
+        end()
+    #.......................................................................................................
+    .pipe D$ ( block_hotml, send ) =>
+      urge D.HOTMETAL.as_html block_hotml
+      send block_hotml
+    #.......................................................................................................
+    .pipe do =>
+      line_count = 0
+      # step ( resume ) =>
+      # yield MKTS.wait resume
+      return D$ ( block_hotml, send, end ) =>
+        if block_hotml?
+          lines       = D.HOTMETAL.break_lines block_hotml, test_line, set_line
+          line_count += lines.length
+          send block_hotml
+        if end?
+          help "line count: #{line_count}"
+          warn 'ended'
+  #.........................................................................................................
+  input.write md
+  input.end()
+  # input.write $end
+  # immediately => input.end()
+  # hyphenate   = D.new_hyphenate()
+  # debug '©u2NsL', hyphenate 'illustrative'
+  # debug '©u2NsL', hyphenate 'leading'
   #.........................................................................................................
   return null
 

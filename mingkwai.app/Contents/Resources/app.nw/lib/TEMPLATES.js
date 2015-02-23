@@ -80,6 +80,10 @@
               type: 'text/javascript',
               src: './jquery-2.1.3.js'
             });
+            SCRIPT({
+              type: 'text/javascript',
+              src: './outerHTML-2.1.0.js'
+            });
             return SCRIPT({
               type: 'text/javascript',
               src: './blaidddrwg.js'
@@ -90,15 +94,6 @@
             DIV('.paper', function() {
               DIV('.mingkwai-dev-page-marker', function() {});
               return DIV('.page', function() {
-                DIV('.ruler', function() {
-                  var idx, _i, _results;
-                  _results = [];
-                  for (idx = _i = 0; _i <= 20; idx = ++_i) {
-                    _results.push(DIV('.ruler-block'));
-                  }
-                  return _results;
-                });
-                H1("眀快排字机");
                 return DIV('.flex-columns-wrap', function() {
                   DIV('#box-a.column.filled-with-id-content');
                   DIV('#box-b.column.filled-with-id-content');
