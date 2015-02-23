@@ -1,6 +1,9 @@
 
 
 
+植字機
+
+
 ### Why Not TeX?
 
 > TeX was one of the earliest typesetting systems, and had to make a lot of design decisions somewhat in a
@@ -11,4 +14,13 @@
 > standard: we use TrueType fonts, not METAFONTs (xetex); PDFs, not DVIs (pstex, pdftex); Unicode, not 7-bit
 > ASCII (xetex again); markup languages and embedded programming languages, not macro languages (xmltex,
 > luatex). At this point, **the parts of TeX that people actually \em{use} are 1) the box-and-glue model, 2)
-> the hyphenation algorithm, and 3) the line-breaking algorithm**.——[Simon Cozens, *SILE versus TeX*](http://www.sile-typesetter.org/what-is/index.html) (emphasis mine)
+> the hyphenation algorithm, and 3) the line-breaking algorithm**. [...]
+> one of the things that TeX can’t do particularly well is typesetting on a grid. [...] There are various
+> hacks to try to make it happen, but they’re all horrible.——[Simon Cozens, *SILE versus TeX*](http://www.sile-typesetter.org/what-is/index.html) (emphasis mine)
+
+### Linkfarm
+
+* http://pollenpub.com/
+* http://www.sile-typesetter.org/
+
+

@@ -1,12 +1,3 @@
-p:before {
-/* ### NB fixed-width space used here; see e.g. https://www.cs.tut.fi/~jkorpela/chars/spaces.html. ### */
-  content: '❡ ';
-  color: #008000;
-}
-p {
-  margin-bottom: 5mm;
-  line-height: 5mm;
-}
 .justify {
   text-align: justify;
 }
@@ -105,16 +96,19 @@ td.separator {
 .doc-table td.free-cell {
   color: rgba(0,0,0,0.1);
 }
+.jzr-babel {
+  font-family: 'BabelStone Han', 'Georgia';
+}
 h1,
 p,
 div {
   font-family: 'cjk', 'cjk-xb', 'jzr', 'Ampersand', 'EB Garamond 12', 'Georgia';
-  font-weight: 200;
+  line-height: 5mm;
 }
-h1 {
-  font-size: 200%;
-  line-height: 100%;
+p {
+  line-height: 5mm;
 }
-.jzr-babel {
-  font-family: 'BabelStone Han', 'Georgia';
+p:before {
+/* ### NB fixed-width space used here; see e.g. https://www.cs.tut.fi/~jkorpela/chars/spaces.html. ### */
+  content: ' ';
 }

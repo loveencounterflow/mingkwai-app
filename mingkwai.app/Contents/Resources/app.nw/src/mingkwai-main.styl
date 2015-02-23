@@ -62,20 +62,6 @@ $fontsize-body            = 3.5mm
 
 // .columns-5:last-child
 
-p:before
-  // content:                '❡ '
-  /* ### NB fixed-width space used here; see e.g. https://www.cs.tut.fi/~jkorpela/chars/spaces.html. ### */
-  content:                '❡ '
-  color:                  green
-
-// p:after
-//   content:                '❡ '
-//   color:                  red
-
-p
-  // border: 1px solid orange
-  margin-bottom:          5mm
-  line-height:            5mm
 
 .justify
   text-align:             justify
@@ -183,19 +169,32 @@ td.separator
 
 // new
 
+.jzr-babel
+  font-family: 'BabelStone Han', 'Georgia'
+
 
 h1, p, div
   // font-family: Helvetica
   // font-family: "Ampersand", Times
   font-family: 'cjk', 'cjk-xb', 'jzr', 'Ampersand', 'EB Garamond 12', 'Georgia'
-  font-weight: 200
+  // font-weight: 200
+  line-height:            5mm
 
-h1
-  font-size:              200%
-  line-height:            100% /* ??? */
 
-.jzr-babel
-  font-family: 'BabelStone Han', 'Georgia'
+p
+  // margin-bottom:          5mm
+  line-height:            5mm
 
+
+
+p:before
+  /* ### NB fixed-width space used here; see e.g. https://www.cs.tut.fi/~jkorpela/chars/spaces.html. ### */
+  content:                ' '
+  // content:                '❡ '
+  // color:                  green
+
+// p:after
+//   content:                '❡ '
+//   color:                  red
 
 

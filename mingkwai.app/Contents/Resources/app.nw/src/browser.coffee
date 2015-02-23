@@ -31,135 +31,7 @@ D                         = require 'pipedreams2'
 D$                        = D.remit.bind D
 CHR                       = require 'coffeenode-chr'
 #...........................................................................................................
-# ### must be loaded by HTML page; see
-# https://github.com/nwjs/nw.js/wiki/Differences-of-JavaScript-contexts ###
 LINESETTER                = require './LINESETTER'
-# ### https://github.com/loveencounterflow/guy-trace ###
-# ( require 'guy-trace' ).limit Infinity
-# require( 'clarify' );
-# require( 'trace' );
-# Error.stackTraceLimit = Infinity;
-
-# MKTS._TRY_balanced_columns = ->
-#   # range.surroundContents ( $ "<span class='hilite'></span>" ).get 0
-#   # range = window.getSelection().getRangeAt 0
-#   # range     = window.getSelection().getRangeAt 0
-#   # { bottom
-#   #   height
-#   #   left
-#   #   right
-#   #   top
-#   #   width } = range.getBoundingClientRect()
-#   last_left         = null
-#   focus_idx         = -1
-#   text_node         = ( $ '#box-a p' ).contents().get 0
-#   debug '©09SY6', 'content element count:', ( $ '#box-a p' ).contents().length
-#   columns           = $ '.flex-columns-wrap .column'
-#   column_count      = columns.length
-#   debug '©AT6uj', "#{column_count} columns"
-#   line_offsets      = []
-#   #.......................................................................................................
-#   ### TAINT must recompute on zoom ###
-#   hilite = ( focus, rectangle ) ->
-#     focus.offset rectangle
-#     focus.width  rectangle[ 'width'  ]
-#     focus.height rectangle[ 'height' ]
-#   #.......................................................................................................
-#   new_range = ( start ) ->
-#     throw new Error "text_node not defined" unless text_node?
-#     R         = document.createRange()
-#     R.setStart  text_node, start
-#     R.setEnd    text_node, start
-#     return R
-#   #.......................................................................................................
-#   new_focus = ->
-#     focus_idx  += +1
-#     R           = $ "<div class='focus' id='focus-#{focus_idx}'></div>"
-#     ( $ 'html' ).append R
-#     return R
-#   #.......................................................................................................
-#   new_line_offset = ->
-#     line_offsets.push R = [ null, null, ]
-#     return R
-#   #.......................................................................................................
-#   is_demo           = yes
-#   range             = new_range 0
-#   focus             = new_focus()
-#   line_offset       = new_line_offset()
-#   line_offset[ 0 ]  = 0
-#   #.......................................................................................................
-#   step ( resume ) =>
-#     #.....................................................................................................
-#     for end_idx in [ 1 .. text_node.length ]
-#       range.setEnd text_node, end_idx
-#       line_offset[ 1 ]  = end_idx
-#       rectangle         = range.getBoundingClientRect()
-#       { left }          = rectangle
-#       #...................................................................................................
-#       if last_left is 0
-#         last_left = left
-#       #...................................................................................................
-#       else if last_left? and left > last_left
-#         corrected_end_idx = end_idx - 1
-#         range.setEnd text_node, corrected_end_idx
-#         line_offset[ 1 ]  = corrected_end_idx
-#         hilite focus, range.getBoundingClientRect()
-#         debug '©pwdqt', end_idx, line_offset, rpr range.toString()
-#         range             = new_range corrected_end_idx
-#         line_offset       = new_line_offset()
-#         line_offset[ 0 ]  = corrected_end_idx
-#         line_offset[ 1 ]  = corrected_end_idx
-#         focus             = new_focus()
-#         rectangle         = range.getBoundingClientRect()
-#         if is_demo then yield after 0.05, resume
-#       #...................................................................................................
-#       last_left = rectangle[ 'left' ]
-#       hilite focus, rectangle
-#     #.....................................................................................................
-#     debug '©OE1Vx', end_idx, line_offset, rpr range.toString()
-#     line_count        = line_offsets.length
-#     column_linecounts = MKTS.get_column_linecounts 'even', line_count, column_count
-#     text              = ( $ text_node ).text()
-#     ### TAINT use jQuery? ###
-#     line_offset_idx   = 0
-#     for column_idx in [ 0 ... column_count ]
-#       column_linecount      = column_linecounts[ column_idx ]
-#       continue if column_linecount < 1
-#       # _text_node            = ( $ '.flex-columns-wrap .column' )
-#       #   .eq column_idx
-#       #   .find 'p'
-#       #   .contents().get 0
-#       _text_node            = ( ( ( $ '.flex-columns-wrap .column' ).eq column_idx ).find 'p' ).contents().get 0
-#       first_idx             = line_offsets[ line_offset_idx                         ][ 0 ]
-#       last_idx              = line_offsets[ line_offset_idx + column_linecount - 1  ][ 1 ]
-#       line_offset_idx      += column_linecount
-#       column_text           = text[ first_idx ... last_idx ]
-#       ### TAINT should mark as 'originally a soft hyphen' in case of later text re-flow? ###
-#       column_text           = column_text.replace /\u00ad$/, '-'
-#       _text_node.nodeValue  = column_text
-#       if is_demo then yield after 0.5, resume
-
-
-
-# PRINTER                   = require 'printer'
-# CND.dir PRINTER
-# help printer[ 'name' ] for printer in PRINTER.getPrinters()
-# help PRINTER.getSupportedPrintFormats()
-
-# # log     = console.log.bind console
-# help 'loaded'
-# window.addEventListener 'DOMContentLoaded', ( event ) ->
-#   help window.$?
-#   help "DOM fully loaded and parsed"
-# window.addEventListener 'load', ( event ) ->
-#   help window.$?
-#   help "everything loaded"
-# document.addEventListener 'visibilityChange', ->
-#   switch document.visibilityState
-#     when 'prerender'
-#       help 'prerender'
-#     when 'visible'
-#       help 'visible'
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS = {}
@@ -168,6 +40,7 @@ MKTS = {}
 app =
   'zoom-level':   0
   'mm-per-px':    50 / 189
+  'jQuery':       $
 
 #-----------------------------------------------------------------------------------------------------------
 on_file_menu_what_you_should_know_C = ->
@@ -455,10 +328,10 @@ win.on 'document-end', ->
     #.......................................................................................................
     ( $ document ).keydown MKTS.on_keydown.bind MKTS
     #.......................................................................................................
-    _demo '#box-a'
+    _demo()
 
 #-----------------------------------------------------------------------------------------------------------
-_demo = ( container_selector ) ->
+_demo = ->
   #.......................................................................................................
   md = """
     # Through the Looking-Glass
@@ -500,153 +373,207 @@ _demo = ( container_selector ) ->
     that dark hall, and wander about among those beds of bright flowers and
     those cool fountains, but she could not even get her head through the
     doorway; 'and even if my head would go through,' thought poor Alice, 'it
-    would be of very little use without my shoulders. **愛麗絲** Oh, how I wish I could
+    would be of very little use without my shoulders. Oh, how I wish I could
     shut up like a telescope! I think I could, if I only knew how to begin.'
     For, you see, so many out-of-the-way things had happened lately,
     that Alice had begun to think that very few things indeed were really
-    impossible."""
-  #.........................................................................................................
-  md = """
-    # Through the Looking-Glass
+    impossible.
 
-    That's very *good* she said, not knowing that she would still have to climb the mountain.
-    xxxxxxxxxx yyyyyyyyyyyy zzzzzzzzzz ppppppppppppppppppppppppppppppppppppppp qqqqqqqqqqqqqqqqqqqqqqqq.
+    'Only mustard isn't a bird,' Alice remarked.
 
-    It's a pleasure."""
+    'Right, as usual,' said the Duchess: 'what a clear way you have of
+    putting things!'
+
+    'It's a mineral, I THINK,' said Alice.
+
+    'Of course it is,' said the Duchess, who seemed ready to agree to
+    everything that Alice said; 'there's a large mustard-mine near here. And
+    the moral of that is--"The more there is of mine, the less there is of
+    yours."'
+
+    'Oh, I know!' exclaimed Alice, who had not attended to this last remark,
+    'it's a vegetable. It doesn't look like one, but it is.'
+
+    'I quite agree with you,' said the Duchess; 'and the moral of that
+    is--"Be what you would seem to be"--or if you'd like it put more
+    simply--"Never imagine yourself not to be otherwise than what it might
+    appear to others that what you were or might have been was not otherwise
+    than what you had been would have appeared to them to be otherwise."'
+
+    'I think I should understand that better,' Alice said very politely, 'if
+    I had it written down: but I can't quite follow it as you say it.'
+
+    'That's nothing to what I could say if I chose,' the Duchess replied, in
+    a pleased tone.
+
+    'Pray don't trouble yourself to say it any longer than that,' said
+    Alice.
+
+    'Oh, don't talk about trouble!' said the Duchess. 'I make you a present
+    of everything I've said as yet.'
+
+    'A cheap sort of present!' thought Alice. 'I'm glad they don't give
+    birthday presents like that!' But she did not venture to say it out
+    loud.
+
+    'Thinking again?' the Duchess asked, with another dig of her sharp
+    little chin.
+
+    'I've a right to think,' said Alice sharply, for she was beginning to
+    feel a little worried.
+
+    'Just about as much right,' said the Duchess, 'as pigs have to fly; and
+    the m--'
+
+    But here, to Alice's great surprise, the Duchess's voice died away, even
+    in the middle of her favourite word 'moral,' and the arm that was linked
+    into hers began to tremble. Alice looked up, and there stood the Queen
+    in front of them, with her arms folded, frowning like a thunderstorm.
+
+    'A fine day, your Majesty!' the Duchess began in a low, weak voice.
+
+    'Now, I give you fair warning,' shouted the Queen, stamping on the
+    ground as she spoke; 'either you or your head must be off, and that in
+    about half no time! Take your choice!'
+
+    The Duchess took her choice, and was gone in a moment.
+
+    'Let's go on with the game,' the Queen said to Alice; and Alice was
+    too much frightened to say a word, but slowly followed her back to the
+    croquet-ground.
+
+    The other guests had taken advantage of the Queen's absence, and were
+    resting in the shade: however, the moment they saw her, they hurried
+    back to the game, the Queen merely remarking that a moment's delay would
+    cost them their lives.
+
+    All the time they were playing the Queen never left off quarrelling with
+    the other players, and shouting 'Off with his head!' or 'Off with her
+    head!' Those whom she sentenced were taken into custody by the soldiers,
+    who of course had to leave off being arches to do this, so that by
+    the end of half an hour or so there were no arches left, and all the
+    players, except the King, the Queen, and Alice, were in custody and
+    under sentence of execution.
+
+    Then the Queen left off, quite out of breath, and said to Alice, 'Have
+    you seen the Mock Turtle yet?'
+
+    'No,' said Alice. 'I don't even know what a Mock Turtle is.'
+
+    'It's the thing Mock Turtle Soup is made from,' said the Queen.
+
+    'I never saw one, or heard of one,' said Alice.
+
+    'Come on, then,' said the Queen, 'and he shall tell you his history,'
+
+    As they walked off together, Alice heard the King say in a low voice,
+    to the company generally, 'You are all pardoned.' 'Come, THAT'S a good
+    thing!' she said to herself, for she had felt quite unhappy at the
+    number of executions the Queen had ordered.
+
+    They very soon came upon a Gryphon, lying fast asleep in the sun.
+    (IF you don't know what a Gryphon is, look at the picture.) 'Up, lazy
+    thing!' said the Queen, 'and take this young lady to see the Mock
+    Turtle, and to hear his history. I must go back and see after some
+    executions I have ordered'; and she walked off, leaving Alice alone with
+    the Gryphon. Alice did not quite like the look of the creature, but on
+    the whole she thought it would be quite as safe to stay with it as to go
+    after that savage Queen: so she waited.
+
+    The Gryphon sat up and rubbed its eyes: then it watched the Queen till
+    she was out of sight: then it chuckled. 'What fun!' said the Gryphon,
+    half to itself, half to Alice.
+
+    'What IS the fun?' said Alice.
+
+    'Why, SHE,' said the Gryphon. 'It's all her fancy, that: they never
+    executes nobody, you know. Come on!'
+
+    'Everybody says "come on!" here,' thought Alice, as she went slowly
+    after it: 'I never was so ordered about in all my life, never!'
+
+    They had not gone far before they saw the Mock Turtle in the distance,
+    sitting sad and lonely on a little ledge of rock, and, as they came
+    nearer, Alice could hear him sighing as if his heart would break. She
+    pitied him deeply. 'What is his sorrow?' she asked the Gryphon, and the
+    Gryphon answered, very nearly in the same words as before, 'It's all his
+    fancy, that: he hasn't got no sorrow, you know. Come on!'
+
+    So they went up to the Mock Turtle, who looked at them with large eyes
+    full of tears, but said nothing.
+
+    'This here young lady,' said the Gryphon, 'she wants for to know your
+    history, she do.'
+
+    'I'll tell it her,' said the Mock Turtle in a deep, hollow tone: 'sit
+    down, both of you, and don't speak a word till I've finished.'
+
+    So they sat down, and nobody spoke for some minutes. Alice thought to
+    herself, 'I don't see how he can EVEN finish, if he doesn't begin.' But
+    she waited patiently.
+
+    'Once,' said the Mock Turtle at last, with a deep sigh, 'I was a real
+    Turtle.'
+
+    These words were followed by a very long silence, broken only by an
+    occasional exclamation of 'Hjckrrh!' from the Gryphon, and the constant
+    heavy sobbing of the Mock Turtle. Alice was very nearly getting up and
+    saying, 'Thank you, sir, for your interesting story,' but she could
+    not help thinking there MUST be more to come, so she sat still and said
+    nothing.
+
+    'When we were little,' the Mock Turtle went on at last, more calmly,
+    though still sobbing a little now and then, 'we went to school in the
+    sea. The master was an old Turtle--we used to call him Tortoise--'
+
+    'Why did you call him Tortoise, if he wasn't one?' Alice asked.
+
+    'We called him Tortoise because he taught us,' said the Mock Turtle
+    angrily: 'really you are very dull!'
+
+    'You ought to be ashamed of yourself for asking such a simple question,'
+    added the Gryphon; and then they both sat silent and looked at poor
+    Alice, who felt ready to sink into the earth. At last the Gryphon said
+    to the Mock Turtle, 'Drive on, old fellow! Don't be all day about it!'
+    and he went on in these words:
+
+    'Yes, we went to school in the sea, though you mayn't believe it--'
+
+    'I never said I didn't!' interrupted Alice.
+
+    'You did,' said the Mock Turtle.
+
+    'Hold your tongue!' added the Gryphon, before Alice could speak again.
+    The Mock Turtle went on.
+
+    'We had the best of educations--in fact, we went to school every day--'
+
+    'I'VE been to a day-school, too,' said Alice; 'you needn't be so proud
+    as all that.'
+
+    'With extras?' asked the Mock Turtle a little anxiously.
+
+    'Yes,' said Alice, 'we learned French and music.'
+
+    'And washing?' said the Mock Turtle.
+
+    'Certainly not!' said Alice indignantly.
+
+    'Ah! then yours wasn't a really good school,' said the Mock Turtle in
+    a tone of great relief. 'Now at OURS they had at the end of the bill,
+    "French, music, AND WASHING--extra."'
+
+    """
+  # #.........................................................................................................
+  # md = """
+  #   # Through the Looking-Glass
+
+  #   That's very *good* she said, not knowing that she would still have to climb the mountain.
+  #   xxxxxxxxxx yyyyyyyyyyyy zzzzzzzzzz ppppppppppppppppppppppppppppppppppppppp qqqqqqqqqqqqqqqqqqqqqqqq.
+
+  #   It's a pleasure."""
   #.........................................................................................................
-  container       = $ container_selector
-  # $end            = Symbol '$end'
-  #.........................................................................................................
-  has_hanging_margin = ( hotml ) ->
-    # debug '©mnhYJ',  ( CND.last_of ( CND.last_of hotml )[ 1 ] ), ( CND.last_of ( CND.last_of hotml )[ 1 ] ) in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ]
-    last_chr = CND.last_of ( CND.last_of hotml )[ 1 ].replace /\s+$/, ''
-    return last_chr in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ]
-  #.........................................................................................................
-  get_class = ( is_first, is_last ) ->
-    if is_first
-      return 'is-lone' if is_last
-      return 'is-first'
-    return 'is-last' if is_last
-    return 'is-middle'
-  #.........................................................................................................
-  get_line = ( hotml, is_first, is_last ) ->
-    R = $ D.HOTMETAL.as_html hotml
-    R.addClass get_class is_first, is_last
-    R.addClass ' hangs-right-05ex' if has_hanging_margin hotml
-    return R
-  #.........................................................................................................
-  test_line = ( hotml, is_first, is_last ) =>
-    ### Must return whether HTML fits into one line. ###
-    line            = get_line hotml, is_first, is_last
-    left_cork       = $ "<span class='cork'></span>"
-    right_cork      = $ "<span class='cork'></span>"
-    line.prepend     left_cork
-    line.append      right_cork
-    container.append  line
-    R               = left_cork.offset()[ 'top' ] == right_cork.offset()[ 'top' ]
-    # debug '©YPs8M', left_cork.offset()[ 'top' ], right_cork.offset()[ 'top' ], line.outerHTML()
-    # debug '©YPs8M', line.outerHTML()
-    line.detach()
-    return R
-  #.........................................................................................................
-  set_line = ( hotml, is_first, is_last ) =>
-    ### Inserts text line into document ###
-    #.......................................................................................................
-    for chunk, chunk_idx in hotml
-      [ open_tags, text, close_tags, ] = chunk
-      continue if text[ 0 ] is '<'
-      is_last_chunk = chunk_idx >= hotml.length - 1
-      text          = text.replace /^(\s+)/, """<span class='mkts-lws'>$1</span>""" unless chunk_idx is 0
-      text          = text.replace /(\s+)$/, """<span class='mkts-lws'>$1</span>""" unless is_last_chunk
-      ### TAINT not a good implementation ###
-      if ( text.indexOf """<span class='mkts-lws'>""" ) is -1
-        text = """<span class='mkts-material'>#{text}</span>"""
-      chunk[ 1 ]    = text
-    #.......................................................................................................
-    line            = get_line hotml, is_first, is_last
-    container.append  line
-    #.......................................................................................................
-    ###
-    http://stackoverflow.com/a/16072668/256361:
-    ( ( lws.get idx ).getBoundingClientRect().width for idx in [ 0 .. lws.length - 1 ] )
-    http://stackoverflow.com/a/16072449/256361:
-    window.getComputedStyle(element).width
-    ###
-    #.......................................................................................................
-    line_width_px     = line.width()
-    lws               = line.find '.mkts-lws'
-    debug()
-    debug '©RwY5D', line.text()
-    if lws.length > 0
-      lws_width_px      = 0
-      lws_width_px     += ( lws.eq idx ).width() for idx in [ 0 .. lws.length - 1 ]
-      lws_width_px_avg  = lws_width_px / lws.length
-      avg_lws_ratio_pc  = a = lws_width_px_avg / line_width_px * 100
-      color             = if a < 10 then 'green' else ( if a < 20 then 'orange' else 'red' )
-      # lws_width_mm      = lws_width_px  * app[ 'mm-per-px' ]
-      # line_width_mm     = line.width()  * app[ 'mm-per-px' ]
-      # debug '©sHu8j', ( ( lws.eq idx ).width() for idx in [ 0 .. lws.length - 1 ] )
-      # debug '©VTLl9', ( ( line_width_mm ).toFixed 1 ), ( ( lws_width_mm ).toFixed 1 )
-      # debug 'Ratio of all     inter-word spaces to column width:', ( ( lws_width_px     / line_width_px * 100 ).toFixed 1 ) + '% '
-      debug 'Ratio of average inter word spaces to column width:', ( avg_lws_ratio_pc.toFixed 1 ) + '% ', CND[ color ] '█'
-    else
-      material          = line.find '.mkts-material'
-      if material.length is 0
-        warn "no LWS, no material found for line #{rpr line.outerHTML()}"
-      else
-        material_width_px = material.width()
-        # debug '©zOqsw', material_width_px
-        material_ratio_pc = material_width_px / line_width_px * 100 - 100
-        a                 = Math.abs material_ratio_pc
-        color             = if a < 10 then 'green' else ( if a < 20 then 'orange' else 'red' )
-        debug 'Ratio of material                  to column width:', ( material_ratio_pc.toFixed 1 ) + '% ', CND[ color ] '█'
-    #.......................................................................................................
-    return null
-  #---------------------------------------------------------------------------------------------------------
-  input = D.create_throughstream()
-  #.........................................................................................................
-  input
-    .pipe D.MD.$as_html()
-    .pipe D.TYPO.$quotes()
-    .pipe D.TYPO.$dashes()
-    .pipe D.HTML.$parse()
-    .pipe D.HTML.$slice_toplevel_tags()
-    # #.......................................................................................................
-    # .pipe D$ ( data, send, end ) =>
-    #   if data?
-    #     urge data
-    #     send data
-    #   if end?
-    #     warn 'ended'
-    #     end()
-    #.......................................................................................................
-    .pipe D$ ( block_hotml, send ) =>
-      # urge D.HOTMETAL.as_html block_hotml
-      send block_hotml
-    #.......................................................................................................
-    .pipe do =>
-      line_count = 0
-      # step ( resume ) =>
-      # yield MKTS.wait resume
-      return D$ ( block_hotml, send, end ) =>
-        if block_hotml?
-          lines       = D.HOTMETAL.break_lines block_hotml, test_line, set_line
-          line_count += lines.length
-          send block_hotml
-        if end?
-          column_linecounts = D.HOTMETAL.get_column_linecounts 'even', line_count, 3
-          help "line count: #{line_count}"
-          help "column line counts: #{column_linecounts}"
-          warn 'ended'
-  #.........................................................................................................
-  input.write md
-  input.end()
-  # input.write $end
-  # immediately => input.end()
-  # hyphenate   = D.new_hyphenate()
-  # debug '©u2NsL', hyphenate 'illustrative'
-  # debug '©u2NsL', hyphenate 'leading'
-  #.........................................................................................................
+  LINESETTER.demo app, md
   return null
 
 
