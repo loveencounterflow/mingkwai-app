@@ -10,5 +10,5 @@
 > involved removing his early decisions and replacing them with technologies which have become the industry
 > standard: we use TrueType fonts, not METAFONTs (xetex); PDFs, not DVIs (pstex, pdftex); Unicode, not 7-bit
 > ASCII (xetex again); markup languages and embedded programming languages, not macro languages (xmltex,
-> luatex). At this point, the parts of TeX that people actually \em{use} are 1) the box-and-glue model, 2)
-> the hyphenation algorithm, and 3) the line-breaking algorithm.——[Simon Cozens, *SILE versus TeX*](http://www.sile-typesetter.org/what-is/index.html)
+> luatex). At this point, **the parts of TeX that people actually \em{use} are 1) the box-and-glue model, 2)
+> the hyphenation algorithm, and 3) the line-breaking algorithm**.——[Simon Cozens, *SILE versus TeX*](http://www.sile-typesetter.org/what-is/index.html) (emphasis mine)
