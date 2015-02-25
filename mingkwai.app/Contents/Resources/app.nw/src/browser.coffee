@@ -41,6 +41,8 @@ app =
   'zoom-level':   0
   'mm-per-px':    50 / 189
   'jQuery':       $
+  'MKTS':         MKTS
+  'window':       window
 
 #-----------------------------------------------------------------------------------------------------------
 on_file_menu_what_you_should_know_C = ->
@@ -153,7 +155,7 @@ MKTS.zoom_to = ( me, level ) ->
   base_zoom_level = -0.15
   win.zoomLevel   = level ? base_zoom_level
   zoom_percent    = ( win.zoomLevel - base_zoom_level ) * 1.2 * 100
-  echo "zoomed to level #{win.zoomLevel} (#{zoom_percent.toFixed 0}%)"
+  # echo "zoomed to level #{win.zoomLevel} (#{zoom_percent.toFixed 0}%)"
   return win.zoomLevel
 
 
@@ -166,9 +168,9 @@ MKTS.zoom = ( me, delta ) ->
   else
     win.zoomLevel = base_zoom_level
   zoom_percent = ( win.zoomLevel - base_zoom_level ) * 1.2 * 100
-  echo "zoomed to level #{win.zoomLevel} (#{zoom_percent.toFixed 0}%)"
-  debug '©zVBdI', ( $ '.flex-columns-wrap' ).height()
-  debug '©zVBdI', ( $ '.flex-columns-wrap' ).height() * me[ 'mm-per-px' ], 'mm'
+  # echo "zoomed to level #{win.zoomLevel} (#{zoom_percent.toFixed 0}%)"
+  # debug '©zVBdI', ( $ '.flex-columns-wrap' ).height()
+  # debug '©zVBdI', ( $ '.flex-columns-wrap' ).height() * me[ 'mm-per-px' ], 'mm'
   return win.zoomLevel
 
 #-----------------------------------------------------------------------------------------------------------
@@ -209,85 +211,6 @@ MKTS._capture = ( win, handler ) ->
 MKTS.foo = ( event ) ->
   debug '©9HvgT', 'xxxx'
 
-### TAINT should live in its own module ###
-### TAINT cosider using e.g. https://www.npmjs.com/package/combokeys ###
-#-----------------------------------------------------------------------------------------------------------
-keyboard = new Map()
-keyboard.set 187, 'plus'
-keyboard.set 189, 'minus'
-keyboard.set 221, 'asterisk'
-keyboard.set 48,  '0'
-keyboard.set 80,  'p'
-keyboard.set 81,  'q'
-keyboard.set 82,  'r'
-keyboard.set 83,  's'
-keyboard.set 89,  'y'
-keyboard.set 37,  'left'
-keyboard.set 39,  'right'
-
-#-----------------------------------------------------------------------------------------------------------
-bindings =
-  'meta+plus':            -> MKTS.zoom app, +1
-  'meta+shift+asterisk':  -> MKTS.zoom app, +0.1
-  'meta+0':               -> MKTS.zoom app, null
-  'meta+minus':           -> MKTS.zoom app, -1
-  'meta+shift+minus':     -> MKTS.zoom app, -0.1
-  'meta+p':               -> MKTS.print()
-  # 'meta+r':               -> MKTS.reload()
-  # 'meta+q':               -> MKTS.take_screenshot()
-  'meta+left':            -> MKTS.scroll_to_top()
-  'meta+right':           -> MKTS.scroll_to_bottom()
-  #.........................................................................................................
-  'meta+y': ->
-
-###
-
-foo <b><i>is it</i> really</b> baz
-
-'foo'
-'foo', ' '
-'foo', ' ', <b><i>, 'is', ⬇, ⬇
-'foo', ' ', <b><i>, 'is', ' ', ⬇, ⬇
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ⬇
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ' ', ⬇
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ' ', 'really', ⬇
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ' ', 'really', ⬇, ' '
-'foo', ' ', <b><i>, 'is', ' ', 'it', ⬇, ' ', 'really', ⬇, ' ', 'baz'
-
-'foo'
-'foo '
-'foo <b><i>is</i></b>'
-'foo <b><i>is </i></b>'
-'foo <b><i>is it</i></b>'
-'foo <b><i>is it</i> </b>'
-'foo <b><i>is it</i> really</b>'
-'foo <b><i>is it</i> really</b> '
-'foo <b><i>is it</i> really</b> baz'
-
-
-###
-
-
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.on_keydown = ( event ) ->
-  code      = event.keyCode ? event.which
-  key_name  = []
-  #.........................................................................................................
-  key_name.push 'alt'   if event.altKey
-  key_name.push 'ctrl'  if event.ctrlKey
-  key_name.push 'meta'  if event.metaKey
-  key_name.push 'shift' if event.shiftKey
-  key_name.push ( keyboard.get code ) ? code
-  key_name  = key_name.join '+'
-  #.........................................................................................................
-  echo ( rpr key_name ), code
-  if ( binding = bindings[ key_name ] )?
-    binding()
-    return false
-  #.........................................................................................................
-  else
-    return true
 
 # # keyboard.on 'A', ( event, keys, combo ) -> help '>>>', 'A', event, keys, combo
 # keyboard.on 'super + a', ( event, keys, combo ) ->
@@ -302,33 +225,6 @@ MKTS.on_keydown = ( event ) ->
 # keyboard.on  'super + dash',  -> MKTS.zoom app, 0.75
 # keyboard.on 'rsuper + dash',  -> MKTS.zoom app, 0.75
 
-
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
-###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
-###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
-###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
-###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-
-
-#-----------------------------------------------------------------------------------------------------------
-win.on 'document-end', ->
-  step ( resume ) ->
-    # MKTS.zoom_to app, -2
-    # yield MKTS.wait resume
-    # debug '©wVnkq', 'paper ', ( $ '.paper' ).offset(), "#{( $ '.paper' ).outerWidth()} x #{( $ '.paper' ).outerHeight()}"
-    # debug '©wVnkq', 'page  ', ( $ '.page' ).offset(), "#{( $ '.page' ).outerWidth()} x #{( $ '.page' ).outerHeight()}"
-    # MKTS.zoom app
-    # MKTS.maximize app
-    MKTS.zoom_to app, 1.85
-    yield step.wrap ( $ 'document' ).ready, resume
-    help "document ready"
-    #.......................................................................................................
-    ( $ document ).keydown MKTS.on_keydown.bind MKTS
-    #.......................................................................................................
-    _demo()
 
 #-----------------------------------------------------------------------------------------------------------
 _demo = ->
@@ -582,6 +478,82 @@ _demo = ->
 
 
 
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+
+### TAINT should live in its own module ###
+### TAINT cosider using e.g. https://www.npmjs.com/package/combokeys ###
+#-----------------------------------------------------------------------------------------------------------
+keyboard = new Map()
+keyboard.set 187, 'plus'
+keyboard.set 189, 'minus'
+keyboard.set 221, 'asterisk'
+keyboard.set 48,  '0'
+keyboard.set 80,  'p'
+keyboard.set 81,  'q'
+keyboard.set 82,  'r'
+keyboard.set 83,  's'
+keyboard.set 89,  'y'
+keyboard.set 37,  'left'
+keyboard.set 39,  'right'
+
+#-----------------------------------------------------------------------------------------------------------
+bindings =
+  'meta+plus':            -> MKTS.zoom app, +1
+  'meta+shift+asterisk':  -> MKTS.zoom app, +0.1
+  'meta+0':               -> MKTS.zoom app, null
+  'meta+minus':           -> MKTS.zoom app, -1
+  'meta+shift+minus':     -> MKTS.zoom app, -0.1
+  'meta+p':               -> MKTS.print()
+  # 'meta+r':               -> MKTS.reload()
+  # 'meta+q':               -> MKTS.take_screenshot()
+  'meta+left':            -> MKTS.scroll_to_top()
+  'meta+right':           -> MKTS.scroll_to_bottom()
+  #.........................................................................................................
+  'meta+y':               -> _demo()
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.on_keydown = ( event ) ->
+  code      = event.keyCode ? event.which
+  key_name  = []
+  #.........................................................................................................
+  key_name.push 'alt'   if event.altKey
+  key_name.push 'ctrl'  if event.ctrlKey
+  key_name.push 'meta'  if event.metaKey
+  key_name.push 'shift' if event.shiftKey
+  key_name.push ( keyboard.get code ) ? code
+  key_name  = key_name.join '+'
+  #.........................................................................................................
+  echo ( rpr key_name ), code
+  if ( binding = bindings[ key_name ] )?
+    binding()
+    return false
+  #.........................................................................................................
+  else
+    return true
+
+#-----------------------------------------------------------------------------------------------------------
+win.on 'document-end', ->
+  step ( resume ) ->
+    # MKTS.zoom_to app, -2
+    # yield MKTS.wait resume
+    # debug '©wVnkq', 'paper ', ( $ '.paper' ).offset(), "#{( $ '.paper' ).outerWidth()} x #{( $ '.paper' ).outerHeight()}"
+    # debug '©wVnkq', 'page  ', ( $ '.page' ).offset(), "#{( $ '.page' ).outerWidth()} x #{( $ '.page' ).outerHeight()}"
+    # MKTS.zoom app
+    MKTS.maximize app
+    MKTS.zoom_to app, 1.85
+    yield step.wrap ( $ 'document' ).ready, resume
+    help "document ready"
+    #.......................................................................................................
+    ( $ document ).keydown MKTS.on_keydown.bind MKTS
+  #.........................................................................................................
+  return null
 
 
 

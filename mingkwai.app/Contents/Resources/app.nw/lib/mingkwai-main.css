@@ -8,12 +8,6 @@
 #content {
   flow-into: article;
 }
-/* ### TAINT this should be calculated, i.o.w. the style name should declare the content origin ### */
-.filled-with-id-content {
-  flow-from: article;
-  width: 31%;
-  height: 100%;
-}
 .clear-float {
   clear: both;
 }

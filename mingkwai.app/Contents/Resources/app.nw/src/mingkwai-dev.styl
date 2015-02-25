@@ -55,22 +55,22 @@
   /* ------------------------------------------------------------------------------------------------------
    COLUMNS */
 
-//  .focus
-//    // outline:                1px solid rgba( 200, 0, 0, 0.5 )
-//    // background-color:       rgba( 200, 0, 0, 0.25 )
-//    background:             none
-//    /* Allow click-through;
-//      thx to http://stackoverflow.com/a/4839672/256361 */
-//    pointer-events:         none
-//    width:                  10px
-//    height:                 10px
-//    z-index:                1
+  //  .focus
+  //    // outline:                1px solid rgba( 200, 0, 0, 0.5 )
+  //    // background-color:       rgba( 200, 0, 0, 0.25 )
+  //    background:             none
+  //    /* Allow click-through;
+  //      thx to http://stackoverflow.com/a/4839672/256361 */
+  //    pointer-events:         none
+  //    width:                  10px
+  //    height:                 10px
+  //    z-index:                1
 
   #focus
     background-color:       rgba( 100, 0, 0, 0.25 )
 
-  .column
-    background-color:       #dee1dd
+  // .column
+  //   background-color:       #dee1dd
 
   .cork
     display:                inline-block
@@ -96,4 +96,17 @@
   #box-c
     outline:                1px solid blue
 
+  .grid
+    opacity:                0.25
+    opacity:                1
+    // z-index:                1
 
+  .gridline
+    position:               absolute
+    border-top:             0.75px dotted red
+
+  .gridline.horizontal
+    width:                  $paper-width
+    height:                 1px
+
+// .baseline-grid

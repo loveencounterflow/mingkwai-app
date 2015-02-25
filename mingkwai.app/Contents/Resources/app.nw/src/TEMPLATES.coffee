@@ -193,20 +193,24 @@ for name_ of TEACUP
         DIV '#mkts-top'
         # DIV '#focus'
         DIV '.paper', =>
+          #.................................................................................................
+          # #### pixel grid ###
+          # DIV '.grid.pixel-grid', =>
+          #   for idx in [ 1 .. 100 ]
+          #     y = idx * 10
+          #     DIV '.gridline.horizontal', { style: "top:#{y}px;", }
+          #.................................................................................................
+          #### baseline grid ###
+          DIV '.grid.baseline-grid', =>
+            for idx in [ 1 .. 53 ]
+              ### get offset from CSS ###
+              ### TAINT should be 5 ###
+              y = 14 + idx * 4.9
+              DIV '.gridline.horizontal', { style: "top:#{y}mm;", }
+          #.................................................................................................
           DIV '.mingkwai-dev-page-marker', =>
           DIV '.page', =>
-            # DIV '.ruler', => ( DIV '.ruler-block' for idx in [ 0 .. 20 ] )
-            # # DIV '.grid.grid-1cm'
-            # # DIV '.grid.baseline-grid'
             # H1 "眀快排字机"
-            # DIV """here & there"""
-            # # DIV '#mytext.columns-5.justify', => ( ( P => RAW paragraph ) for paragraph in _XXX_paragraphs )
-            # # DIV '.circle', """Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-            # # tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            # # exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-            # # reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-            # # occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."""
-            # DIV '.clear-float'
             # DIV =>
             #   SPAN => '〇'
             #   SPAN '.jzr-babel', '〇'
@@ -223,7 +227,9 @@ for name_ of TEACUP
             #.............................................................................................
             DIV '.flex-columns-wrap', =>
               DIV '#box-a.column.filled-with-id-content'
+              DIV '.column-gap'
               DIV '#box-b.column.filled-with-id-content'
+              DIV '.column-gap'
               DIV '#box-c.column.filled-with-id-content'
                 # P '.is-first', contenteditable: 'true'
                 # P '.is-last', contenteditable: 'true'

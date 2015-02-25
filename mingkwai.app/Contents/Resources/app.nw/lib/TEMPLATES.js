@@ -92,11 +92,28 @@
           return BODY(function() {
             DIV('#mkts-top');
             DIV('.paper', function() {
+              DIV('.grid.baseline-grid', function() {
+                var idx, y, _i, _results;
+                _results = [];
+                for (idx = _i = 1; _i <= 53; idx = ++_i) {
+
+                  /* get offset from CSS */
+
+                  /* TAINT should be 5 */
+                  y = 14 + idx * 4.9;
+                  _results.push(DIV('.gridline.horizontal', {
+                    style: "top:" + y + "mm;"
+                  }));
+                }
+                return _results;
+              });
               DIV('.mingkwai-dev-page-marker', function() {});
               return DIV('.page', function() {
                 return DIV('.flex-columns-wrap', function() {
                   DIV('#box-a.column.filled-with-id-content');
+                  DIV('.column-gap');
                   DIV('#box-b.column.filled-with-id-content');
+                  DIV('.column-gap');
                   return DIV('#box-c.column.filled-with-id-content');
                 });
               });
