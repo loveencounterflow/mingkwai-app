@@ -71,7 +71,7 @@ GAP         = new_tag ( P... ) -> TAG 'gap',      P...
         if yes
           DIV '#mkts-top'
           ARTBOARD =>
-            for page_nr in [ 1 .. 3 ]
+            for page_nr in [ 1 .. 32 ]
               PAPER =>
                 PAGE =>
                   GALLEY =>

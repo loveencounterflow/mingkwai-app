@@ -91,7 +91,8 @@ HOTMETAL                  = D.HOTMETAL
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@demo = ( app, md ) ->
+@demo = ( app, md, handler ) ->
+  debug '©o00Is', CND.type_of handler
   #.........................................................................................................
   jQuery              = app[ 'jQuery' ]
   MKTS                = app[ 'MKTS'   ]
@@ -305,7 +306,8 @@ HOTMETAL                  = D.HOTMETAL
             warn 'ended'
             t1 = 1 * new Date()
             dt = t1 - t0
-            debug '©h9n6j', dt
+            help "demo took #{ƒ dt / 1000}s"
+            handler null
             # debug '©h9n6j', dt / saved_lines.length
             # first_column            = columns.eq 0
             # { top: column_top, }    = first_column.offset()

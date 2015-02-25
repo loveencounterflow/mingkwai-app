@@ -214,8 +214,11 @@ MKTS._capture = ( win, handler ) ->
   win.capturePage ( ( img ) => handler null, img ), format: 'png', datatype: 'buffer'
 
 #-----------------------------------------------------------------------------------------------------------
-MKTS.demo = ->
-  LINESETTER.demo app, require './demo-text'
+MKTS.demo = ( me ) ->
+  md = require './demo-text'
+  MKTS.zoom me, 2
+  LINESETTER.demo me, md, ( error ) =>
+    help "MKTS.demo ok"
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -274,6 +277,7 @@ MKTS.open_print_preview = ( me ) ->
   @switch_to_print_view me
   # MKTS.open_print_dialog()
   #.........................................................................................................
+  ### thx to http://apple.stackexchange.com/a/36947/59895 for the script ###
   script = """
   tell application "mingkwai"
     activate

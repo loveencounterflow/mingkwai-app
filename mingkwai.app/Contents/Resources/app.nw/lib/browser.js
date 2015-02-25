@@ -253,8 +253,15 @@
     });
   };
 
-  MKTS.demo = function() {
-    LINESETTER.demo(app, require('./demo-text'));
+  MKTS.demo = function(me) {
+    var md;
+    md = require('./demo-text');
+    MKTS.zoom(me, 2);
+    LINESETTER.demo(me, md, (function(_this) {
+      return function(error) {
+        return help("MKTS.demo ok");
+      };
+    })(this));
     return null;
   };
 
@@ -330,6 +337,8 @@
   MKTS.open_print_preview = function(me) {
     var script;
     this.switch_to_print_view(me);
+
+    /* thx to http://apple.stackexchange.com/a/36947/59895 for the script */
     script = "tell application \"mingkwai\"\n  activate\n  tell application \"System Events\" to keystroke \"p\" using {shift down, command down}\n  delay 1\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 49\n  tell application \"System Events\" to key code 125\n  tell application \"System Events\" to key code 49\nend tell";
     return APPLESCRIPT.execString(script, (function(_this) {
       return function(error) {

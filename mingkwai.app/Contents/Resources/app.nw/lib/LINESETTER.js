@@ -106,8 +106,9 @@
     })(this);
   };
 
-  this.demo = function(app, md) {
+  this.demo = function(app, md, handler) {
     var BD, MKTS, available_height, available_width, available_width_mm, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, last_line_height, line_count, live, mm_from_px, new_line_entry, page, seen_lines, set_lines, t0, test_line, window, ƒ;
+    debug('©o00Is', CND.type_of(handler));
     jQuery = app['jQuery'];
     MKTS = app['MKTS'];
     window = app['window'];
@@ -321,7 +322,8 @@
               warn('ended');
               t1 = 1 * new Date();
               dt = t1 - t0;
-              return debug('©h9n6j', dt);
+              help("demo took " + (ƒ(dt / 1000)) + "s");
+              return handler(null);
             }
           });
         });
