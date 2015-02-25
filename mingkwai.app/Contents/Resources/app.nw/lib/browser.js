@@ -57,11 +57,13 @@
   MKTS = {};
 
   app = {
+    '%memo': {},
     'zoom-level': 0,
     'mm-per-px': 100 / 377.94791,
     'jQuery': $,
     'MKTS': MKTS,
-    'window': window
+    'window': window,
+    'view-mode': 'dev'
   };
 
   on_file_menu_what_you_should_know_C = function() {
@@ -69,7 +71,7 @@
   };
 
   build_menu = function() {
-    var edit_menu_item, file_menu, file_menu_entry, help_menu, help_menu_entry, win_menu;
+    var edit_menu_item, file_menu, file_menu_entry, help_menu, help_menu_entry, view_menu, view_menu_entry, win_menu;
     help_menu = new NW.Menu();
     help_menu.append(new NW.MenuItem({
       label: 'about 眀快排字机'
@@ -133,11 +135,25 @@
       label: 'File',
       'submenu': file_menu
     });
+    view_menu = new NW.Menu();
+    view_menu.append(new NW.MenuItem({
+      label: 'Toggle Dev / Print View',
+      key: 't',
+      modifiers: 'cmd',
+      click: function() {
+        return MKTS.toggle_view(app);
+      }
+    }));
+    view_menu_entry = new NW.MenuItem({
+      label: 'View',
+      'submenu': view_menu
+    });
     win_menu = new NW.Menu({
       type: 'menubar'
     });
     win_menu.createMacBuiltin('眀快排字机');
     win_menu.insert(file_menu_entry, 1);
+    win_menu.insert(view_menu_entry, 3);
     win_menu.append(help_menu_entry);
     win.menu = win_menu;
     edit_menu_item = win.menu.items[2];
@@ -242,43 +258,86 @@
     return null;
   };
 
-  MKTS._detach_artboard = function() {
+  MKTS._detach_artboard = function(me) {
+
+    /* TAINT `#mkts-top`, `#mkts-bottom` not honored; are they needed? */
     var artboard, body, contents;
+    if (me['view-mode'] === 'print') {
+      return;
+    }
     body = $('body');
     artboard = $('artboard');
     contents = artboard.contents();
     artboard.detach();
     body.append(contents);
-    return {
+    me['%memo']['view-mode'] = {
       contents: contents,
       artboard: artboard,
       body: body
     };
+    return null;
   };
 
-  MKTS._reattach_artboard = function(memo) {
-    var artboard, body, contents;
-    contents = memo.contents, artboard = memo.artboard, body = memo.body;
+  MKTS._reattach_artboard = function(me) {
+    var artboard, body, contents, _ref;
+    if (me['view-mode'] === 'dev') {
+      return;
+    }
+    _ref = me['%memo']['view-mode'], contents = _ref.contents, artboard = _ref.artboard, body = _ref.body;
+    delete me['%memo']['view-mode'];
     contents.detach();
     artboard.append(contents);
-    return body.append(artboard);
+    body.append(artboard);
+    return null;
+  };
+
+  MKTS.switch_to_print_view = function(me) {
+    help("MKTS.switch_to_print_view");
+    if (me['view-mode'] === 'print') {
+      return;
+    }
+    this._detach_artboard(me);
+    me['view-mode'] = 'print';
+    return null;
+  };
+
+  MKTS.switch_to_dev_view = function(me) {
+    help("MKTS.switch_to_dev_view");
+    if (me['view-mode'] === 'dev') {
+      return;
+    }
+    this._reattach_artboard(me);
+    me['view-mode'] = 'dev';
+    return null;
+  };
+
+  MKTS.toggle_view = function(me) {
+    var view_mode;
+    switch (view_mode = me['view-mode']) {
+      case 'print':
+        return this.switch_to_dev_view(me);
+      case 'dev':
+        return this.switch_to_print_view(me);
+      default:
+        throw new Error("unknown view mode " + (rpr(view_mode)));
+    }
   };
 
   MKTS.open_print_dialog = function(me) {
-    return print();
+    return window.print();
   };
 
   MKTS.open_print_preview = function(me) {
-    var memo, script;
-    memo = this._detach_artboard();
+    var script;
+    this.switch_to_print_view(me);
     script = "tell application \"mingkwai\"\n  activate\n  tell application \"System Events\" to keystroke \"p\" using {shift down, command down}\n  delay 1\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 48 using shift down\n  tell application \"System Events\" to key code 49\n  tell application \"System Events\" to key code 125\n  tell application \"System Events\" to key code 49\nend tell";
     return APPLESCRIPT.execString(script, (function(_this) {
-      return function(error, result) {
+      return function(error) {
         if (error != null) {
           throw error;
         }
-        debug('©np14r', result);
-        return _this._reattach_artboard(memo);
+        _this.switch_to_dev_view(me);
+        return help("MKTS.open_print_preview: ok");
       };
     })(this));
   };

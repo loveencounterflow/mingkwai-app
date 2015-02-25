@@ -39,12 +39,14 @@ MKTS = {}
 
 #-----------------------------------------------------------------------------------------------------------
 app =
+  '%memo':        {}
   'zoom-level':   0
   # 'mm-per-px':    50 / 189
   'mm-per-px':    100 / 377.94791
   'jQuery':       $
   'MKTS':         MKTS
   'window':       window
+  'view-mode':    'dev'
 
 #-----------------------------------------------------------------------------------------------------------
 on_file_menu_what_you_should_know_C = ->
@@ -68,10 +70,15 @@ build_menu = ->
   file_menu.append new NW.MenuItem label: 'Open Print Preview...',  key: 'p', modifiers: 'cmd',       click: -> MKTS.open_print_preview app
   file_menu_entry = new NW.MenuItem label: 'File', 'submenu': file_menu
   #.........................................................................................................
+  view_menu = new NW.Menu()
+  view_menu.append new NW.MenuItem label: 'Toggle Dev / Print View', key: 't', modifiers: 'cmd',      click: -> MKTS.toggle_view app
+  view_menu_entry = new NW.MenuItem label: 'View', 'submenu': view_menu
+  #.........................................................................................................
   win_menu  = new NW.Menu type: 'menubar'
   # win_menu.append new NW.MenuItem label: '眀快排字机', 'submenu': app_menu
   win_menu.createMacBuiltin '眀快排字机'
   win_menu.insert file_menu_entry, 1
+  win_menu.insert view_menu_entry, 3
   win_menu.append help_menu_entry
   win.menu  = win_menu
   # win_menu.items.push new NW.MenuItem label: 'Help', 'submenu': help_menu
@@ -212,30 +219,59 @@ MKTS.demo = ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-MKTS._detach_artboard = ->
+MKTS._detach_artboard = ( me ) ->
+  ### TAINT `#mkts-top`, `#mkts-bottom` not honored; are they needed? ###
+  return if me[ 'view-mode' ] is 'print'
   body      = $ 'body'
   artboard  = $ 'artboard'
   contents  = artboard.contents()
   artboard.detach()
   body.append contents
-  return { contents, artboard, body, }
+  me[ '%memo' ][ 'view-mode' ] = { contents, artboard, body, }
+  return null
 
 #-----------------------------------------------------------------------------------------------------------
-MKTS._reattach_artboard = ( memo ) ->
-  { contents, artboard, body, } = memo
+MKTS._reattach_artboard = ( me ) ->
+  return if me[ 'view-mode' ] is 'dev'
+  { contents, artboard, body, } = me[ '%memo' ][ 'view-mode' ]
+  delete me[ '%memo' ][ 'view-mode' ]
   contents.detach()
   artboard.append contents
   body.append artboard
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.switch_to_print_view = ( me ) ->
+  help "MKTS.switch_to_print_view"
+  return if me[ 'view-mode' ] is 'print'
+  @_detach_artboard me
+  me[ 'view-mode' ] = 'print'
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.switch_to_dev_view = ( me ) ->
+  help "MKTS.switch_to_dev_view"
+  return if me[ 'view-mode' ] is 'dev'
+  @_reattach_artboard me
+  me[ 'view-mode' ] = 'dev'
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.toggle_view = ( me ) ->
+  switch view_mode = me[ 'view-mode' ]
+    when 'print'  then @switch_to_dev_view    me
+    when 'dev'    then @switch_to_print_view  me
+    else throw new Error "unknown view mode #{rpr view_mode}"
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_print_dialog = ( me ) ->
-  print()
+  window.print()
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_print_preview = ( me ) ->
   # route   = '/tmp/mkts/index.html'
   # njs_fs.writeFileSync route, ( $ 'html' ).outerHTML()
-  memo    = @_detach_artboard()
+  @switch_to_print_view me
   # MKTS.open_print_dialog()
   #.........................................................................................................
   script = """
@@ -251,19 +287,12 @@ MKTS.open_print_preview = ( me ) ->
     tell application "System Events" to key code 49
     tell application "System Events" to key code 125
     tell application "System Events" to key code 49
-  end tell
-  """
+  end tell"""
   #.........................................................................................................
-  APPLESCRIPT.execString script, ( error, result ) =>
+  APPLESCRIPT.execString script, ( error ) =>
     throw error if error?
-    debug '©np14r', result
-    @_reattach_artboard memo
-  # help "saved to #{route}"
-
-
-
-
-
+    @switch_to_dev_view me
+    help "MKTS.open_print_preview: ok"
 
 
 
