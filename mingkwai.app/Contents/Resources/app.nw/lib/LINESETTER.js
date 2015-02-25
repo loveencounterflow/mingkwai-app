@@ -107,19 +107,33 @@
   };
 
   this.demo = function(app, md) {
-    var MKTS, available_height, bottom_of, bounding_rectangle_of, column_count, column_idx, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, height_of, input, jQuery, last_line_height, line_count, live, mm_from_px, new_line_entry, page, relative_bottom_of, relative_top_of, seen_lines, set_lines, style_of, t0, test_line, top_of, window;
+    var BD, MKTS, available_height, available_width, available_width_mm, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, last_line_height, line_count, live, mm_from_px, new_line_entry, page, seen_lines, set_lines, t0, test_line, window, ƒ;
     jQuery = app['jQuery'];
     MKTS = app['MKTS'];
     window = app['window'];
-    page = (jQuery('.page')).eq(0);
-    container = jQuery('.flex-columns-wrap');
-    columns = container.find('.column');
+    BD = window['BD'];
+    page = (jQuery('page')).eq(0);
+    container = (jQuery('wrap')).eq(0);
+    columns = jQuery('column');
     column_count = columns.length;
     seen_lines = null;
     last_line_height = null;
     mm_from_px = function(px) {
-      return (px * app['mm-per-px']).toFixed(1);
+      return px * app['mm-per-px'];
     };
+    ƒ = function(x, precision) {
+      if (precision == null) {
+        precision = 2;
+      }
+      return x.toFixed(precision);
+    };
+    line_count = 0;
+    available_height = BD.height_of(container);
+    available_width = BD.width_of((container.find('column')).eq(0));
+    available_width_mm = mm_from_px(available_width);
+    column_idx = 0;
+    has_warned = false;
+    column_linecount = 0;
     new_line_entry = function(line, height) {
       var R;
       R = {
@@ -131,7 +145,7 @@
     has_hanging_margin = function(hotml) {
       var last_chr;
       last_chr = CND.last_of((CND.last_of(hotml))[1].replace(/\s+$/, ''));
-      return last_chr === '\u00ad' || last_chr === '-' || last_chr === ',' || last_chr === '.' || last_chr === '!' || last_chr === '—' || last_chr === '–' || last_chr === ':' || last_chr === ';' || last_chr === '(' || last_chr === ')';
+      return last_chr === '\u00ad' || last_chr === '-' || last_chr === ',' || last_chr === '.' || last_chr === '!' || last_chr === '—' || last_chr === '–' || last_chr === ':' || last_chr === ';' || last_chr === '(' || last_chr === ')' || last_chr === '‘' || last_chr === '’' || last_chr === '“' || last_chr === '”';
     };
     get_class = function(is_first, is_last) {
       if (is_first) {
@@ -146,15 +160,19 @@
       return 'is-middle';
     };
     get_line = function(hotml, is_first, is_last) {
-      var R, left_cork, line, right_cork;
+      var R, left_cork, line, right_cork, width_mm;
       if (typeof R !== "undefined" && R !== null) {
         return (R = seen_lines.get(hotml));
       }
       line = jQuery(HOTMETAL.as_html(hotml));
       line.addClass(get_class(is_first, is_last));
+      width_mm = available_width_mm;
+
+      /* TAINT shouldn't use absolute length here; depends on font size, hanging character */
       if (has_hanging_margin(hotml)) {
-        line.addClass('hangs-right-05ex');
+        width_mm += +1;
       }
+      line.css('width', width_mm + "mm");
       line.wrapInner(jQuery("<span class='text-wrapper'></span>"));
       left_cork = jQuery("<span class='cork'></span>");
       right_cork = jQuery("<span class='cork'></span>");
@@ -164,55 +182,20 @@
       seen_lines.set(hotml, R);
       return R;
     };
-    style_of = function(element) {
-      return window.getComputedStyle(element.get(0));
-    };
-    bounding_rectangle_of = function(element) {
-      return (element.get(0)).getBoundingClientRect();
-    };
-    height_of = function(element) {
-
-      /* jQuery rounds to integer pixels, this is more precise. */
-      var height, style;
-      style = style_of(element);
-      height = parseFloat(style['height']);
-      if (!isFinite(height)) {
-        height = (bounding_rectangle_of(element))['height'];
-      }
-      return height - (parseFloat(style['border-top-width'])) - (parseFloat(style['border-bottom-width'])) - (parseFloat(style['margin-top'])) - (parseFloat(style['margin-bottom'])) - (parseFloat(style['padding-top'])) - (parseFloat(style['padding-bottom']));
-    };
-    top_of = function(element) {
-      return window.scrollY + (bounding_rectangle_of(element))['top'];
-    };
-    bottom_of = function(element) {
-      return (top_of(element)) + height_of(element);
-    };
-    relative_top_of = function(element, selector) {
-      return (top_of(element)) - (top_of(element.parents(selector)));
-    };
-    relative_bottom_of = function(element, selector) {
-      return (relative_top_of(element, selector)) + height_of(element);
-    };
-    window.height_of = height_of;
-    window.bottom_of = bottom_of;
-    window.top_of = top_of;
-    window.relative_bottom_of = relative_bottom_of;
-    window.relative_top_of = relative_top_of;
-    line_count = 0;
-    available_height = height_of(jQuery('.flex-columns-wrap'));
-    column_idx = 0;
-    has_warned = false;
     test_line = function(action, hotml, is_first, is_last) {
 
       /* Must return whether HTML fits into one line. */
-      var R, bottom, left_cork, line, right_cork, _, _ref, _ref1;
+      var R, bottom, left_cork, line, right_cork, top, top_css, _, _ref, _ref1;
       switch (action) {
         case 'set':
           if (column_idx <= column_count - 1) {
             _ref = get_line(hotml, is_first, is_last), _ = _ref[0], line = _ref[1], _ = _ref[2];
+            top_css = (column_linecount * 5) + "mm";
+            line.css('top', top_css);
+            column_linecount += +1;
             (line.find('.cork')).detach();
             (columns.eq(column_idx)).append(line);
-            bottom = relative_bottom_of(line.find('.text-wrapper'), '.flex-columns-wrap');
+            bottom = BD.relative_bottom_of(line.find('.text-wrapper'), 'wrap');
             if (available_height - bottom < 0) {
               line.detach();
               column_idx += +1;
@@ -222,7 +205,11 @@
                 }
                 has_warned = true;
               } else {
+                column_linecount = 0;
+                top = (column_linecount * 5) + "mm";
+                line.css('top', top);
                 (columns.eq(column_idx)).append(line);
+                column_linecount += +1;
               }
             }
           }
@@ -240,7 +227,7 @@
     };
     distribute_lines = function() {
       var R, column_line_height, column_linecounts, line, line_entry, line_height, line_idx, page_height, total_line_height, _i, _len;
-      page_height = height_of(page);
+      page_height = BD.height_of(page);
       column_line_height = 0;
       total_line_height = 0;
       column_idx = 0;
@@ -283,7 +270,7 @@
         return function*(resume) {
 
           /* TAINT assuming we have an entire blank page */
-          var column, column_linecount, column_linecounts, count, line, line_entry, _i, _j, _len, _len1, _ref;
+          var column, column_linecounts, count, line, line_entry, _i, _j, _len, _len1, _ref;
           line_count = saved_lines.length;
           column_linecounts = HOTMETAL.get_column_linecounts('even', line_count, 3);
           help("line count: " + line_count);

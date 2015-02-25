@@ -4,8 +4,12 @@
 @require mingkwai-colors
 
 /* ------------------------------------------------------------------------------------------------------ */
+/* Experimentally detected that `$paper-height = 297mm - 0.13mm` is not enough but
+  `297mm - 0.15mm` is enough to avoid intervening blank pages in the PDF. */
 $paper-width                = 210mm
-$paper-height               = 297mm
+$paper-height               = 297mm - 0.15mm
+// $paper-width                = 210mm
+// $paper-height               = 297mm
 /* ...................................................................................................... */
 // 'gutters' in typographic terms (non-printable areas) become 'paddings' in CSS:
 $gutter-left                = 4.5mm
@@ -23,9 +27,76 @@ $margin-bottom              = 5mm
 $page-width                 = $paper-width  - $gutter-left  - $gutter-right
 $page-height                = $paper-height - $gutter-top   - $gutter-bottom
 /* ...................................................................................................... */
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $content-width              = $page-width   - $margin-left  - $margin-right
 $content-height             = $page-height  - $margin-top   - $margin-bottom
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$galley-width               = $page-width   - $margin-left  - $margin-right
+$galley-height              = $page-height  - $margin-top   - $margin-bottom
+
+
+/* ------------------------------------------------------------------------------------------------------ */
+artboard
+page
+paper
+galley
+box
+column
+wrap
+gap
+  position:               relative
+
+/* ------------------------------------------------------------------------------------------------------ */
+artboard
+  display :               flex
+  flex-direction:         row
+  justify-content:        flex-start
+  // ### TAINT: width should be so that it fills entire width either when fully zoomed out or
+  // adjusted to available width on current zoom (so pages rearrange) ###
+  width:                  1000mm
+  height:                 5000mm
+
+/* ------------------------------------------------------------------------------------------------------ */
+paper
+  // margin:                 5mm
+  width:                  $paper-width
+  height:                 $paper-height
+
+/* ------------------------------------------------------------------------------------------------------ */
+page
+  width:                  $page-width
+  height:                 $page-height
+  left:                   $gutter-left
+  top:                    $gutter-top
+
+/* ------------------------------------------------------------------------------------------------------ */
+galley
+  width:                  $galley-width
+  height:                 $galley-height
+  left:                   $margin-left
+  top:                    $margin-top
+
+/* ------------------------------------------------------------------------------------------------------ */
+wrap
+column
+  width:                  100%
+  height:                 100%
+
+/* ------------------------------------------------------------------------------------------------------ */
+wrap
+  display:                flex
+  flex-direction:         row
+  justify-content:        space-between
+
+/* ------------------------------------------------------------------------------------------------------ */
+gap
+  width:                  5mm
+  height:                 100%
+  min-width:              5mm
+  max-width:              5mm
+
+/* ###################################################################################################### */
 
 
 /* ------------------------------------------------------------------------------------------------------ */
@@ -104,23 +175,6 @@ body
 /* ------------------------------------------------------------------------------------------------------
  COLUMNS */
 
-.flex-columns-wrap
-  width:                  100%
-  height:                 100%
-  overflow:               visible
-  display :               flex
-  // display : inline-flex
-  flex-direction:         row
-  justify-content:        space-between
-  // max-height:             50mm
-
-.column
-  width:                  100%
-
-.column-gap
-  width:                  5mm
-  min-width:              5mm
-  max-width:              5mm
 
 p.is-first
 p.is-middle
@@ -146,8 +200,8 @@ p.is-middle
 p.is-last
   margin-top:             0
 
-p.hangs-right-05ex
-  margin-right:           -0.5ex
+// p.hangs-right-05ex
+//   margin-right:           100% + 0.5ex
 
 
 // mkts-lineprobe

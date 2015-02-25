@@ -94,11 +94,13 @@ HOTMETAL                  = D.HOTMETAL
 @demo = ( app, md ) ->
   #.........................................................................................................
   jQuery              = app[ 'jQuery' ]
-  MKTS                = app[ 'MKTS' ]
+  MKTS                = app[ 'MKTS'   ]
   window              = app[ 'window' ]
-  page                = ( jQuery '.page' ).eq 0
-  container           = jQuery '.flex-columns-wrap'
-  columns             = container.find '.column'
+  BD                  = window[ 'BD'  ]
+  page                = ( jQuery 'page' ).eq 0
+  container           = ( jQuery 'wrap' ).eq 0
+  # columns             = container.find 'column'
+  columns             = jQuery 'column'
   # for idx in [0,1,2]
   #   debug '©9DN9H', ( columns.eq idx ).outerHTML()
   column_count        = columns.length
@@ -107,7 +109,16 @@ HOTMETAL                  = D.HOTMETAL
   last_line_height    = null
 
   #---------------------------------------------------------------------------------------------------------
-  mm_from_px = ( px ) -> ( px * app[ 'mm-per-px' ] ).toFixed 1
+  mm_from_px  = ( px ) -> px * app[ 'mm-per-px' ]
+  ƒ           = ( x, precision = 2 ) -> x.toFixed precision
+
+  line_count                = 0
+  available_height          = BD.height_of  container
+  available_width           = BD.width_of   ( container.find 'column' ).eq 0
+  available_width_mm        = mm_from_px available_width
+  column_idx                = 0
+  has_warned                = no
+  column_linecount          = 0
 
   #---------------------------------------------------------------------------------------------------------
   new_line_entry = ( line, height ) ->
@@ -120,7 +131,7 @@ HOTMETAL                  = D.HOTMETAL
   has_hanging_margin = ( hotml ) ->
     # debug '©mnhYJ',  ( CND.last_of ( CND.last_of hotml )[ 1 ] ), ( CND.last_of ( CND.last_of hotml )[ 1 ] ) in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ]
     last_chr = CND.last_of ( CND.last_of hotml )[ 1 ].replace /\s+$/, ''
-    return last_chr in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ';', '(', ')', ]
+    return last_chr in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ';', '(', ')', '‘', '’', '“', '”', ]
 
   #---------------------------------------------------------------------------------------------------------
   get_class = ( is_first, is_last ) ->
@@ -144,7 +155,10 @@ HOTMETAL                  = D.HOTMETAL
     return ( R = seen_lines.get hotml ) if R?
     line              = jQuery HOTMETAL.as_html hotml
     line.addClass get_class is_first, is_last
-    line.addClass 'hangs-right-05ex' if has_hanging_margin hotml
+    width_mm          = available_width_mm
+    ### TAINT shouldn't use absolute length here; depends on font size, hanging character ###
+    width_mm         += +1 if has_hanging_margin hotml
+    line.css 'width', "#{width_mm}mm"
     line.wrapInner jQuery "<span class='text-wrapper'></span>"
     left_cork         = jQuery "<span class='cork'></span>"
     right_cork        = jQuery "<span class='cork'></span>"
@@ -155,77 +169,37 @@ HOTMETAL                  = D.HOTMETAL
     return R
 
   #---------------------------------------------------------------------------------------------------------
-  style_of              = ( element ) -> window.getComputedStyle element.get 0
-  bounding_rectangle_of = ( element ) -> ( element.get 0 ).getBoundingClientRect()
-
-  #---------------------------------------------------------------------------------------------------------
-  height_of = ( element ) ->
-    ### jQuery rounds to integer pixels, this is more precise. ###
-    style   = style_of element
-    height  = parseFloat style[ 'height' ]
-    unless isFinite height
-      height = ( bounding_rectangle_of element )[ 'height' ]
-    return height \
-      - ( parseFloat style[ 'border-top-width'    ] ) \
-      - ( parseFloat style[ 'border-bottom-width' ] ) \
-      - ( parseFloat style[ 'margin-top'          ] ) \
-      - ( parseFloat style[ 'margin-bottom'       ] ) \
-      - ( parseFloat style[ 'padding-top'         ] ) \
-      - ( parseFloat style[ 'padding-bottom'      ] )
-    # return ( element.get 0 ).getBoundingClientRect().height
-
-  #---------------------------------------------------------------------------------------------------------
-  top_of              = ( element ) -> window.scrollY + ( bounding_rectangle_of element )[ 'top' ]
-  bottom_of           = ( element ) -> ( top_of element ) + height_of element
-  relative_top_of     = ( element, selector ) -> ( top_of element ) - ( top_of element.parents selector )
-  relative_bottom_of  = ( element, selector ) -> ( relative_top_of element, selector ) + height_of element
-
-  #---------------------------------------------------------------------------------------------------------
-  window.height_of          = height_of
-  window.bottom_of          = bottom_of
-  window.top_of             = top_of
-  window.relative_bottom_of = relative_bottom_of
-  window.relative_top_of    = relative_top_of
-
-  line_count = 0
-  # height_of columns.eq 0
-  available_height          = height_of jQuery '.flex-columns-wrap'
-  column_idx                = 0
-  has_warned                = no
-
-  #---------------------------------------------------------------------------------------------------------
   test_line = ( action, hotml, is_first, is_last ) ->
     ### Must return whether HTML fits into one line. ###
     # return save_line hotml, is_first, is_last, line_idx if action is 'set'
     switch action
+      #.....................................................................................................
       when 'set'
         if column_idx <= column_count - 1
-          [ _, line, _, ] = get_line hotml, is_first, is_last
+          [ _, line, _, ]   = get_line hotml, is_first, is_last
+          top_css           = "#{column_linecount * 5}mm"
+          line.css 'top',     top_css
+          column_linecount += +1
           ( line.find '.cork' ).detach()
           ( columns.eq column_idx ).append line
-          bottom = relative_bottom_of ( line.find '.text-wrapper' ), '.flex-columns-wrap'
+          bottom = BD.relative_bottom_of ( line.find '.text-wrapper' ), 'wrap'
+          #.................................................................................................
           if available_height - bottom < 0
             line.detach()
             column_idx += +1
+            #...............................................................................................
             if column_idx > column_count - 1
               warn "next page" unless has_warned
               has_warned = true
+            #...............................................................................................
             else
+              column_linecount  = 0
+              top               = "#{column_linecount * 5}mm"
+              line.css 'top', top
               ( columns.eq column_idx ).append line
+              column_linecount += +1
         line_count += +1                             # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        # if line_count < 55                            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        #   bottom = relative_bottom_of ( line.find '.text-wrapper' ), '.flex-columns-wrap'
-        #   debug '©KsiDD', line_count, bottom, available_height, available_height - bottom  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        # if line_count == 53                            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        #   style = style_of line.find '.text-wrapper'
-        #   debug '©vccUS', 'height',              style[ 'height'              ]
-        #   debug '©Qm0Zx', 'border-top-width',    style[ 'border-top-width'    ]
-        #   debug '©f7eTy', 'border-bottom-width', style[ 'border-bottom-width' ]
-        #   debug '©QTJ1w', 'margin-top',          style[ 'margin-top'          ]
-        #   debug '©wq9Zv', 'margin-bottom',       style[ 'margin-bottom'       ]
-        #   debug '©p9mEF', 'padding-top',         style[ 'padding-top'         ]
-        #   debug '©jsyXp', 'padding-bottom',      style[ 'padding-bottom'      ]
-
+      #.....................................................................................................
       when 'test'
         process.stdout.write '.'
         [ left_cork
@@ -235,35 +209,13 @@ HOTMETAL                  = D.HOTMETAL
         R                 = left_cork.offset()[ 'top' ] == right_cork.offset()[ 'top' ]
         line.detach()
         return R
+      #.....................................................................................................
       else
         throw new Error "unknown action #{rpr action}"
 
-  # #---------------------------------------------------------------------------------------------------------
-  # test_line = ( hotml, is_first, is_last, action, line_idx ) ->
-  #   ### Must return whether HTML fits into one line. ###
-  #   process.stdout.write '.'
-  #   # return Math.random() < 0.3
-  #   line              = get_line hotml, is_first, is_last
-  #   left_cork         = jQuery "<span class='cork'></span>"
-  #   right_cork        = jQuery "<span class='cork'></span>"
-  #   line.prepend     left_cork
-  #   line.append      right_cork
-  #   ( columns.eq 0 ).append line
-  #   R                 = left_cork.offset()[ 'top' ] == right_cork.offset()[ 'top' ]
-  #   last_line_height  = height_of line if R
-  #   line.detach()
-  #   return R
-
-  # #---------------------------------------------------------------------------------------------------------
-  # save_line = ( hotml, is_first, is_last, line_idx ) ->
-  #   line = get_line hotml, is_first, is_last
-  #   saved_lines.push line
-  #   # saved_lines.push new_line_entry line, last_line_height
-  #   return null
-
   #---------------------------------------------------------------------------------------------------------
   distribute_lines = ->
-    page_height         = height_of page
+    page_height         = BD.height_of page
     column_line_height  = 0
     total_line_height   = 0
     column_idx          = 0
@@ -357,9 +309,9 @@ HOTMETAL                  = D.HOTMETAL
             # debug '©h9n6j', dt / saved_lines.length
             # first_column            = columns.eq 0
             # { top: column_top, }    = first_column.offset()
-            # column_height           = height_of first_column
+            # column_height           = BD.height_of first_column
             # { top: page_top, }      = page.offset()
-            # page_height             = height_of page
+            # page_height             = BD.height_of page
             # help column_top, page_top
             # help column_bottom      = column_top + column_height
             # help page_bottom        = page_top + page_height

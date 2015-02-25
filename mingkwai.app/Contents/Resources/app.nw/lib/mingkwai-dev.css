@@ -1,4 +1,53 @@
 /* ------------------------------------------------------------------------------------------------------ */
+artboard,
+page,
+paper,
+galley,
+box,
+column,
+wrap,
+gap {
+  position: relative;
+}
+artboard {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: 1000mm;
+  height: 5000mm;
+}
+paper {
+  width: 210mm;
+  height: 296.85mm;
+}
+page {
+  width: 201mm;
+  height: 275.85mm;
+  left: 4.5mm;
+  top: 3mm;
+}
+galley {
+  width: 171mm;
+  height: 259.85mm;
+  left: 15mm;
+  top: 11mm;
+}
+wrap,
+column {
+  width: 100%;
+  height: 100%;
+}
+wrap {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+gap {
+  width: 5mm;
+  height: 100%;
+  min-width: 5mm;
+  max-width: 5mm;
+}
 body,
 .paper,
 .page {
@@ -7,7 +56,7 @@ body,
 .paper {
   margin: 10mm;
   width: 210mm;
-  height: 297mm;
+  height: 296.85mm;
   padding-left: 4.5mm;
   padding-right: 4.5mm;
   padding-top: 3mm;
@@ -16,7 +65,7 @@ body,
 }
 .page {
   width: 201mm;
-  height: 276mm;
+  height: 275.85mm;
   padding-left: 15mm;
   padding-right: 15mm;
   padding-top: 11mm;
@@ -31,22 +80,6 @@ body,
   position: absolute;
   top: 0;
   left: 0;
-}
-.flex-columns-wrap {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-.column {
-  width: 100%;
-}
-.column-gap {
-  width: 5mm;
-  min-width: 5mm;
-  max-width: 5mm;
 }
 p.is-first,
 p.is-middle {
@@ -72,9 +105,6 @@ p.is-middle,
 p.is-last {
   margin-top: 0;
 }
-p.hangs-right-05ex {
-  margin-right: -0.5ex;
-}
 #mytext p:last-child {
   margin-bottom: 0;
 }
@@ -84,8 +114,54 @@ p.hangs-right-05ex {
 .hilite {
   color: #821e00;
 }
-/* ------------------------------------------------------------------------------------------------------ */
+/* ====================================================================================================== */
+@media print {
+  @page {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+  }
+  paper {
+    page-break-inside: avoid;
+    page-break-before: always;
+  }
+}
+/* ====================================================================================================== */
 @media screen {
+  artboard,
+  page,
+  paper,
+  galley,
+  box,
+  column,
+  wrap,
+  gap {
+    background-color: transparent;
+  }
+  artboard {
+    background-color: rgba(150,166,12,0.25);
+  }
+  paper {
+    margin: 5mm;
+    background-color: #fafafa;
+    outline: 1px dotted #ffa500;
+  }
+  page {
+    outline: 1px dotted #f00;
+  }
+  galley {
+    outline: 1px dotted #008000;
+  }
+  wrap {
+    outline: 1.5px dotted #000;
+  }
+  box,
+  column {
+    outline: 1px dotted #00f;
+  }
+  gap {
+    background-color: rgba(240,240,130,0.5);
+  }
   .paper {
     outline: 1px dotted #f00;
     box-shadow: 10px 10px 35px 0px rgba(0,0,0,0.5);
@@ -94,24 +170,11 @@ p.hangs-right-05ex {
     outline: 1px dotted #00f;
     box-shadow: 0px 0px 35px 10px rgba(0,0,0,0.5);
   }
-  .mingkwai-dev-page-marker {
-    position: absolute;
-    top: 14mm;
-    left: 19.5mm;
-    width: 171mm;
-    height: 260mm;
-    outline: 1px dotted #008000;
-    z-index: 1;
-/* Allow click-through;
-      thx to http://stackoverflow.com/a/4839672/256361 */
-    pointer-events: none;
-    box-shadow: inset 0px 0px 35px -10px rgba(0,0,0,0.5);
-  }
   body,
   .paper,
   .mingkwai-dev-page-marker,
   .page {
-    background-color: rgba(0,0,0,0.01);
+    background-color: transparent;
   }
   .flex-columns-wrap {
     outline: 1px dotted #ee82ee;
@@ -138,15 +201,14 @@ p.hangs-right-05ex {
     outline: 1px solid #00f;
   }
   .grid {
-    opacity: 0.25;
     opacity: 1;
   }
   .gridline {
     position: absolute;
-    border-top: 0.75px dotted #f00;
+    outline: 0.75px dotted #f00;
   }
   .gridline.horizontal {
     width: 210mm;
-    height: 1px;
+    height: 0px;
   }
 }
