@@ -12,6 +12,11 @@ gap {
 artboard {
   width: 1000mm;
   height: 5000mm;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  transform: scale(1);
 }
 paper {
   float: left;
