@@ -287,7 +287,7 @@
 
   MKTS.demo = function(me) {
     var md;
-    md = require('./demo-text');
+    md = "Just as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe went.";
     MKTS.zoom(me, 2);
     LINESETTER.demo(me, md, (function(_this) {
       return function(error) {

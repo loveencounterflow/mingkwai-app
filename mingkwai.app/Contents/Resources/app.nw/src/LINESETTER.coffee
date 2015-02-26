@@ -92,7 +92,6 @@ HOTMETAL                  = D.HOTMETAL
 #
 #-----------------------------------------------------------------------------------------------------------
 @demo = ( app, md, handler ) ->
-  debug '©o00Is', CND.type_of handler
   #.........................................................................................................
   jQuery              = app[ 'jQuery' ]
   MKTS                = app[ 'MKTS'   ]
@@ -151,8 +150,28 @@ HOTMETAL                  = D.HOTMETAL
   #   R = jQuery HOTMETAL.as_html hotml
   #   return R
 
+  # #---------------------------------------------------------------------------------------------------------
+  # get_line = ( hotml, is_first, is_last ) ->
+  #   ### TAINT corks not always needed ###
+  #   return ( R = seen_lines.get hotml ) if R?
+  #   line              = jQuery HOTMETAL.as_html hotml
+  #   line.addClass get_class is_first, is_last
+  #   width_mm          = available_width_mm
+  #   ### TAINT shouldn't use absolute length here; depends on font size, hanging character ###
+  #   width_mm         += +1 if has_hanging_margin hotml
+  #   line.css 'width', "#{width_mm}mm"
+  #   line.wrapInner jQuery "<span class='text-wrapper'></span>"
+  #   left_cork         = jQuery "<span class='cork'></span>"
+  #   right_cork        = jQuery "<span class='cork'></span>"
+  #   R                 = [ left_cork, line, right_cork, ]
+  #   line.prepend  left_cork
+  #   line.append  right_cork
+  #   seen_lines.set hotml, R
+  #   return R
+
   #---------------------------------------------------------------------------------------------------------
   get_line = ( hotml, is_first, is_last ) ->
+    ### TAINT corks not always needed ###
     return ( R = seen_lines.get hotml ) if R?
     line              = jQuery HOTMETAL.as_html hotml
     line.addClass get_class is_first, is_last
@@ -161,11 +180,12 @@ HOTMETAL                  = D.HOTMETAL
     width_mm         += +1 if has_hanging_margin hotml
     line.css 'width', "#{width_mm}mm"
     line.wrapInner jQuery "<span class='text-wrapper'></span>"
-    left_cork         = jQuery "<span class='cork'></span>"
-    right_cork        = jQuery "<span class='cork'></span>"
-    R                 = [ left_cork, line, right_cork, ]
-    line.prepend  left_cork
-    line.append  right_cork
+    # left_cork         = jQuery "<span class='cork'></span>"
+    # right_cork        = jQuery "<span class='cork'></span>"
+    # R                 = [ left_cork, line, right_cork, ]
+    R                 = [ null, line, null, ]
+    # line.prepend  left_cork
+    # line.append  right_cork
     seen_lines.set hotml, R
     return R
 
@@ -183,7 +203,8 @@ HOTMETAL                  = D.HOTMETAL
           column_linecount += +1
           ( line.find '.cork' ).detach()
           ( columns.eq column_idx ).append line
-          bottom = BD.relative_bottom_of ( line.find '.text-wrapper' ), 'wrap'
+          bottom = BD.relative_bottom_of ( line.find '.text-wrapper' ), 'wrap', 0
+          # bottom = BD.relative_bottom_of ( line.find '.text-wrapper' ), 'wrap'
           #.................................................................................................
           if available_height - bottom < 0
             line.detach()
@@ -207,7 +228,13 @@ HOTMETAL                  = D.HOTMETAL
           line
           right_cork ]    = get_line hotml, is_first, is_last
         ( columns.eq 0 ).append line
-        R                 = left_cork.offset()[ 'top' ] == right_cork.offset()[ 'top' ]
+        # l = line.get 0
+        # debug()
+        # debug '©SEJyD', line.text()
+        # debug '©ereqk', ( BD.x_height_of line ), line.height(), l.clientHeight, l.offsetHeight, l.scrollHeight
+        # debug '©ereqk', l.scrollHeight
+        # R                 = ( BD.top_of left_cork, 0 ) == ( BD.top_of right_cork, 0 )
+        R = ( line.get 0 ).scrollHeight < 20
         line.detach()
         return R
       #.....................................................................................................
@@ -248,75 +275,87 @@ HOTMETAL                  = D.HOTMETAL
     #.......................................................................................................
     return R
 
-  #---------------------------------------------------------------------------------------------------------
-  set_lines = ( live = no, handler ) ->
-    return handler null
-    step ( resume ) =>
-      ### TAINT assuming we have an entire blank page ###
-      # help distribute_lines()
-      #.....................................................................................................
-      line_count        = saved_lines.length
-      column_linecounts = HOTMETAL.get_column_linecounts 'even', line_count, 3
-      help "line count: #{line_count}"
-      help "column line counts: #{column_linecounts}"
-      #.....................................................................................................
-      ### TAINT simplify ###
-      count = 0
-      for column_linecount, column_idx in column_linecounts
-        column = columns.eq column_idx
-        for line_entry in saved_lines[ count ... count + column_linecount ]
-          line = line_entry[ '%self' ]
-          if live
-            yield MKTS.wait resume
-          column.append line
-        count += column_linecount
-      handler null
-    #.......................................................................................................
-    return null
+  # #---------------------------------------------------------------------------------------------------------
+  # set_lines = ( live = no, handler ) ->
+  #   return handler null
+  #   step ( resume ) =>
+  #     ### TAINT assuming we have an entire blank page ###
+  #     # help distribute_lines()
+  #     #.....................................................................................................
+  #     line_count        = saved_lines.length
+  #     column_linecounts = HOTMETAL.get_column_linecounts 'even', line_count, 3
+  #     help "line count: #{line_count}"
+  #     help "column line counts: #{column_linecounts}"
+  #     #.....................................................................................................
+  #     ### TAINT simplify ###
+  #     count = 0
+  #     for column_linecount, column_idx in column_linecounts
+  #       column = columns.eq column_idx
+  #       for line_entry in saved_lines[ count ... count + column_linecount ]
+  #         line = line_entry[ '%self' ]
+  #         if live
+  #           yield MKTS.wait resume
+  #         column.append line
+  #       count += column_linecount
+  #     handler null
+  #   #.......................................................................................................
+  #   return null
 
   #---------------------------------------------------------------------------------------------------------
   input   = D.create_throughstream()
   live    = yes
   live    = no
   t0      = 1 * new Date()
+  t1_a    = null
   #.........................................................................................................
   input
-    # .pipe $ ( data, send ) =>
-    .pipe D.TYPO.$quotes()
-    .pipe D.TYPO.$dashes()
+    #.......................................................................................................
+    # .pipe D.TYPO.$quotes()
+    # .pipe D.TYPO.$dashes()
     .pipe D.MD.$as_html()
-    .pipe D.HTML.$parse()
+    .pipe D.HTML.$parse yes, yes
     .pipe D.HTML.$slice_toplevel_tags()
     #.......................................................................................................
-    .pipe $ ( block_hotml, send ) =>
-      # urge HOTMETAL.as_html block_hotml
-      send block_hotml
+    .pipe $ ( data, send ) =>
+        t1_a ?= +new Date()
+        send data if data?
+    # #.......................................................................................................
+    # .pipe do =>
+    #   shreds      = {}
+    #   shred_count = 0
+    #   return $ ( block_hotml, send, end ) =>
+    #     if block_hotml?
+    #       for [ _, shred, _, ] in block_hotml
+    #         shred_count      += +1
+    #         target            = shreds[ shred ]?= {}
+    #         target[ 'count' ] = ( target[ 'count' ] ? 0 ) + 1
+    #       send block_hotml
+    #     if end?
+    #       urge shreds
+    #       urge shred_count
+    #       urge ( Object.keys shreds ).length
+    #       end()
     #.......................................................................................................
     .pipe do =>
       line_count = 0
       return $ ( block_hotml, send, end ) =>
-        step ( resume ) =>
-          if block_hotml?
-            seen_lines = new WeakMap()
-            HOTMETAL.break_lines block_hotml, test_line
-            # HOTMETAL.break_lines block_hotml, test_line, save_line
-            send block_hotml
-          if end?
-            yield set_lines live, resume
-            warn 'ended'
-            t1 = 1 * new Date()
-            dt = t1 - t0
-            help "demo took #{ƒ dt / 1000}s"
-            handler null
-            # debug '©h9n6j', dt / saved_lines.length
-            # first_column            = columns.eq 0
-            # { top: column_top, }    = first_column.offset()
-            # column_height           = BD.height_of first_column
-            # { top: page_top, }      = page.offset()
-            # page_height             = BD.height_of page
-            # help column_top, page_top
-            # help column_bottom      = column_top + column_height
-            # help page_bottom        = page_top + page_height
+        # step ( resume ) =>
+        if block_hotml?
+          seen_lines = new WeakMap()
+          ### TAINT `break_lines` is a misnomer; the method is a 'director' method to find good lines
+          in typesetting. ###
+          HOTMETAL.break_lines block_hotml, test_line
+          send block_hotml
+        if end?
+          # yield set_lines live, resume
+          warn 'ended'
+          t1    = 1 * new Date()
+          dt    = t1   - t0
+          dt_a  = t1_a - t0
+          help "demo took #{ƒ dt / 1000}s"
+          help "(#{ƒ dt_a / 1000}s before point 'a')"
+          handler null
+          end()
   #.........................................................................................................
   input.write md
   input.end()

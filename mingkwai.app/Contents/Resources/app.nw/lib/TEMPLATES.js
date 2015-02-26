@@ -152,7 +152,7 @@
               ARTBOARD(function() {
                 var page_nr, _i, _results;
                 _results = [];
-                for (page_nr = _i = 1; _i <= 32; page_nr = ++_i) {
+                for (page_nr = _i = 1; _i <= 4; page_nr = ++_i) {
                   _results.push(PAPER(function() {
                     return PAGE(function() {
                       return GALLEY(function() {

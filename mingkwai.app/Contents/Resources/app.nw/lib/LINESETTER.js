@@ -107,8 +107,7 @@
   };
 
   this.demo = function(app, md, handler) {
-    var BD, MKTS, available_height, available_width, available_width_mm, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, last_line_height, line_count, live, mm_from_px, new_line_entry, page, seen_lines, set_lines, t0, test_line, window, ƒ;
-    debug('©o00Is', CND.type_of(handler));
+    var BD, MKTS, available_height, available_width, available_width_mm, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, last_line_height, line_count, live, mm_from_px, new_line_entry, page, seen_lines, t0, t1_a, test_line, window, ƒ;
     jQuery = app['jQuery'];
     MKTS = app['MKTS'];
     window = app['window'];
@@ -161,7 +160,9 @@
       return 'is-middle';
     };
     get_line = function(hotml, is_first, is_last) {
-      var R, left_cork, line, right_cork, width_mm;
+
+      /* TAINT corks not always needed */
+      var R, line, width_mm;
       if (typeof R !== "undefined" && R !== null) {
         return (R = seen_lines.get(hotml));
       }
@@ -175,11 +176,7 @@
       }
       line.css('width', width_mm + "mm");
       line.wrapInner(jQuery("<span class='text-wrapper'></span>"));
-      left_cork = jQuery("<span class='cork'></span>");
-      right_cork = jQuery("<span class='cork'></span>");
-      R = [left_cork, line, right_cork];
-      line.prepend(left_cork);
-      line.append(right_cork);
+      R = [null, line, null];
       seen_lines.set(hotml, R);
       return R;
     };
@@ -196,7 +193,7 @@
             column_linecount += +1;
             (line.find('.cork')).detach();
             (columns.eq(column_idx)).append(line);
-            bottom = BD.relative_bottom_of(line.find('.text-wrapper'), 'wrap');
+            bottom = BD.relative_bottom_of(line.find('.text-wrapper'), 'wrap', 0);
             if (available_height - bottom < 0) {
               line.detach();
               column_idx += +1;
@@ -219,7 +216,7 @@
           process.stdout.write('.');
           _ref1 = get_line(hotml, is_first, is_last), left_cork = _ref1[0], line = _ref1[1], right_cork = _ref1[2];
           (columns.eq(0)).append(line);
-          R = left_cork.offset()['top'] === right_cork.offset()['top'];
+          R = (line.get(0)).scrollHeight < 20;
           line.detach();
           return R;
         default:
@@ -262,70 +259,44 @@
       }
       return R;
     };
-    set_lines = function(live, handler) {
-      if (live == null) {
-        live = false;
-      }
-      return handler(null);
-      step((function(_this) {
-        return function*(resume) {
-
-          /* TAINT assuming we have an entire blank page */
-          var column, column_linecounts, count, line, line_entry, _i, _j, _len, _len1, _ref;
-          line_count = saved_lines.length;
-          column_linecounts = HOTMETAL.get_column_linecounts('even', line_count, 3);
-          help("line count: " + line_count);
-          help("column line counts: " + column_linecounts);
-
-          /* TAINT simplify */
-          count = 0;
-          for (column_idx = _i = 0, _len = column_linecounts.length; _i < _len; column_idx = ++_i) {
-            column_linecount = column_linecounts[column_idx];
-            column = columns.eq(column_idx);
-            _ref = saved_lines.slice(count, count + column_linecount);
-            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-              line_entry = _ref[_j];
-              line = line_entry['%self'];
-              if (live) {
-                (yield MKTS.wait(resume));
-              }
-              column.append(line);
-            }
-            count += column_linecount;
-          }
-          return handler(null);
-        };
-      })(this));
-      return null;
-    };
     input = D.create_throughstream();
     live = true;
     live = false;
     t0 = 1 * new Date();
-    input.pipe(D.TYPO.$quotes()).pipe(D.TYPO.$dashes()).pipe(D.MD.$as_html()).pipe(D.HTML.$parse()).pipe(D.HTML.$slice_toplevel_tags()).pipe($((function(_this) {
-      return function(block_hotml, send) {
-        return send(block_hotml);
+    t1_a = null;
+    input.pipe(D.MD.$as_html()).pipe(D.HTML.$parse(true, true)).pipe(D.HTML.$slice_toplevel_tags()).pipe($((function(_this) {
+      return function(data, send) {
+        if (t1_a == null) {
+          t1_a = +new Date();
+        }
+        if (data != null) {
+          return send(data);
+        }
       };
     })(this))).pipe((function(_this) {
       return function() {
         line_count = 0;
         return $(function(block_hotml, send, end) {
-          return step(function*(resume) {
-            var dt, t1;
-            if (block_hotml != null) {
-              seen_lines = new WeakMap();
-              HOTMETAL.break_lines(block_hotml, test_line);
-              send(block_hotml);
-            }
-            if (end != null) {
-              (yield set_lines(live, resume));
-              warn('ended');
-              t1 = 1 * new Date();
-              dt = t1 - t0;
-              help("demo took " + (ƒ(dt / 1000)) + "s");
-              return handler(null);
-            }
-          });
+          var dt, dt_a, t1;
+          if (block_hotml != null) {
+            seen_lines = new WeakMap();
+
+            /* TAINT `break_lines` is a misnomer; the method is a 'director' method to find good lines
+            in typesetting.
+             */
+            HOTMETAL.break_lines(block_hotml, test_line);
+            send(block_hotml);
+          }
+          if (end != null) {
+            warn('ended');
+            t1 = 1 * new Date();
+            dt = t1 - t0;
+            dt_a = t1_a - t0;
+            help("demo took " + (ƒ(dt / 1000)) + "s");
+            help("(" + (ƒ(dt_a / 1000)) + "s before point 'a')");
+            handler(null);
+            return end();
+          }
         });
       };
     })(this)());

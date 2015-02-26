@@ -6,7 +6,7 @@
     return window.getComputedStyle(element.get(0));
   };
 
-  BD.bounding_rectangle_of = function(element) {
+  BD.box_of = function(element) {
     return (element.get(0)).getBoundingClientRect();
   };
 
@@ -19,7 +19,7 @@
     style = this.style_of(element);
     height = parseFloat(style['height']);
     if (!isFinite(height)) {
-      height = (this.bounding_rectangle_of(element))['height'];
+      height = (this.box_of(element))['height'];
     }
     return height - (parseFloat(style['border-top-width'])) - (parseFloat(style['border-bottom-width'])) - (parseFloat(style['margin-top'])) - (parseFloat(style['margin-bottom'])) - (parseFloat(style['padding-top'])) - (parseFloat(style['padding-bottom']));
   };
@@ -33,25 +33,41 @@
     style = this.style_of(element);
     height = parseFloat(style['width']);
     if (!isFinite(width)) {
-      width = (this.bounding_rectangle_of(element))['width'];
+      width = (this.box_of(element))['width'];
     }
     return width - (parseFloat(style['border-left-width'])) - (parseFloat(style['border-right-width'])) - (parseFloat(style['margin-left'])) - (parseFloat(style['margin-right'])) - (parseFloat(style['padding-left'])) - (parseFloat(style['padding-right']));
   };
 
-  BD.top_of = function(element) {
-    return window.scrollY + (this.bounding_rectangle_of(element))['top'];
+  BD.top_of = function(element, y) {
+    if (y == null) {
+      y = null;
+    }
+    return (y != null ? y : window.scrollY) + (this.box_of(element))['top'];
   };
 
-  BD.bottom_of = function(element) {
-    return (this.top_of(element)) + this.height_of(element);
+  BD.bottom_of = function(element, y) {
+    if (y == null) {
+      y = null;
+    }
+    return (this.top_of(element, y)) + this.height_of(element);
   };
 
-  BD.relative_top_of = function(element, selector) {
-    return (this.top_of(element)) - (this.top_of(element.parents(selector)));
+  BD.relative_top_of = function(element, selector, y) {
+    if (y == null) {
+      y = null;
+    }
+    return (this.top_of(element, y)) - (this.top_of(element.parents(selector, y)));
   };
 
-  BD.relative_bottom_of = function(element, selector) {
-    return (this.relative_top_of(element, selector)) + this.height_of(element);
+  BD.relative_bottom_of = function(element, selector, y) {
+    if (y == null) {
+      y = null;
+    }
+    return (this.relative_top_of(element, selector, y)) + this.height_of(element);
+  };
+
+  BD.x_height_of = function(element) {
+    return this.height_of(element);
   };
 
 }).call(this);

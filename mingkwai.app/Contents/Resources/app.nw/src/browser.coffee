@@ -232,7 +232,13 @@ MKTS._capture = ( win, handler ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.demo = ( me ) ->
-  md = require './demo-text'
+  # md = require './demo-text'
+  md = """
+    Just as she said this, she noticed that one of the trees had a door
+    leading right into it. 'That's very curious!' she thought. 'But
+    everything's curious today. I think I may as well go in at once.' And in
+    she went.
+  """
   MKTS.zoom me, 2
   LINESETTER.demo me, md, ( error ) =>
     MKTS.revert_zoom me
