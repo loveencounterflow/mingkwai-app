@@ -32,21 +32,26 @@ D$                        = D.remit.bind D
 CHR                       = require 'coffeenode-chr'
 #...........................................................................................................
 LINESETTER                = require './LINESETTER'
+#...........................................................................................................
+### https://github.com/TooTallNate/node-applescript ###
 APPLESCRIPT               = require 'applescript'
+#...........................................................................................................
+ƒ                         = ( x, precision = 2 ) -> x.toFixed precision
+
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS = {}
 
 #-----------------------------------------------------------------------------------------------------------
 app =
-  '%memo':        {}
-  'zoom-level':   0
-  # 'mm-per-px':    50 / 189
-  'mm-per-px':    100 / 377.94791
-  'jQuery':       $
-  'MKTS':         MKTS
-  'window':       window
-  'view-mode':    'dev'
+  '%memo':            {}
+  'zoom-level':       0
+  'base-zoom-level':  -0.15
+  'mm-per-px':        100 / 377.94791
+  'jQuery':           $
+  'MKTS':             MKTS
+  'window':           window
+  'view-mode':        'dev'
 
 #-----------------------------------------------------------------------------------------------------------
 on_file_menu_what_you_should_know_C = ->
@@ -56,7 +61,8 @@ on_file_menu_what_you_should_know_C = ->
 build_menu = ->
   #.........................................................................................................
   help_menu = new NW.Menu()
-  help_menu.append new NW.MenuItem label: 'about 眀快排字机'
+  help_menu.append new NW.MenuItem label: 'about mingkwai'
+  # help_menu.append new NW.MenuItem label: 'about 眀快排字机'
   help_menu.append new NW.MenuItem label: 'what you should know A'
   help_menu_entry = new NW.MenuItem label: 'Help', 'submenu': help_menu
   #.........................................................................................................
@@ -76,7 +82,8 @@ build_menu = ->
   #.........................................................................................................
   win_menu  = new NW.Menu type: 'menubar'
   # win_menu.append new NW.MenuItem label: '眀快排字机', 'submenu': app_menu
-  win_menu.createMacBuiltin '眀快排字机'
+  win_menu.createMacBuiltin 'mingkwai'
+  # win_menu.createMacBuiltin '眀快排字机'
   win_menu.insert file_menu_entry, 1
   win_menu.insert view_menu_entry, 3
   win_menu.append help_menu_entry
@@ -161,27 +168,37 @@ MKTS.maximize = ( app ) ->
 
 
 #-----------------------------------------------------------------------------------------------------------
-MKTS.zoom_to = ( me, level ) ->
+MKTS.revert_zoom = ( me ) ->
   ### TAINT code duplication ###
-  base_zoom_level = -0.15
-  win.zoomLevel   = level ? base_zoom_level
-  zoom_percent    = ( win.zoomLevel - base_zoom_level ) * 1.2 * 100
-  # echo "zoomed to level #{win.zoomLevel} (#{zoom_percent.toFixed 0}%)"
-  return win.zoomLevel
+  return unless ( last_zoom_level = me[ '%memo' ][ 'last-zoom-level' ] )?
+  return @zoom_to me, last_zoom_level
 
+#-----------------------------------------------------------------------------------------------------------
+MKTS.zoom_percent_from_level = ( me, level = null ) ->
+  level ?= win.zoomLevel
+  return ( level - me[ 'base-zoom-level' ] ) * 1.2 * 100
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.zoom_to = ( me, level = null ) ->
+  ### TAINT code duplication ###
+  me[ '%memo' ][ 'last-zoom-level' ]  = win.zoomLevel
+  win.zoomLevel                       = level ? me[ 'base-zoom-level' ]
+  #.........................................................................................................
+  help "zoomed to #{ƒ win.zoomLevel} (#{ƒ ( @zoom_percent_from_level me ), 0}%)"
+  return win.zoomLevel
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.zoom = ( me, delta ) ->
-  base_zoom_level = -0.15
+  me[ '%memo' ][ 'last-zoom-level' ]  = win.zoomLevel
+  #.........................................................................................................
   if delta?
     if ( delta > 0 and win.zoomLevel <= 8.8 ) or ( delta < 0 and win.zoomLevel >= -7.5 )
       win.zoomLevel += delta
+  #.........................................................................................................
   else
-    win.zoomLevel = base_zoom_level
-  zoom_percent = ( win.zoomLevel - base_zoom_level ) * 1.2 * 100
-  # echo "zoomed to level #{win.zoomLevel} (#{zoom_percent.toFixed 0}%)"
-  # debug '©zVBdI', ( $ '.flex-columns-wrap' ).height()
-  # debug '©zVBdI', ( $ '.flex-columns-wrap' ).height() * me[ 'mm-per-px' ], 'mm'
+    win.zoomLevel = me[ 'base-zoom-level' ]
+  #.........................................................................................................
+  help "zoomed to #{ƒ win.zoomLevel} (#{ƒ ( @zoom_percent_from_level me ), 0}%)"
   return win.zoomLevel
 
 #-----------------------------------------------------------------------------------------------------------
@@ -218,6 +235,7 @@ MKTS.demo = ( me ) ->
   md = require './demo-text'
   MKTS.zoom me, 2
   LINESETTER.demo me, md, ( error ) =>
+    MKTS.revert_zoom me
     help "MKTS.demo ok"
   return null
 
@@ -268,30 +286,35 @@ MKTS.toggle_view = ( me ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_print_dialog = ( me ) ->
+  @switch_to_print_view me
   window.print()
+  @switch_to_dev_view me
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.open_save_dialog = ( me ) -> throw new Error "not implemented"
+MKTS.save = ( me ) -> throw new Error "not implemented"
+  # route   = '/tmp/mkts/index.html'
+  # njs_fs.writeFileSync route, ( $ 'html' ).outerHTML()
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_print_preview = ( me ) ->
-  # route   = '/tmp/mkts/index.html'
-  # njs_fs.writeFileSync route, ( $ 'html' ).outerHTML()
   @switch_to_print_view me
   # MKTS.open_print_dialog()
   #.........................................................................................................
-  ### thx to http://apple.stackexchange.com/a/36947/59895 for the script ###
+  ### thx to http://apple.stackexchange.com/a/36947/59895, http://www.jaimerios.com/?p=171 ###
   script = """
-  tell application "mingkwai"
-    activate
-    tell application "System Events" to keystroke "p" using {shift down, command down}
-    delay 1
-    tell application "System Events" to key code 48 using shift down
-    tell application "System Events" to key code 48 using shift down
-    tell application "System Events" to key code 48 using shift down
-    tell application "System Events" to key code 48 using shift down
-    tell application "System Events" to key code 48 using shift down
-    tell application "System Events" to key code 49
-    tell application "System Events" to key code 125
-    tell application "System Events" to key code 49
-  end tell"""
+    tell application "System Events"
+      tell process "mingkwai"
+        keystroke "p" using {shift down, command down}
+        repeat until exists window "Print"
+        end repeat
+        click menu button "PDF" of window "Print"
+        repeat until exists menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+        end repeat
+        click menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+      end tell
+    end tell
+    """
   #.........................................................................................................
   APPLESCRIPT.execString script, ( error ) =>
     throw error if error?

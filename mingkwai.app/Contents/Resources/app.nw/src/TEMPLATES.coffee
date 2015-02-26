@@ -48,7 +48,8 @@ GAP         = new_tag ( P... ) -> TAG 'gap',      P...
     HTML =>
       HEAD =>
         META charset: 'utf-8'
-        TITLE '眀快排字机'
+        TITLE 'mingkwai'
+        # TITLE '眀快排字机'
         LINK rel: 'shortcut icon', href: './favicon.icon'
         LINK rel: 'stylesheet', href: './html5doctor-css-reset.css'
         LINK rel: 'stylesheet', href: './mingkwai-fixes.css'

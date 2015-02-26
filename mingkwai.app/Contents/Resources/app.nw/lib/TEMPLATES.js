@@ -92,7 +92,7 @@
             META({
               charset: 'utf-8'
             });
-            TITLE('眀快排字机');
+            TITLE('mingkwai');
             LINK({
               rel: 'shortcut icon',
               href: './favicon.icon'
