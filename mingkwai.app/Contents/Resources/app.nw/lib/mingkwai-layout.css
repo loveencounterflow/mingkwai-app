@@ -68,10 +68,7 @@ gap {
 }
 /* ###################################################################################################### */
 ribbon {
-  border: 1px solid #000;
   display: none;
-  position: fixed;
-  z-index: 1000;
 }
 tool {
   border: 1px solid #000;

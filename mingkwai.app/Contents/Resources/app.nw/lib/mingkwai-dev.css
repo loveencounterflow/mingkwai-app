@@ -52,10 +52,7 @@ gap {
   max-width: 5mm;
 }
 ribbon {
-  border: 1px solid #000;
   display: none;
-  position: fixed;
-  z-index: 1000;
 }
 tool {
   border: 1px solid #000;
@@ -204,8 +201,32 @@ p.is-last {
   .flex-columns-wrap {
     outline: 1px dotted #ee82ee;
   }
-  ribbon {
+  ribbon,
+  ribbon.bar {
+    border: 1px solid #000;
+    background-color: rgba(100,100,100,0.25);
+    position: fixed;
+    z-index: 1000;
     display: flex;
+    width: 100%;
+    padding: 0.5mm;
+  }
+  ribbon.float {
+    draggable: true;
+    resize: both;
+    overflow: hidden;
+  }
+  ribbon.float.vertical {
+    width: 10mm;
+    height: 10%;
+    flex-direction: column;
+    top: 10mm;
+    left: 1mm;
+  }
+  ribbon.dock,
+  ribbon.tile,
+  tool {
+    margin: 0.5mm;
   }
   #focus {
     background-color: rgba(100,0,0,0.25);

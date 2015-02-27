@@ -161,7 +161,14 @@
           return BODY(function() {
             if (true) {
               DIV('#mkts-top');
-              RIBBON(function() {
+              RIBBON('.bar.horizontal.top', function() {
+                TOOL('.save', "save");
+                TOOL('.open', "open");
+                return TOOL('.print', "print");
+              });
+              RIBBON('.float.vertical.left', {
+                draggable: 'true'
+              }, function() {
                 TOOL('.save', "save");
                 TOOL('.open', "open");
                 return TOOL('.print', "print");

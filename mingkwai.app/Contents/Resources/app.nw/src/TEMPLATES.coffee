@@ -73,10 +73,25 @@ TOOL        = new_tag ( P... ) -> TAG 'tool',     P...
       BODY =>
         if yes
           DIV '#mkts-top'
-          RIBBON =>
+          # RIBBON '.bar' =>
+          # RIBBON '.dock' =>
+          # RIBBON '.float' =>
+          # RIBBON '.tile' =>
+          #   TOOLBOX =>
+          #     TOOL '.save', "save"
+          #     TOOL '.open', "open"
+          #     TOOL '.print', "print"
+
+          RIBBON '.bar.horizontal.top', =>
             TOOL '.save', "save"
             TOOL '.open', "open"
             TOOL '.print', "print"
+
+          RIBBON '.float.vertical.left', draggable: 'true', =>
+            TOOL '.save', "save"
+            TOOL '.open', "open"
+            TOOL '.print', "print"
+
           ARTBOARD =>
             for page_nr in [ 1 .. 4 ]
               PAPER =>

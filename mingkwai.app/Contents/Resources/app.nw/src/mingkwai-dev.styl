@@ -115,7 +115,32 @@
   /* ------------------------------------------------------------------------------------------------------
    UI */
   ribbon
+  ribbon.bar
+    border:                 1px solid black
+    background-color:       $gray
+    position:               fixed
+    z-index:                1000
     display:                flex
+    width:                  100%
+    padding:                0.5mm
+
+  ribbon.float
+    draggable:              true // not CSS3
+    resize:                 both
+    overflow:               hidden
+
+  ribbon.float.vertical
+    width:                  10mm
+    height:                 10%
+    flex-direction:         column
+    top:                    10mm
+    left:                   1mm
+
+  ribbon.dock
+  ribbon.tile
+
+  tool
+    margin:                 0.5mm
 
   /* ------------------------------------------------------------------------------------------------------
    COLUMNS */
