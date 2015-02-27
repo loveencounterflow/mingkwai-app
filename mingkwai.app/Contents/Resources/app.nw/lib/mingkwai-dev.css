@@ -51,6 +51,25 @@ gap {
   min-width: 5mm;
   max-width: 5mm;
 }
+ribbon {
+  border: 1px solid #000;
+  display: none;
+  position: fixed;
+  z-index: 1000;
+}
+tool {
+  border: 1px solid #000;
+  display: block;
+}
+tool.save {
+  background-color: #f00;
+}
+tool.open {
+  background-color: #ffa500;
+}
+tool.print {
+  background-color: #008000;
+}
 .cork {
   display: none;
 }
@@ -184,6 +203,9 @@ p.is-last {
   }
   .flex-columns-wrap {
     outline: 1px dotted #ee82ee;
+  }
+  ribbon {
+    display: flex;
   }
   #focus {
     background-color: rgba(100,0,0,0.25);

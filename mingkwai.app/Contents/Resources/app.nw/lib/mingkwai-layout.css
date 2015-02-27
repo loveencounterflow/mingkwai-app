@@ -67,6 +67,26 @@ gap {
   max-width: 5mm;
 }
 /* ###################################################################################################### */
+ribbon {
+  border: 1px solid #000;
+  display: none;
+  position: fixed;
+  z-index: 1000;
+}
+tool {
+  border: 1px solid #000;
+  display: block;
+}
+tool.save {
+  background-color: #f00;
+}
+tool.open {
+  background-color: #ffa500;
+}
+tool.print {
+  background-color: #008000;
+}
+/* ###################################################################################################### */
 .cork {
   display: none;
 }
