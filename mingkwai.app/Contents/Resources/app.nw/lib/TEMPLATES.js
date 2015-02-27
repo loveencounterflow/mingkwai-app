@@ -159,7 +159,9 @@
                         return WRAP(function() {
                           COLUMN(function() {});
                           GAP(function() {});
-                          COLUMN(function() {});
+                          COLUMN(function() {
+                            return RAW("<p>Just as she said this, she no­ticed that one of the trees had a door lead­ing right into it.\n‘That’s very cu­ri­ous!’ she thought. ‘But every­thing’s cu­ri­ous to­day. I think I may as\nwell go in at once.’ And in she went.</p></p>");
+                          });
                           GAP(function() {});
                           return COLUMN(function() {});
                         });

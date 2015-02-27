@@ -107,7 +107,7 @@
   };
 
   this.demo = function(app, md, handler) {
-    var BD, MKTS, available_height, available_width, available_width_mm, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, last_line_height, line_count, live, mm_from_px, new_line_entry, page, seen_lines, t0, t1_a, test_line, window, ƒ;
+    var BD, MKTS, available_height, available_width, available_width_mm, cache_hits, cache_misses, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, last_line_height, line_count, live, mm_from_px, new_line_entry, page, seen_lines, t0, t1_a, test_line, window, ƒ;
     jQuery = app['jQuery'];
     MKTS = app['MKTS'];
     window = app['window'];
@@ -159,10 +159,17 @@
       }
       return 'is-middle';
     };
+    cache_hits = 0;
+    cache_misses = 0;
     get_line = function(hotml, is_first, is_last) {
 
       /* TAINT corks not always needed */
-      var R, line, width_mm;
+      var R, left_cork, line, right_cork, width_mm;
+      if ((seen_lines.get(hotml)) != null) {
+        cache_hits += 1;
+      } else {
+        cache_misses += 1;
+      }
       if (typeof R !== "undefined" && R !== null) {
         return (R = seen_lines.get(hotml));
       }
@@ -176,22 +183,30 @@
       }
       line.css('width', width_mm + "mm");
       line.wrapInner(jQuery("<span class='text-wrapper'></span>"));
-      R = [null, line, null];
+      left_cork = jQuery("<span class='cork'></span>");
+      right_cork = jQuery("<span class='cork'></span>");
+      R = [left_cork, line, right_cork];
+      line.prepend(left_cork);
+      line.append(right_cork);
       seen_lines.set(hotml, R);
       return R;
     };
     test_line = function(action, hotml, is_first, is_last) {
 
       /* Must return whether HTML fits into one line. */
+
+      /* TAINT consider using `scrollHeight`, but must keep state */
       var R, bottom, left_cork, line, right_cork, top, top_css, _, _ref, _ref1;
       switch (action) {
         case 'set':
           if (column_idx <= column_count - 1) {
             _ref = get_line(hotml, is_first, is_last), _ = _ref[0], line = _ref[1], _ = _ref[2];
+            if (((line.attr('class')).indexOf('test')) > 0) {
+              line.removeClass('test');
+            }
             top_css = (column_linecount * 5) + "mm";
             line.css('top', top_css);
             column_linecount += +1;
-            (line.find('.cork')).detach();
             (columns.eq(column_idx)).append(line);
             bottom = BD.relative_bottom_of(line.find('.text-wrapper'), 'wrap', 0);
             if (available_height - bottom < 0) {
@@ -215,8 +230,9 @@
         case 'test':
           process.stdout.write('.');
           _ref1 = get_line(hotml, is_first, is_last), left_cork = _ref1[0], line = _ref1[1], right_cork = _ref1[2];
+          line.addClass('test');
           (columns.eq(0)).append(line);
-          R = (line.get(0)).scrollHeight < 20;
+          R = (BD.top_of(left_cork, 0)) === (BD.top_of(right_cork, 0));
           line.detach();
           return R;
         default:
@@ -275,6 +291,15 @@
       };
     })(this))).pipe((function(_this) {
       return function() {
+        return $(function(block_hotml, send) {
+          if (block_hotml != null) {
+            help(HOTMETAL.as_html(block_hotml));
+            return send(block_hotml);
+          }
+        });
+      };
+    })(this)()).pipe((function(_this) {
+      return function() {
         line_count = 0;
         return $(function(block_hotml, send, end) {
           var dt, dt_a, t1;
@@ -294,6 +319,8 @@
             dt_a = t1_a - t0;
             help("demo took " + (ƒ(dt / 1000)) + "s");
             help("(" + (ƒ(dt_a / 1000)) + "s before point 'a')");
+            debug('©hsgjo', "cache_hits", cache_hits);
+            debug('©hsgjo', "cache_misses", cache_misses);
             handler(null);
             return end();
           }

@@ -80,6 +80,9 @@ GAP         = new_tag ( P... ) -> TAG 'gap',      P...
                       COLUMN =>
                       GAP =>
                       COLUMN =>
+                        RAW """<p>Just as she said this, she no­ticed that one of the trees had a door lead­ing right into it.
+                          ‘That’s very cu­ri­ous!’ she thought. ‘But every­thing’s cu­ri­ous to­day. I think I may as
+                          well go in at once.’ And in she went.</p></p>"""
                       GAP =>
                       COLUMN =>
           DIV '#mkts-bottom'

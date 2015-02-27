@@ -51,6 +51,9 @@ gap {
   min-width: 5mm;
   max-width: 5mm;
 }
+.cork {
+  display: none;
+}
 body,
 .paper,
 .page {
@@ -185,7 +188,7 @@ p.is-last {
   #focus {
     background-color: rgba(100,0,0,0.25);
   }
-  .cork {
+  .test .cork {
     display: inline-block;
     width: 0;
     height: 100%;

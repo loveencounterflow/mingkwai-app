@@ -150,28 +150,14 @@ HOTMETAL                  = D.HOTMETAL
   #   R = jQuery HOTMETAL.as_html hotml
   #   return R
 
-  # #---------------------------------------------------------------------------------------------------------
-  # get_line = ( hotml, is_first, is_last ) ->
-  #   ### TAINT corks not always needed ###
-  #   return ( R = seen_lines.get hotml ) if R?
-  #   line              = jQuery HOTMETAL.as_html hotml
-  #   line.addClass get_class is_first, is_last
-  #   width_mm          = available_width_mm
-  #   ### TAINT shouldn't use absolute length here; depends on font size, hanging character ###
-  #   width_mm         += +1 if has_hanging_margin hotml
-  #   line.css 'width', "#{width_mm}mm"
-  #   line.wrapInner jQuery "<span class='text-wrapper'></span>"
-  #   left_cork         = jQuery "<span class='cork'></span>"
-  #   right_cork        = jQuery "<span class='cork'></span>"
-  #   R                 = [ left_cork, line, right_cork, ]
-  #   line.prepend  left_cork
-  #   line.append  right_cork
-  #   seen_lines.set hotml, R
-  #   return R
-
+  cache_hits = 0
+  cache_misses = 0
   #---------------------------------------------------------------------------------------------------------
   get_line = ( hotml, is_first, is_last ) ->
     ### TAINT corks not always needed ###
+    if ( seen_lines.get hotml )?
+      cache_hits += 1
+    else cache_misses += 1
     return ( R = seen_lines.get hotml ) if R?
     line              = jQuery HOTMETAL.as_html hotml
     line.addClass get_class is_first, is_last
@@ -180,28 +166,29 @@ HOTMETAL                  = D.HOTMETAL
     width_mm         += +1 if has_hanging_margin hotml
     line.css 'width', "#{width_mm}mm"
     line.wrapInner jQuery "<span class='text-wrapper'></span>"
-    # left_cork         = jQuery "<span class='cork'></span>"
-    # right_cork        = jQuery "<span class='cork'></span>"
-    # R                 = [ left_cork, line, right_cork, ]
-    R                 = [ null, line, null, ]
-    # line.prepend  left_cork
-    # line.append  right_cork
+    left_cork         = jQuery "<span class='cork'></span>"
+    right_cork        = jQuery "<span class='cork'></span>"
+    R                 = [ left_cork, line, right_cork, ]
+    line.prepend  left_cork
+    line.append  right_cork
     seen_lines.set hotml, R
     return R
 
   #---------------------------------------------------------------------------------------------------------
   test_line = ( action, hotml, is_first, is_last ) ->
     ### Must return whether HTML fits into one line. ###
+    ### TAINT consider using `scrollHeight`, but must keep state ###
     # return save_line hotml, is_first, is_last, line_idx if action is 'set'
     switch action
       #.....................................................................................................
       when 'set'
         if column_idx <= column_count - 1
           [ _, line, _, ]   = get_line hotml, is_first, is_last
+          line.removeClass 'test' if ( ( line.attr 'class' ).indexOf 'test' ) > 0
           top_css           = "#{column_linecount * 5}mm"
           line.css 'top',     top_css
           column_linecount += +1
-          ( line.find '.cork' ).detach()
+          # ( line.find '.cork' ).detach()
           ( columns.eq column_idx ).append line
           bottom = BD.relative_bottom_of ( line.find '.text-wrapper' ), 'wrap', 0
           # bottom = BD.relative_bottom_of ( line.find '.text-wrapper' ), 'wrap'
@@ -227,14 +214,9 @@ HOTMETAL                  = D.HOTMETAL
         [ left_cork
           line
           right_cork ]    = get_line hotml, is_first, is_last
+        line.addClass 'test'
         ( columns.eq 0 ).append line
-        # l = line.get 0
-        # debug()
-        # debug '©SEJyD', line.text()
-        # debug '©ereqk', ( BD.x_height_of line ), line.height(), l.clientHeight, l.offsetHeight, l.scrollHeight
-        # debug '©ereqk', l.scrollHeight
-        # R                 = ( BD.top_of left_cork, 0 ) == ( BD.top_of right_cork, 0 )
-        R = ( line.get 0 ).scrollHeight < 20
+        R                 = ( BD.top_of left_cork, 0 ) == ( BD.top_of right_cork, 0 )
         line.detach()
         return R
       #.....................................................................................................
@@ -337,6 +319,12 @@ HOTMETAL                  = D.HOTMETAL
     #       end()
     #.......................................................................................................
     .pipe do =>
+      return $ ( block_hotml, send ) =>
+        if block_hotml?
+          help HOTMETAL.as_html block_hotml
+          send block_hotml
+    #.......................................................................................................
+    .pipe do =>
       line_count = 0
       return $ ( block_hotml, send, end ) =>
         # step ( resume ) =>
@@ -354,6 +342,8 @@ HOTMETAL                  = D.HOTMETAL
           dt_a  = t1_a - t0
           help "demo took #{ƒ dt / 1000}s"
           help "(#{ƒ dt_a / 1000}s before point 'a')"
+          debug '©hsgjo', "cache_hits", cache_hits
+          debug '©hsgjo', "cache_misses", cache_misses
           handler null
           end()
   #.........................................................................................................
