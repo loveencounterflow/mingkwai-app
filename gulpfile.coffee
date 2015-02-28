@@ -59,7 +59,8 @@ gulp.task 'make', [
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'make-app', ->
-  gulp.src  join app_root, '**/*'
+  # gulp.src  ( join app_root, '**/*' ), { base: app_root, }
+  gulp.src  '/Volumes/Storage/io/mingkwai-app/mingkwai.app/Contents/Info.plist'
   gulp.dest release_root
 
 
