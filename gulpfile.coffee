@@ -6,9 +6,11 @@ join                      = ( require 'path' ).join
 CND                       = require 'cnd'
 badge                     = 'MKTS/gulp'
 warn                      = CND.get_logger 'warn',    badge
+#...........................................................................................................
 gulp                      = require 'gulp'
 coffee                    = require 'gulp-coffee'
 stylus                    = require 'gulp-stylus'
+shell                     = require 'gulp-shell'
 #...........................................................................................................
 sourcemaps                = require 'gulp-sourcemaps'
 #...........................................................................................................
@@ -22,6 +24,7 @@ gulp.task 'hello', ->
 gulp.task 'build', [
   'build-coffee'
   'build-stylus'
+  'build-html'
   ]
 
 #-----------------------------------------------------------------------------------------------------------
@@ -41,6 +44,11 @@ gulp.task 'build-stylus', ->
     .pipe sourcemaps.write()
     .pipe gulp.dest join root, 'lib'
   return null
+
+#-----------------------------------------------------------------------------------------------------------
+gulp.task 'build-html', shell.task [
+  'node --harmony ./mingkwai.app/Contents/Resources/app.nw/lib/generate-html.js'
+  ]
 
 
 
