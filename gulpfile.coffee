@@ -6,6 +6,7 @@ join                      = ( require 'path' ).join
 CND                       = require 'cnd'
 badge                     = 'MKTS/gulp'
 warn                      = CND.get_logger 'warn',    badge
+info                      = CND.get_logger 'info',    badge
 #...........................................................................................................
 gulp                      = require 'gulp'
 coffee                    = require 'gulp-coffee'
@@ -59,9 +60,13 @@ gulp.task 'make', [
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'make-app', ->
-  # gulp.src  ( join app_root, '**/*' ), { base: app_root, }
-  gulp.src  '/Volumes/Storage/io/mingkwai-app/mingkwai.app/Contents/Info.plist'
-  gulp.dest release_root
+  temp_route = join '/tmp', 'mingkwai.app' + CND.random_integer 1e5, 1e6
+  info temp_route
+  # gulp.src  join app_root, '**/*'
+  # gulp.src( ( join app_root, '**/*' ), { base: app_root, } ).on 'error', warn
+  # # gulp.src  '/Volumes/Storage/io/mingkwai-app/mingkwai.app/Contents/Info.plist'
+  #   .pipe gulp.dest release_root
+  return null
 
 
 
