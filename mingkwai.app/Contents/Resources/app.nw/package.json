@@ -15,7 +15,7 @@
   "no-edit-menu": false,
   "window": {
     "x": 0,
-    "y": 0,
+    "y": 20,
     "width": 1200,
     "height": 800,
     "show": true,
@@ -35,6 +35,7 @@
     "coffeenode-suspend": "^0.1.4",
     "coffeenode-teacup": "^0.1.2",
     "pipedreams2": "^0.2.8",
+    "stylefill": "^1.0.1",
     "stylus": "^0.49.3"
   }
 }

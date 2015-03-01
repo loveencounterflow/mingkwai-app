@@ -101,12 +101,9 @@ HOTMETAL                  = D.HOTMETAL
   container           = ( jQuery 'wrap' ).eq 0
   # columns             = container.find 'column'
   columns             = jQuery 'column'
-  # for idx in [0,1,2]
-  #   debug '©9DN9H', ( columns.eq idx ).outerHTML()
   column_count        = columns.length
   seen_lines          = null
-  # debug '©Qdx1P', md
-  last_line_height    = null
+  # last_line_height    = null
 
   #---------------------------------------------------------------------------------------------------------
   mm_from_px  = ( px ) -> px * app[ 'mm-per-px' ]

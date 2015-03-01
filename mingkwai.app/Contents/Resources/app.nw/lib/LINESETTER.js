@@ -107,7 +107,7 @@
   };
 
   this.demo = function(app, md, handler) {
-    var BD, MKTS, available_height, available_width, available_width_mm, cache_hits, cache_misses, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, last_line_height, line_count, live, mm_from_px, new_line_entry, page, seen_lines, t0, t1_a, test_line, window, ƒ;
+    var BD, MKTS, available_height, available_width, available_width_mm, cache_hits, cache_misses, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, line_count, live, mm_from_px, new_line_entry, page, seen_lines, t0, t1_a, test_line, window, ƒ;
     jQuery = app['jQuery'];
     MKTS = app['MKTS'];
     window = app['window'];
@@ -117,7 +117,6 @@
     columns = jQuery('column');
     column_count = columns.length;
     seen_lines = null;
-    last_line_height = null;
     mm_from_px = function(px) {
       return px * app['mm-per-px'];
     };

@@ -60,7 +60,7 @@ BD.relative_bottom_of = ( element, selector, y = null ) ->
   return ( @relative_top_of element, selector, y ) + @height_of element
 
 
-BD.x_height_of = ( element ) -> @height_of element
+# BD.x_height_of = ( element ) -> @height_of element
 
 
 

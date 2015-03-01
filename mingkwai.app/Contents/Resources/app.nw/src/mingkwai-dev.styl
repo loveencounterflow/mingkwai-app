@@ -45,7 +45,8 @@
   paper
     margin:                 5mm
     background-color:       $white
-    outline:                1px dotted orange
+    // outline:                1px dotted orange
+    box-shadow              10px 10px 35px 0px rgba(0,0,0,0.5)
 
   page
     // background-color:       transparent
@@ -67,15 +68,15 @@
     // z-index:                -2
 
 
-  /* -----------------------------------------------------------------------------------------------------*/
-  .paper
-    outline:                1px dotted red
-    box-shadow              10px 10px 35px 0px rgba(0,0,0,0.5)
-
-  /* -----------------------------------------------------------------------------------------------------*/
-  .page
-    outline:                1px dotted blue
-    box-shadow              0px 0px 35px 10px rgba( 0, 0, 0, 0.5 )
+  //  /* -----------------------------------------------------------------------------------------------------*/
+  //  .paper
+  //    outline:                1px dotted red
+  //    box-shadow              10px 10px 35px 0px rgba(0,0,0,0.5)
+  //
+  //  /* -----------------------------------------------------------------------------------------------------*/
+  //  .page
+  //    outline:                1px dotted blue
+  //    box-shadow              0px 0px 35px 10px rgba( 0, 0, 0, 0.5 )
 
   // /* -----------------------------------------------------------------------------------------------------*/
   // .mingkwai-dev-page-marker
@@ -98,13 +99,12 @@
   //   // .page
   //   background-image:       url( './raster.gif' )
 
-  /* -----------------------------------------------------------------------------------------------------*/
-  body
-  .paper
-  .mingkwai-dev-page-marker
-  .page
-    // background-color:       rgba( 0, 0, 0, 0.01 )
-    background-color:       transparent
+  //  /* -----------------------------------------------------------------------------------------------------*/
+  //  body
+  //  .paper
+  //  .mingkwai-dev-page-marker
+  //  .page
+  //    // background-color:       rgba( 0, 0, 0, 0.01 )
 
 
   /* -----------------------------------------------------------------------------------------------------*/
@@ -114,12 +114,74 @@
 
   /* ------------------------------------------------------------------------------------------------------
    UI */
+
+  html, body
+    height:                 100%
+
+  html
+    background-image:       url( ./background_linen.png ) !important
+    background-color:       gray !important
+
+  body
+    background-color:       transparent
+
+  outer
+    height:                 100%
+    width:                  100%
+    display:                flex
+    flex-direction:         column
+    justify-content:        center
+    align-items:            stretch
+    // align-content:          stretch
+
+  // ### TAINT must distinguish vertical, horizontal panels ###
+  panel
+    // width:                  100%
+    // height:                 100%
+    top:                    0
+    left:                   0
+    overflow:               hidden
+    outline:                1px solid black
+    align-self:             strech
+
+  panel.top
+  panel.bottom
+    flex-grow:              0
+    flex-shrink:            0
+    height:                 150px
+
+  panel.center
+    overflow:               scroll
+    flex-basis:             main-size
+    flex-grow:              1
+    flex-shrink:            1
+
+  grip
+    flex-grow:              0
+    flex-shrink:            0
+
+  grip.horizontal
+    align-self:             stretch
+    height:                 10px
+    background-color:       $gray
+
+  boxer
+    width:                  100%
+    height:                 100%
+    position:               fixed
+    top:                    0
+    left:                   0
+    padding:                1mm
+    z-index:                1000
+    pointer-events:         none
+
+
   ribbon
   ribbon.bar
+    pointer-events:         auto
     border:                 1px solid black
     background-color:       $gray
     position:               fixed
-    z-index:                1000
     display:                flex
     width:                  100%
     padding:                0.5mm
@@ -133,14 +195,45 @@
     width:                  10mm
     height:                 10%
     flex-direction:         column
-    top:                    10mm
+
+  ribbon.float.horizontal
+    width:                  100%
+    height:                 10%
+    flex-direction:         row
+
+  ribbon.left
     left:                   1mm
+
+  ribbon.right
+    right:                  1mm
+
+  ribbon.top
+    top:                    10mm
+
+  ribbon.bottom
+    bottom:                 10mm
 
   ribbon.dock
   ribbon.tile
 
   tool
-    margin:                 0.5mm
+    pointer-events:         auto
+    // margin:                 0.5mm
+
+  tool.console
+    width:                  100%
+    height:                 100%
+    background-color:       $console-black
+    color:                  white
+    overflow:               auto
+
+  tool.console div
+    font-family:            "Flow DejaVu Sans Mono", 'Courier', monospace
+    font-size:              2.5mm
+    line-height:            3mm
+
+  // tool.console.cursor
+
 
   /* ------------------------------------------------------------------------------------------------------
    COLUMNS */

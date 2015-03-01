@@ -66,8 +66,4 @@
     return (this.relative_top_of(element, selector, y)) + this.height_of(element);
   };
 
-  BD.x_height_of = function(element) {
-    return this.height_of(element);
-  };
-
 }).call(this);

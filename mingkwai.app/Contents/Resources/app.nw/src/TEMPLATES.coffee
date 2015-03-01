@@ -31,16 +31,23 @@ TEACUP                    = require 'coffeenode-teacup'
 #-----------------------------------------------------------------------------------------------------------
 for name_ of TEACUP
   eval "#{name_} = TEACUP[ #{rpr name_} ]"
-ARTBOARD    = new_tag ( P... ) -> TAG 'artboard', P...
-PAGE        = new_tag ( P... ) -> TAG 'page',     P...
-PAPER       = new_tag ( P... ) -> TAG 'paper',    P...
-GALLEY      = new_tag ( P... ) -> TAG 'galley',   P...
-BOX         = new_tag ( P... ) -> TAG 'box',      P...
-COLUMN      = new_tag ( P... ) -> TAG 'column',   P...
-WRAP        = new_tag ( P... ) -> TAG 'wrap',     P...
-GAP         = new_tag ( P... ) -> TAG 'gap',      P...
-RIBBON      = new_tag ( P... ) -> TAG 'ribbon',   P...
-TOOL        = new_tag ( P... ) -> TAG 'tool',     P...
+ARTBOARD    = new_tag ( p... ) -> TAG 'artboard', p...
+PAGE        = new_tag ( p... ) -> TAG 'page',     p...
+PAPER       = new_tag ( p... ) -> TAG 'paper',    p...
+GALLEY      = new_tag ( p... ) -> TAG 'galley',   p...
+BOX         = new_tag ( p... ) -> TAG 'box',      p...
+COLUMN      = new_tag ( p... ) -> TAG 'column',   p...
+WRAP        = new_tag ( p... ) -> TAG 'wrap',     p...
+GAP         = new_tag ( p... ) -> TAG 'gap',      p...
+RIBBON      = new_tag ( p... ) -> TAG 'ribbon',   p...
+TOOL        = new_tag ( p... ) -> TAG 'tool',     p...
+BOXER       = new_tag ( p... ) -> TAG 'boxer',    p...
+PANEL       = new_tag ( p... ) -> TAG 'panel',    p...
+GRIP        = new_tag ( p... ) -> TAG 'grip',     p...
+OUTER       = new_tag ( p... ) -> TAG 'outer',    p...
+#...........................................................................................................
+JS          = new_tag ( route ) -> SCRIPT type: 'text/javascript',  src: route
+CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
 
 #-----------------------------------------------------------------------------------------------------------
 @layout = ->
@@ -53,111 +60,141 @@ TOOL        = new_tag ( P... ) -> TAG 'tool',     P...
         TITLE 'mingkwai'
         # TITLE '眀快排字机'
         LINK rel: 'shortcut icon', href: './favicon.icon'
-        LINK rel: 'stylesheet', href: './html5doctor-css-reset.css'
-        LINK rel: 'stylesheet', href: './mingkwai-fixes.css'
-        LINK rel: 'stylesheet', href: './mingkwai-custom-elements.css'
-        LINK rel: 'stylesheet', href: './mingkwai-colors.css'
-        LINK rel: 'stylesheet', href: './mingkwai-layout.css'
-        LINK rel: 'stylesheet', href: './mingkwai-fonts.css'
-        LINK rel: 'stylesheet', href: './mingkwai-main.css'
-        LINK rel: 'stylesheet', href: './mingkwai-dev.css'
-        SCRIPT type: 'text/javascript', src: './jquery-2.1.3.js'
-        SCRIPT type: 'text/javascript', src: './outerHTML-2.1.0.js'
+        CSS './html5doctor-css-reset.css'
+        CSS './mingkwai-fixes.css'
+        CSS './mingkwai-custom-elements.css'
+        CSS './mingkwai-colors.css'
+        CSS './mingkwai-layout.css'
+        CSS './mingkwai-fonts.css'
+        CSS './mingkwai-main.css'
+        CSS './mingkwai-dev.css'
+        JS  './jquery-2.1.3.js'
+        CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
+        JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
+        JS  './outerHTML-2.1.0.js'
+        # JS  './cssutilities/CSSUtilities[commented].js'
+        JS  './polyfill.min.js'
         # ### https://github.com/FremyCompany/css-regions-polyfill/ ###
-        # SCRIPT type: 'text/javascript', src: './css-regions-polyfill.min.js'
-        SCRIPT type: 'text/javascript', src: './blaidddrwg.js'
-        SCRIPT type: 'text/javascript', src: './browser.js'
-        # SCRIPT type: 'text/javascript', src: './LINESETTER.js'
+        # JS  './css-regions-polyfill.min.js'
+        JS  './blaidddrwg.js'
+        JS  './browser.js'
+        # JS  '../node_modules/stylefill/js/stylefill.js'
+        # JS  './draggable-stylefill.js'
+        # JS  './LINESETTER.js'
         # SCRIPT src: '/socket.io/socket.io.js'
       #=====================================================================================================
+      COFFEESCRIPT =>
+        ( $ 'document' ).ready =>
+          ( $ 'ribbon.float' ).draggable()
+          #.................................................................................................
+          # CSSUtilities.define 'mode', 'browser'
+          # CSSUtilities.define 'async', false
+          # CSSUtilities.init()
+          # for rule in CSSUtilities.getCSSRules '#dYPFk'
+          #   console.log '©8fTQT', rule
+            # console.log '©8fTQT', css if ( css = rule[ 'css' ] ).length > 0
+          max_columns = window.max_columns = Polyfill { declarations: [ 'colspan:*', ], }
+          # max_columns = window.max_columns = Polyfill declarations: [ 'max-columns:*', ]
+          # console.log max_columns.getMatches()
+          max_columns.doMatched ( rules ) ->
+            rules.each ( rule ) -> console.log rule
+      #=====================================================================================================
       BODY =>
-        if yes
-          DIV '#mkts-top'
-          # RIBBON '.bar' =>
-          # RIBBON '.dock' =>
-          # RIBBON '.float' =>
-          # RIBBON '.tile' =>
-          #   TOOLBOX =>
-          #     TOOL '.save', "save"
-          #     TOOL '.open', "open"
-          #     TOOL '.print', "print"
-
-          RIBBON '.bar.horizontal.top', =>
+        #...............................................................................................
+        BOXER =>
+          RIBBON '.float.vertical.left', =>
             TOOL '.save', "save"
             TOOL '.open', "open"
             TOOL '.print', "print"
+        OUTER =>
+          PANEL '.top', => "top"
+          # RIBBON '.bar.horizontal.top', =>
+            #   TOOL '.save', "save"
+            #   TOOL '.open', "open"
+            #   TOOL '.print', "print"
+          #...................................................................................................
+          GRIP '.horizontal', =>
+          #...................................................................................................
+          PANEL '.center', '.main', =>
+            DIV '#mkts-top'
+            #...................................................................................................
+            ARTBOARD =>
+              #...............................................................................................
+              for page_nr in [ 1 .. 4 ]
+                PAPER =>
+                  PAGE =>
+                    GALLEY =>
+                      WRAP =>
+                        COLUMN =>
+                        GAP =>
+                        COLUMN =>
+                          RAW """
+                            <h1 id='dYPFk'>helo</h1>
+                            <p>Just as she said this, she no­ticed that one of the trees had a door lead­ing right into it.
+                            ‘That’s very cu­ri­ous!’ she thought. ‘But every­thing’s cu­ri­ous to­day. I think I may as
+                            well go in at once.’ And in she went.</p></p>"""
+                        GAP =>
+                        COLUMN =>
+            #...................................................................................................
+            DIV '#mkts-bottom'
+          #...................................................................................................
+          GRIP '.horizontal'
+          #...................................................................................................
+          PANEL '.bottom', =>
+            TOOL '#console.console'
+            DIV '#console-bottom'
 
-          RIBBON '.float.vertical.left', draggable: 'true', =>
-            TOOL '.save', "save"
-            TOOL '.open', "open"
-            TOOL '.print', "print"
 
-          ARTBOARD =>
-            for page_nr in [ 1 .. 4 ]
-              PAPER =>
-                PAGE =>
-                  GALLEY =>
-                    WRAP =>
-                      COLUMN =>
-                      GAP =>
-                      COLUMN =>
-                        RAW """<p>Just as she said this, she no­ticed that one of the trees had a door lead­ing right into it.
-                          ‘That’s very cu­ri­ous!’ she thought. ‘But every­thing’s cu­ri­ous to­day. I think I may as
-                          well go in at once.’ And in she went.</p></p>"""
-                      GAP =>
-                      COLUMN =>
-          DIV '#mkts-bottom'
-        if no
-          DIV '#mkts-top'
-          # DIV '#focus'
-          DIV '.paper', =>
-            #.................................................................................................
-            # #### pixel grid ###
-            # DIV '.grid.pixel-grid', =>
-            #   for idx in [ 1 .. 100 ]
-            #     y = idx * 10
-            #     DIV '.gridline.horizontal', { style: "top:#{y}px;", }
-            #.................................................................................................
-            #### baseline grid ###
-            DIV '.grid.baseline-grid', =>
-              for idx in [ 1 .. 53 ]
-                ### get offset from CSS ###
-                ### TAINT should be 5 ###
-                y = 14 + idx * 4.9
-                DIV '.gridline.horizontal', { style: "top:#{y}mm;", }
-            # DIV '#x', { style: "height:100mm;width:100mm;outline:1px solid red;", }
-            #.................................................................................................
-            DIV '.mingkwai-dev-page-marker', =>
-            DIV '.page', =>
-              # H1 "眀快排字机"
-              # DIV =>
-              #   SPAN => '〇'
-              #   SPAN '.jzr-babel', '〇'
-              # DIV """"""
-              # DIV """"""
-              # DIV """"""
-              # DIV """"""
-              # DIV """"""
-              # DIV """"""
-              # DIV """𠀀 𠀁 𠀂 𠀃 𠀄 𠀅 𠀆 𠀇 𠀈 𠀉 𠀊 𠀋 𠀌 𠀍 𠀎 𠀏 𠀐 𠀑 𠀒 𠀓 𠀔 𠀕 𠀖 𠀗 𠀘 𠀙 𠀚 𠀛 𠀜 𠀝 𠀞 𠀟 𠀠 𠀡 𠀢 𠀣 𠀤 𠀥 𠀦 𠀧 𠀨 𠀩 𠀪 𠀫 𠀬 𠀭 𠀮 𠀯 𠀰"""
-              #.............................................................................................
-              # DIV '#column-test', contenteditable: 'true', =>
-              #   RAW "dor-mouse much-ness me-mo-ry <span class='balken'></span>".replace /-/g, '\u00ad'
-              #.............................................................................................
-              DIV '.flex-columns-wrap', =>
-                DIV '#box-a.column.filled-with-id-content'
-                DIV '.column-gap'
-                DIV '#box-b.column.filled-with-id-content'
-                DIV '.column-gap'
-                DIV '#box-c.column.filled-with-id-content'
-                  # P '.is-first', contenteditable: 'true'
-                  # P '.is-last', contenteditable: 'true'
-                #   P '.is-middle', contenteditable: 'true'
-          # #---------------------------------------------------------------------------------------------------
-          # DIV '#content', => ( ( P => RAW paragraph ) for paragraph in _XXX_paragraphs )
-          #---------------------------------------------------------------------------------------------------
-          SCRIPT type: 'text/javascript', src: './browser.js'
-          DIV '#mkts-bottom'
+        #   DIV '#mkts-top'
+        #   # DIV '#focus'
+        #   DIV '.paper', =>
+        #     #.................................................................................................
+        #     # #### pixel grid ###
+        #     # DIV '.grid.pixel-grid', =>
+        #     #   for idx in [ 1 .. 100 ]
+        #     #     y = idx * 10
+        #     #     DIV '.gridline.horizontal', { style: "top:#{y}px;", }
+        #     #.................................................................................................
+        #     #### baseline grid ###
+        #     DIV '.grid.baseline-grid', =>
+        #       for idx in [ 1 .. 53 ]
+        #         ### get offset from CSS ###
+        #         ### TAINT should be 5 ###
+        #         y = 14 + idx * 4.9
+        #         DIV '.gridline.horizontal', { style: "top:#{y}mm;", }
+        #     # DIV '#x', { style: "height:100mm;width:100mm;outline:1px solid red;", }
+        #     #.................................................................................................
+        #     DIV '.mingkwai-dev-page-marker', =>
+        #     DIV '.page', =>
+        #       # H1 "眀快排字机"
+        #       # DIV =>
+        #       #   SPAN => '〇'
+        #       #   SPAN '.jzr-babel', '〇'
+        #       # DIV """"""
+        #       # DIV """"""
+        #       # DIV """"""
+        #       # DIV """"""
+        #       # DIV """"""
+        #       # DIV """"""
+        #       # DIV """𠀀 𠀁 𠀂 𠀃 𠀄 𠀅 𠀆 𠀇 𠀈 𠀉 𠀊 𠀋 𠀌 𠀍 𠀎 𠀏 𠀐 𠀑 𠀒 𠀓 𠀔 𠀕 𠀖 𠀗 𠀘 𠀙 𠀚 𠀛 𠀜 𠀝 𠀞 𠀟 𠀠 𠀡 𠀢 𠀣 𠀤 𠀥 𠀦 𠀧 𠀨 𠀩 𠀪 𠀫 𠀬 𠀭 𠀮 𠀯 𠀰"""
+        #       #.............................................................................................
+        #       # DIV '#column-test', contenteditable: 'true', =>
+        #       #   RAW "dor-mouse much-ness me-mo-ry <span class='balken'></span>".replace /-/g, '\u00ad'
+        #       #.............................................................................................
+        #       DIV '.flex-columns-wrap', =>
+        #         DIV '#box-a.column.filled-with-id-content'
+        #         DIV '.column-gap'
+        #         DIV '#box-b.column.filled-with-id-content'
+        #         DIV '.column-gap'
+        #         DIV '#box-c.column.filled-with-id-content'
+        #           # P '.is-first', contenteditable: 'true'
+        #           # P '.is-last', contenteditable: 'true'
+        #         #   P '.is-middle', contenteditable: 'true'
+        #   # #---------------------------------------------------------------------------------------------------
+        #   # DIV '#content', => ( ( P => RAW paragraph ) for paragraph in _XXX_paragraphs )
+        #   #---------------------------------------------------------------------------------------------------
+        #   SCRIPT type: 'text/javascript', src: './browser.js'
+        #   DIV '#mkts-bottom'
 
 
 

@@ -37,7 +37,6 @@ $galley-height              = $page-height  - $margin-top   - $margin-bottom
 
 
 /* ------------------------------------------------------------------------------------------------------ */
-artboard
 page
 paper
 galley
@@ -56,7 +55,7 @@ artboard
   // adjusted to available width on current zoom (so pages rearrange) ###
   width:                  500mm
   height:                 700mm
-  position:               absolute
+  // position:               absolute
   top:                    0
   left:                   0
   transform-origin:       top left
@@ -109,8 +108,9 @@ ribbon
 
 
 tool
-  border:                 1px solid black
+  // border:                 1px solid black
   display:                block
+
 
 tool.save
   background-color:       red
@@ -224,6 +224,13 @@ p.is-middle
 p.is-middle
 p.is-last
   margin-top:             0
+
+h1
+  max-columns:            1
+  colspan:                1
+
+h2
+  max-columns:            2
 
 // p.hangs-right-05ex
 //   margin-right:           100% + 0.5ex

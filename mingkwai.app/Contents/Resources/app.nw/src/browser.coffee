@@ -39,6 +39,10 @@ APPLESCRIPT               = require 'applescript'
 ƒ                         = ( x, precision = 2 ) -> x.toFixed precision
 
 
+# stylefill = require 'stylefill'
+# CND.dir stylefill
+# debug '©Av5or',  stylefill.init
+
 #-----------------------------------------------------------------------------------------------------------
 MKTS = {}
 
@@ -234,6 +238,9 @@ MKTS._capture = ( win, handler ) ->
 MKTS.demo = ( me ) ->
   # md = require './demo-text'
   md = """
+
+    # Behind the Looking-Glass
+
     Just as she said this, she noticed that one of the trees had a door
     leading right into it. 'That's very curious!' she thought. 'But
     everything's curious today. I think I may as well go in at once.' And in
@@ -394,7 +401,31 @@ MKTS.on_keydown = ( event ) ->
     return true
 
 #-----------------------------------------------------------------------------------------------------------
+MKTS.enable_console = ( selector = '#console' ) ->
+  console = $ '#console'
+  _write  = process.stderr.write.bind process.stderr
+  process.stderr.write = ( P... ) ->
+      # process.stdout.write '***' + P[ 0 ]
+      [ text, ... ] = P
+      lines = ( text.replace /\n$/, '' ).split '\n'
+      for line in lines
+        console.append $ "<div>#{CND.ANSI.as_html text}</div>"
+        console.stop().animate { scrollTop: ( $ '#console-bottom' ).offset()[ 'top' ] }, 500
+        # console.scrollTop ( $ '#console-bottom' ).offset()[ 'top' ]
+      _write P...
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 win.on 'document-end', ->
+  # CND.dir process.stderr.write
+  # setInterval ( -> help rpr new Date() ), 2000
+  MKTS.enable_console()
+  debug '©9kYTO', CND.ANSI.as_html CND.red 'red'
+  debug '©9kYTO', CND.ANSI.as_html CND.orange 'orange'
+  debug '©9kYTO', CND.ANSI.as_html CND.green 'green'
+  debug '©9kYTO', CND.ANSI.as_html CND.blue 'blue'
+  # process.stderr.pipe D$ ( data, send ) ->
+  #   stdout.write '***' + data
   step ( resume ) ->
     # MKTS.zoom_to app, -2
     # yield MKTS.wait resume
