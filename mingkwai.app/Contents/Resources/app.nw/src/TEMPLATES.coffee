@@ -66,7 +66,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
         JS  './outerHTML-2.1.0.js'
-        JS  './mingkwai-styles-fix.js'
+        JS  './mingkwai-xcss.js'
         JS  './blaidddrwg.js'
         JS  './browser.js'
       #=====================================================================================================

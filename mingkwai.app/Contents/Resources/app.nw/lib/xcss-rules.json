@@ -1,0 +1,39 @@
+{
+  "%selectors": {
+    "h1": [
+      0
+    ],
+    "h2": [
+      1
+    ],
+    "ribbon.draggable": [
+      2
+    ]
+  },
+  "rules": [
+    {
+      "media": "*",
+      "selectors": [
+        "h1"
+      ],
+      "property": "-mkts-max-columns",
+      "value": "1"
+    },
+    {
+      "media": "*",
+      "selectors": [
+        "h2"
+      ],
+      "property": "-mkts-max-columns",
+      "value": "2"
+    },
+    {
+      "media": "screen",
+      "selectors": [
+        "ribbon.draggable"
+      ],
+      "property": "-mkts-draggable",
+      "value": "xy"
+    }
+  ]
+}

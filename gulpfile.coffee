@@ -12,6 +12,7 @@ warn                      = CND.get_logger 'warn',    badge
 help                      = CND.get_logger 'help',    badge
 debug                     = CND.get_logger 'debug',    badge
 info                      = CND.get_logger 'info',    badge
+echo                      = CND.echo.bind CND
 #...........................................................................................................
 gulp                      = require 'gulp'
 coffee                    = require 'gulp-coffee'
@@ -83,21 +84,31 @@ gulp.task 'build-stylus', ->
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ( handler ) ->
-  RWP           = require join __dirname, module_root, './lib/rework-plugins'
-  input_route   = join module_root, 'lib/mingkwai-main.css'
-  output_route  = join module_root, 'lib/mingkwai-reworked-main.css'
+  RWP                   = require join __dirname, module_root, './lib/rework-plugins'
+  input_route           = join module_root, 'lib/mingkwai-main.css'
+  output_route          = join module_root, 'lib/mingkwai-reworked-main.css'
+  extras_route          = join module_root, 'lib/xcss-rules.json'
+  xcss_rules_json       = null
   #.........................................................................................................
   css = njs_fs.readFile input_route, encoding: 'utf-8', ( error, css ) =>
     return handler error if error?
     #.......................................................................................................
     rw  = rework css, { source: input_route, }
-    rw  = rw.use RWP.foobar_super()
+    # rw  = rw.use RWP.foobar_super()
+    rw  = rw.use RWP.collect /^-mkts-/, ( error, xcss_rules ) =>
+      return handler error if error?
+      # debug '©tf4Fg', xcss_rules
+      help "found #{xcss_rules[ 'rules' ].length} xCSS rules"
+      xcss_rules_json = JSON.stringify xcss_rules, null, '  '
     #.......................................................................................................
     css = rw.toString { sourcemap: true }
     #.......................................................................................................
     njs_fs.writeFile output_route, css, encoding: 'utf-8', ( error ) =>
       return handler error if error?
-      handler null
+      njs_fs.writeFile extras_route, xcss_rules_json, encoding: 'utf-8', ( error ) =>
+        return handler error if error?
+        help "wrote xCSS rules to #{extras_route}"
+        handler null
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build-html', shell.task [
@@ -149,27 +160,35 @@ help "      -=(#)=-"
 help()
 
 
+#-----------------------------------------------------------------------------------------------------------
+@get_archiving_command_and_arguments = ( project_locator, archive_locator ) ->
+  ### thx to http://qntm.org/bash
+  ###
+  volume_name     = ( njs_path.basename archive_locator ).replace /\..*$/, ''
+  ### https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/hdiutil.1.html ###
+  # UDCO - UDIF ADC-compressed image
+  # UDZO - UDIF zlib-compressed image
+  # UDBZ - UDIF bzip2-compressed image (OS X 10.4+ only)
+  archive_format  = 'UDZO'
+  @validate_archive_format archive_format
+  # volume_name     = BASH.escape volume_name
+  # project_locator = BASH.escape project_locator
+  # archive_locator = BASH.escape archive_locator
+  # return [ "/usr/bin/env", ['hdiutil', 'help', ] ]
+  # return "hdiutil create -format UDZO -srcfolder #{project_locator} -volname #{volume_name} #{archive_locator}"
+  command         = 'hdiutil'
+  arguments_      = [
+    'create'
+    '-format'
+    archive_format
+    '-srcfolder'
+    project_locator
+    '-volname'
+    # http://securityandthe.net/2008/12/04/creating-compressed-dmg-files/
+    '-imagekey zlib-level=9'
+    volume_name
+    archive_locator ]
+  return [ command, arguments_, ]
 
-# #-----------------------------------------------------------------------------------------------------------
-# @get_archiving_command_and_arguments = ( project_locator, archive_locator ) ->
-#   ### thx to http://qntm.org/bash
-#   ###
-#   volume_name     = ( njs_path.basename archive_locator ).replace /\..*$/, ''
-#   archive_format  = options[ 'archive-format']
-#   @validate_archive_format archive_format
-#   # volume_name     = BASH.escape volume_name
-#   # project_locator = BASH.escape project_locator
-#   # archive_locator = BASH.escape archive_locator
-#   # return [ "/usr/bin/env", ['hdiutil', 'help', ] ]
-#   # return "hdiutil create -format UDZO -srcfolder #{project_locator} -volname #{volume_name} #{archive_locator}"
-#   command         = 'hdiutil'
-#   arguments_      = [
-#     'create'
-#     '-format'
-#     archive_format
-#     '-srcfolder'
-#     project_locator
-#     '-volname'
-#     volume_name
-#     archive_locator ]
-#   return [ command, arguments_, ]
+
+
