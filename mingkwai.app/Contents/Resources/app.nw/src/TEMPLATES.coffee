@@ -61,48 +61,21 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         # TITLE '眀快排字机'
         LINK rel: 'shortcut icon', href: './favicon.icon'
         CSS './html5doctor-css-reset.css'
-        CSS './mingkwai-fixes.css'
-        CSS './mingkwai-custom-elements.css'
-        CSS './mingkwai-colors.css'
-        CSS './mingkwai-layout.css'
-        CSS './mingkwai-fonts.css'
         CSS './mingkwai-main.css'
-        CSS './mingkwai-dev.css'
         JS  './jquery-2.1.3.js'
         CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
         JS  './outerHTML-2.1.0.js'
-        # JS  './cssutilities/CSSUtilities[commented].js'
-        JS  './polyfill.min.js'
-        # ### https://github.com/FremyCompany/css-regions-polyfill/ ###
-        # JS  './css-regions-polyfill.min.js'
+        JS  './mingkwai-styles-fix.js'
         JS  './blaidddrwg.js'
         JS  './browser.js'
-        # JS  '../node_modules/stylefill/js/stylefill.js'
-        # JS  './draggable-stylefill.js'
-        # JS  './LINESETTER.js'
-        # SCRIPT src: '/socket.io/socket.io.js'
       #=====================================================================================================
-      COFFEESCRIPT =>
-        ( $ 'document' ).ready =>
-          ( $ 'ribbon.float' ).draggable()
-          #.................................................................................................
-          # CSSUtilities.define 'mode', 'browser'
-          # CSSUtilities.define 'async', false
-          # CSSUtilities.init()
-          # for rule in CSSUtilities.getCSSRules '#dYPFk'
-          #   console.log '©8fTQT', rule
-            # console.log '©8fTQT', css if ( css = rule[ 'css' ] ).length > 0
-          max_columns = window.max_columns = Polyfill { declarations: [ 'colspan:*', ], }
-          # max_columns = window.max_columns = Polyfill declarations: [ 'max-columns:*', ]
-          # console.log max_columns.getMatches()
-          max_columns.doMatched ( rules ) ->
-            rules.each ( rule ) -> console.log rule
+      # COFFEESCRIPT =>
       #=====================================================================================================
       BODY =>
         #...............................................................................................
         BOXER =>
-          RIBBON '.float.vertical.left', =>
+          RIBBON '.draggable.vertical.left', =>
             TOOL '.save', "save"
             TOOL '.open', "open"
             TOOL '.print', "print"

@@ -1,0 +1,9 @@
+
+
+
+
+( $ 'document' ).ready =>
+  ( $ '.draggable' ).draggable()
+
+
+

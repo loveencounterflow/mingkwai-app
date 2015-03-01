@@ -18,17 +18,20 @@ coffee                    = require 'gulp-coffee'
 stylus                    = require 'gulp-stylus'
 shell                     = require 'gulp-shell'
 zip                       = require 'gulp-zip'
+rework                    = require 'rework'
 #...........................................................................................................
 sourcemaps                = require 'gulp-sourcemaps'
 #...........................................................................................................
 D                         = require 'pipedreams2'
 $                         = D.remit.bind D
 #...........................................................................................................
-app_name                  = njs_path.basename __dirname
+# app_name                  = njs_path.basename __dirname
+app_name                  = 'mingkwai.app'
 app_root                  = "./#{app_name}"
 release_root              = './releases'
 module_root               = join app_root, 'Contents/Resources/app.nw'
-
+#...........................................................................................................
+RWP                       = require join __dirname, module_root, './lib/rework-plugins'
 
 #-----------------------------------------------------------------------------------------------------------
 get_timestamp = ->
@@ -50,7 +53,6 @@ npm_route       = join temp_app_route, 'Contents/Resources/app.nw'
 modules_route   = join npm_route, 'node_modules'
 source_route    = 'mingkwai.app'
 
-
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'hello', ->
   console.log('Hello world task called')
@@ -59,12 +61,14 @@ gulp.task 'hello', ->
 gulp.task 'build', [
   'build-coffee'
   'build-stylus'
+  'build-css-rework'
   'build-html'
   ]
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build-coffee', ->
   gulp.src join module_root, 'src/*.coffee'
+    # .pipe D.$show()
     .pipe sourcemaps.init()
     .pipe coffee().on 'error', warn
     .pipe sourcemaps.write()
@@ -73,12 +77,35 @@ gulp.task 'build-coffee', ->
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build-stylus', ->
-  gulp.src join module_root, 'src/*.styl'
+  gulp.src join module_root, 'src/mingkwai-main.styl'
     .pipe sourcemaps.init()
     .pipe stylus().on 'error', warn
     .pipe sourcemaps.write()
     .pipe gulp.dest join module_root, 'lib'
   return null
+
+# #-----------------------------------------------------------------------------------------------------------
+# gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ->
+#   # /Volumes/Storage/io/mingkwai-app/mingkwai.app/Contents/Resources/app.nw/lib/rework-plugins.js
+#   #                                  mingkwai.app/Contents/Resources/app.nw/lib/rework-plugins
+#   gulp.src 'lib/*.css'
+#     .pipe rework( RWP.foobar_super(), sourcemaps: yes ).on 'error', warn
+#     .pipe gulp.dest 'lib'
+#   return null
+
+#-----------------------------------------------------------------------------------------------------------
+gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ( handler ) ->
+  input_route   = join module_root, 'lib/mingkwai-main.css'
+  output_route  = join module_root, 'lib/mingkwai-reworked-main.css'
+  css = njs_fs.readFile input_route, encoding: 'utf-8', ( error, css ) =>
+    return handler error if error?
+    # debug '©VrB4h', css
+    rw  = rework css, { source: input_route, }
+    rw  = rw.use RWP.foobar_super()
+    css = rw.toString { sourcemap: true }
+    njs_fs.writeFile output_route, css, encoding: 'utf-8', ( error ) =>
+      return handler error if error?
+      handler null
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build-html', shell.task [
@@ -90,7 +117,6 @@ gulp.task 'make-archive', [ 'make-app', ], ->
   help "archiving #{zip_glob}"
   help "to #{release_root}"
   return gulp.src zip_glob
-    # .pipe D.$show()
     .pipe zip zip_name
     # .pipe D.$show()
     .pipe gulp.dest release_root

@@ -148,38 +148,18 @@
               href: './favicon.icon'
             });
             CSS('./html5doctor-css-reset.css');
-            CSS('./mingkwai-fixes.css');
-            CSS('./mingkwai-custom-elements.css');
-            CSS('./mingkwai-colors.css');
-            CSS('./mingkwai-layout.css');
-            CSS('./mingkwai-fonts.css');
             CSS('./mingkwai-main.css');
-            CSS('./mingkwai-dev.css');
             JS('./jquery-2.1.3.js');
             CSS('./jquery-ui-1.11.3.custom/jquery-ui.css');
             JS('./jquery-ui-1.11.3.custom/jquery-ui.js');
             JS('./outerHTML-2.1.0.js');
-            JS('./polyfill.min.js');
+            JS('./mingkwai-styles-fix.js');
             JS('./blaidddrwg.js');
             return JS('./browser.js');
           });
-          COFFEESCRIPT(function() {
-            return ($('document')).ready(function() {
-              var max_columns;
-              ($('ribbon.float')).draggable();
-              max_columns = window.max_columns = Polyfill({
-                declarations: ['colspan:*']
-              });
-              return max_columns.doMatched(function(rules) {
-                return rules.each(function(rule) {
-                  return console.log(rule);
-                });
-              });
-            });
-          });
           return BODY(function() {
             BOXER(function() {
-              return RIBBON('.float.vertical.left', function() {
+              return RIBBON('.draggable.vertical.left', function() {
                 TOOL('.save', "save");
                 TOOL('.open', "open");
                 return TOOL('.print', "print");
