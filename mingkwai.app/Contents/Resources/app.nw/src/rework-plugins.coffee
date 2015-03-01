@@ -30,7 +30,6 @@ urge                      = CND.get_logger 'urge',      badge
       for declaration in declarations
         { property, value, } = declaration
         continue unless /^foobar$/.test property
-        debug '©RVpL8', property, value
         declaration[ 'property' ] = '-moz-supercssyeah'
   #.........................................................................................................
   return null

@@ -48,7 +48,6 @@
               if (!/^foobar$/.test(property)) {
                 continue;
               }
-              debug('©RVpL8', property, value);
               _results1.push(declaration['property'] = '-moz-supercssyeah');
             }
             return _results1;

@@ -31,7 +31,6 @@ app_root                  = "./#{app_name}"
 release_root              = './releases'
 module_root               = join app_root, 'Contents/Resources/app.nw'
 #...........................................................................................................
-RWP                       = require join __dirname, module_root, './lib/rework-plugins'
 
 #-----------------------------------------------------------------------------------------------------------
 get_timestamp = ->
@@ -67,42 +66,35 @@ gulp.task 'build', [
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build-coffee', ->
-  gulp.src join module_root, 'src/*.coffee'
+  return gulp.src join module_root, 'src/*.coffee'
     # .pipe D.$show()
     .pipe sourcemaps.init()
     .pipe coffee().on 'error', warn
     .pipe sourcemaps.write()
     .pipe gulp.dest join module_root, 'lib'
-  return null
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build-stylus', ->
-  gulp.src join module_root, 'src/mingkwai-main.styl'
+  return gulp.src join module_root, 'src/mingkwai-main.styl'
     .pipe sourcemaps.init()
     .pipe stylus().on 'error', warn
     .pipe sourcemaps.write()
     .pipe gulp.dest join module_root, 'lib'
-  return null
-
-# #-----------------------------------------------------------------------------------------------------------
-# gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ->
-#   # /Volumes/Storage/io/mingkwai-app/mingkwai.app/Contents/Resources/app.nw/lib/rework-plugins.js
-#   #                                  mingkwai.app/Contents/Resources/app.nw/lib/rework-plugins
-#   gulp.src 'lib/*.css'
-#     .pipe rework( RWP.foobar_super(), sourcemaps: yes ).on 'error', warn
-#     .pipe gulp.dest 'lib'
-#   return null
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ( handler ) ->
+  RWP           = require join __dirname, module_root, './lib/rework-plugins'
   input_route   = join module_root, 'lib/mingkwai-main.css'
   output_route  = join module_root, 'lib/mingkwai-reworked-main.css'
+  #.........................................................................................................
   css = njs_fs.readFile input_route, encoding: 'utf-8', ( error, css ) =>
     return handler error if error?
-    # debug '©VrB4h', css
+    #.......................................................................................................
     rw  = rework css, { source: input_route, }
     rw  = rw.use RWP.foobar_super()
+    #.......................................................................................................
     css = rw.toString { sourcemap: true }
+    #.......................................................................................................
     njs_fs.writeFile output_route, css, encoding: 'utf-8', ( error ) =>
       return handler error if error?
       handler null
