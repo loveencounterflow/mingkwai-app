@@ -29,7 +29,6 @@
       for (_i = 0, _len = selectors.length; _i < _len; _i++) {
         selector = selectors[_i];
         targets = $(selector);
-        targets.draggable();
         _results.push(help("found " + targets.length + " targets for `" + selector + " { " + property + ": " + value + "; }"));
       }
       return _results;

@@ -26,7 +26,7 @@ handler_by_properties =
       throw new Error "unknown value for xCSS property #{property}: #{value}"
     for selector in selectors
       targets = $ selector
-      targets.draggable()
+      # targets.draggable()
       help "found #{targets.length} targets for `#{selector} { #{property}: #{value}; }"
 
   #---------------------------------------------------------------------------------------------------------
