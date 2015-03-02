@@ -1,0 +1,202 @@
+/* ------------------------------------------------------------------------------------------------------ */
+.xbig {
+  font-size: 200%;
+}
+.hilite {
+  color: $red;
+}
+/* ====================================================================================================== */
+@media print {
+  @page {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+  }
+  paper {
+    page-break-inside: avoid;
+    page-break-before: always;
+  }
+}
+/* ====================================================================================================== */
+@media screen {
+  artboard,
+  page,
+  paper,
+  galley,
+  box,
+  column,
+  wrap,
+  gap {
+    background-color: transparent;
+  }
+  artboard {
+    background-image: url("./background_linen_lime.png");
+  }
+  paper {
+    margin: 5mm;
+    background-color: $white;
+    box-shadow: 10px 10px 35px 0px rgba(0,0,0,0.5);
+  }
+  page {
+    outline: 1px dotted #f00;
+  }
+  galley {
+    outline: 1px dotted #008000;
+  }
+  wrap {
+    outline: 1.5px dotted #000;
+  }
+  box,
+  column {
+    outline: 1px dotted #00f;
+  }
+  gap {
+    background-color: $hilite;
+  }
+  .flex-columns-wrap {
+    outline: 1px dotted #ee82ee;
+  }
+  html,
+  body {
+    height: 100%;
+  }
+  html {
+    background-image: url("./background_linen.png") !important;
+    background-color: #808080 !important;
+  }
+  body {
+    background-color: transparent;
+  }
+  outer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+  }
+  panel {
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    outline: 1px solid #000;
+    align-self: strech;
+  }
+  panel.top,
+  panel.bottom {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 150px;
+  }
+  panel.center {
+    overflow: scroll;
+    flex-basis: main-size;
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+  grip {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+  grip.horizontal {
+    align-self: stretch;
+    height: 10px;
+    background-color: $gray;
+  }
+  boxer {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 1mm;
+    z-index: 1000;
+    pointer-events: none;
+  }
+  ribbon,
+  ribbon.bar {
+    pointer-events: auto;
+    border: 1px solid #000;
+    background-color: $gray;
+    position: fixed;
+    display: flex;
+    width: 100%;
+    padding: 0.5mm;
+  }
+  ribbon.draggable {
+    -mkts-draggable: xy;
+    resize: both;
+    overflow: hidden;
+  }
+  ribbon.draggable.vertical {
+    width: 10mm;
+    height: 10%;
+    flex-direction: column;
+  }
+  ribbon.draggable.horizontal {
+    width: 100%;
+    height: 10%;
+    flex-direction: row;
+  }
+  ribbon.left {
+    left: 1mm;
+  }
+  ribbon.right {
+    right: 1mm;
+  }
+  ribbon.top {
+    top: 10mm;
+  }
+  ribbon.bottom {
+    bottom: 10mm;
+  }
+  ribbon.dock,
+  ribbon.tile,
+  tool {
+    pointer-events: auto;
+  }
+  tool.console {
+    width: 100%;
+    height: 100%;
+    background-color: $console-black;
+    color: #fff;
+    overflow: auto;
+  }
+  tool.console div {
+    font-family: "Flow DejaVu Sans Mono", 'Courier', monospace;
+    font-size: 2.5mm;
+    line-height: 3mm;
+  }
+  #focus {
+    background-color: rgba(100,0,0,0.25);
+  }
+  .test .cork {
+    display: inline-block;
+    width: 0;
+    height: 100%;
+    outline: 1px solid #f00;
+  }
+  .mkts-lws {
+    background-color: rgba(100,100,100,0.25);
+  }
+  #box-a {
+    outline: 1px solid #f00;
+  }
+  #box-b {
+    outline: 1px solid #008000;
+  }
+  #box-c {
+    outline: 1px solid #00f;
+  }
+  .grid {
+    opacity: 1;
+  }
+  .gridline {
+    position: absolute;
+    outline: 0.75px dotted #f00;
+  }
+  .gridline.horizontal {
+    width: $paper-width;
+    height: 0px;
+  }
+}

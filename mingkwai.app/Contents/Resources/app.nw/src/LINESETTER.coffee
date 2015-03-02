@@ -26,7 +26,7 @@ D                         = require 'pipedreams2'
 $                         = D.remit.bind D
 # LODASH                    = D.LODASH
 HOTMETAL                  = D.HOTMETAL
-
+XCSS                      = require './XCSS'
 
 #===========================================================================================================
 #
@@ -213,6 +213,7 @@ HOTMETAL                  = D.HOTMETAL
           right_cork ]    = get_line hotml, is_first, is_last
         line.addClass 'test'
         ( columns.eq 0 ).append line
+        debug '©jqFbR', ( line.outerHTML() ), XCSS.rules_from_node app, line
         R                 = ( BD.top_of left_cork, 0 ) == ( BD.top_of right_cork, 0 )
         line.detach()
         return R

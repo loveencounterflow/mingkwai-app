@@ -1,31 +1,20 @@
 {
   "%selectors": {
-    "h1": [
+    "page h1": [
       0
     ],
-    "h2": [
-      1
-    ],
     "ribbon.draggable": [
-      2
+      1
     ]
   },
   "rules": [
     {
       "media": "*",
       "selectors": [
-        "h1"
+        "page h1"
       ],
-      "property": "-mkts-max-columns",
-      "value": "1"
-    },
-    {
-      "media": "*",
-      "selectors": [
-        "h2"
-      ],
-      "property": "-mkts-max-columns",
-      "value": "2"
+      "property": "-mkts-columns",
+      "value": "all"
     },
     {
       "media": "screen",

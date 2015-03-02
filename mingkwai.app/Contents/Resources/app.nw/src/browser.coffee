@@ -417,24 +417,11 @@ MKTS.enable_console = ( selector = '#console' ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 win.on 'document-end', ->
-  # CND.dir process.stderr.write
-  # setInterval ( -> help rpr new Date() ), 2000
   MKTS.enable_console()
-  debug '©9kYTO', CND.ANSI.as_html CND.red 'red'
-  debug '©9kYTO', CND.ANSI.as_html CND.orange 'orange'
-  debug '©9kYTO', CND.ANSI.as_html CND.green 'green'
-  debug '©9kYTO', CND.ANSI.as_html CND.blue 'blue'
-  # process.stderr.pipe D$ ( data, send ) ->
-  #   stdout.write '***' + data
   step ( resume ) ->
-    # MKTS.zoom_to app, -2
-    # yield MKTS.wait resume
-    # debug '©wVnkq', 'paper ', ( $ '.paper' ).offset(), "#{( $ '.paper' ).outerWidth()} x #{( $ '.paper' ).outerHeight()}"
-    # debug '©wVnkq', 'page  ', ( $ '.page' ).offset(), "#{( $ '.page' ).outerWidth()} x #{( $ '.page' ).outerHeight()}"
-    # MKTS.zoom app
     # win.showDevTools()
     MKTS.maximize app
-    MKTS.zoom_to app, 1.85
+    # MKTS.zoom_to app, 1.85
     yield step.wrap ( $ 'document' ).ready, resume
     help "document ready"
     #.......................................................................................................

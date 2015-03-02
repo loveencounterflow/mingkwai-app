@@ -38,13 +38,16 @@ GALLEY      = new_tag ( p... ) -> TAG 'galley',   p...
 BOX         = new_tag ( p... ) -> TAG 'box',      p...
 COLUMN      = new_tag ( p... ) -> TAG 'column',   p...
 WRAP        = new_tag ( p... ) -> TAG 'wrap',     p...
-GAP         = new_tag ( p... ) -> TAG 'gap',      p...
+VGAP        = new_tag ( p... ) -> TAG 'vgap',     p...
+HGAP        = new_tag ( p... ) -> TAG 'hgap',     p...
+XHGAP       = new_tag ( p... ) -> TAG 'xhgap',    p...
 RIBBON      = new_tag ( p... ) -> TAG 'ribbon',   p...
 TOOL        = new_tag ( p... ) -> TAG 'tool',     p...
 BOXER       = new_tag ( p... ) -> TAG 'boxer',    p...
 PANEL       = new_tag ( p... ) -> TAG 'panel',    p...
 GRIP        = new_tag ( p... ) -> TAG 'grip',     p...
 OUTER       = new_tag ( p... ) -> TAG 'outer',    p...
+LINE        = new_tag ( p... ) -> TAG 'line',     p...
 #...........................................................................................................
 JS          = new_tag ( route ) -> SCRIPT type: 'text/javascript',  src: route
 CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
@@ -66,7 +69,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
         JS  './outerHTML-2.1.0.js'
-        JS  './mingkwai-xcss.js'
+        JS  './process-xcss-rules.js'
         JS  './blaidddrwg.js'
         JS  './browser.js'
       #=====================================================================================================
@@ -93,21 +96,53 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
             #...................................................................................................
             ARTBOARD =>
               #...............................................................................................
-              for page_nr in [ 1 .. 4 ]
+              for page_nr in [ 1 ]#.. 4 ]
                 PAPER =>
                   PAGE =>
                     GALLEY =>
                       WRAP =>
-                        COLUMN =>
-                        GAP =>
+                        COLUMN => RAW '1'
+                        VGAP =>
                         COLUMN =>
                           RAW """
                             <h1 id='dYPFk'>helo</h1>
                             <p>Just as she said this, she no­ticed that one of the trees had a door lead­ing right into it.
                             ‘That’s very cu­ri­ous!’ she thought. ‘But every­thing’s cu­ri­ous to­day. I think I may as
-                            well go in at once.’ And in she went.</p></p>"""
-                        GAP =>
-                        COLUMN =>
+                            well go in at once.’ And in she went.</p>"""
+                        VGAP =>
+                        COLUMN => RAW '3'
+              #...............................................................................................
+              PAPER =>
+                PAGE =>
+                  GALLEY =>
+                    WRAP =>
+                      COLUMN => RAW """<p>1 debug '©bMb79', debug '©9WcnO', debug '©UkKnj', 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 </p>"""
+                      VGAP =>
+                      COLUMN => RAW """<p>2 debug '©H8oZl', debug '©rhPuG', debug '©lEad4', </p>"""
+                      VGAP =>
+                      COLUMN => RAW """<p>3 debug '©fL3qd', debug '©BCjqd', debug '©Hbfrn', </p>"""
+                    HGAP =>
+                    WRAP style: 'height:10mm;', =>
+                      COLUMN => RAW """<h1>Another Headline</h1>"""
+                    # HGAP =>
+                    WRAP style: 'height:30mm;', =>
+                      COLUMN => RAW """<p>5 debug '©yJMKj', debug '©FCRML', debug '©JW54V', </p>"""
+                      VGAP =>
+                      COLUMN => RAW """<p>6 debug '©2wxUf', debug '©DjXRj', debug '©oUQGv', </p>"""
+                      VGAP =>
+                      COLUMN => RAW """<p>7 debug '©PbmPW', debug '©85SdO', debug '©XzTS6', </p>"""
+                    HGAP =>
+                    WRAP style: 'height:10mm;', =>
+                      COLUMN => RAW """<h1>Another Headline</h1>"""
+                    WRAP =>
+                      COLUMN => RAW """<p>5 debug '©yJMKj', debug '©FCRML', debug '©JW54V', </p>"""
+                      VGAP =>
+                      COLUMN => RAW """<p>6 debug '©2wxUf', debug '©DjXRj', debug '©oUQGv', </p>"""
+                      VGAP =>
+                      COLUMN => RAW """<p>7 debug '©PbmPW', debug '©85SdO', debug '©XzTS6', </p>"""
+                    XHGAP =>
+                    WRAP style: 'height:50mm;', =>
+                      IMG style: 'height:50mm;width:50mm;', src: './132419489_41n.jpg'
             #...................................................................................................
             DIV '#mkts-bottom'
           #...................................................................................................

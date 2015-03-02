@@ -79,25 +79,47 @@ galley
   height:                 $galley-height
   left:                   $margin-left
   top:                    $margin-top
+  display:                flex
+  flex-direction:         column
 
 /* ------------------------------------------------------------------------------------------------------ */
 wrap
-column
   width:                  100%
-  height:                 100%
-
-/* ------------------------------------------------------------------------------------------------------ */
-wrap
+  height:                 50mm
   display:                flex
   flex-direction:         row
   justify-content:        space-between
+  flex-shrink:            0
+  flex-grow:              0
 
 /* ------------------------------------------------------------------------------------------------------ */
-gap
+column
+  // height:                 100%
+  /* Nominal width so all columns in a flex box have the same width regardless of content: */
+  width:                  1mm
+  flex-shrink:            1
+  flex-grow:              1
+
+/* ------------------------------------------------------------------------------------------------------ */
+hgap
+  width:                  100%
+  flex-shrink:            1
+  flex-grow:              1
+
+/* ------------------------------------------------------------------------------------------------------ */
+xhgap
+  width:                  100%
+  flex-shrink:            1000000
+  flex-grow:              1000000
+
+/* ------------------------------------------------------------------------------------------------------ */
+vgap
   width:                  5mm
-  height:                 100%
+  // height:                 100%
   min-width:              5mm
   max-width:              5mm
+  flex-shrink:            0
+  flex-grow:              0
 
 /* ###################################################################################################### */
 ribbon
@@ -222,11 +244,11 @@ p.is-middle
 p.is-last
   margin-top:             0
 
-h1
-  -mkts-max-columns:      1
+page h1
+  -mkts-columns:          all
 
-h2
-  -mkts-max-columns:      2
+// h2
+//   -mkts-max-columns:      2
 
 // p.hangs-right-05ex
 //   margin-right:           100% + 0.5ex

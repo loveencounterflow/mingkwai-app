@@ -13,8 +13,8 @@ help                      = CND.get_logger 'help',    badge
 debug                     = CND.get_logger 'debug',    badge
 info                      = CND.get_logger 'info',    badge
 #...........................................................................................................
-extra_css_rules           = require './xcss-rules'
-
+### TAINT selectors not properly ordered ###
+xcss_rules                = require './xcss-rules'
 
 #-----------------------------------------------------------------------------------------------------------
 handler_by_properties =
@@ -26,8 +26,14 @@ handler_by_properties =
       throw new Error "unknown value for xCSS property #{property}: #{value}"
     for selector in selectors
       targets = $ selector
-      # targets.draggable()
+      targets.draggable()
       help "found #{targets.length} targets for `#{selector} { #{property}: #{value}; }"
+
+  #---------------------------------------------------------------------------------------------------------
+  '-mkts-columns': ( rule ) ->
+    { media, selectors, property, value, } = rule
+    unless value in [ 'all', '1', ]
+      throw new Error "unknown value for xCSS property #{property}: #{value}"
 
   #---------------------------------------------------------------------------------------------------------
   '-mkts-foobar': ( rule ) ->
@@ -37,7 +43,7 @@ handler_by_properties =
 #-----------------------------------------------------------------------------------------------------------
 ( $ 'document' ).ready =>
   # ( $ '.draggable' ).draggable()
-  for rule in extra_css_rules[ 'rules' ]
+  for rule in xcss_rules[ 'rules' ]
     { property, } = rule
     if ( handler = handler_by_properties[ property ] )?
       handler rule

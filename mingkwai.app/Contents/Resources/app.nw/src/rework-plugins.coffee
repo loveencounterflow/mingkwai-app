@@ -66,6 +66,7 @@ walk_rules = ( ast, handler ) ->
             else return handler new Error "unknown matcher type #{rpr type}"
           rules.push { media, selectors, property, value, }
           idx = rules.length - 1
+          ### TAINT selectors not properly ordered ###
           for selector in selectors
             ( Z[ '%selectors' ][ selector ]?= [] ).push idx
     #.......................................................................................................

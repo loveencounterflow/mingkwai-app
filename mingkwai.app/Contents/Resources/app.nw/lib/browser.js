@@ -526,13 +526,8 @@
 
   win.on('document-end', function() {
     MKTS.enable_console();
-    debug('©9kYTO', CND.ANSI.as_html(CND.red('red')));
-    debug('©9kYTO', CND.ANSI.as_html(CND.orange('orange')));
-    debug('©9kYTO', CND.ANSI.as_html(CND.green('green')));
-    debug('©9kYTO', CND.ANSI.as_html(CND.blue('blue')));
     step(function*(resume) {
       MKTS.maximize(app);
-      MKTS.zoom_to(app, 1.85);
       (yield step.wrap(($('document')).ready, resume));
       help("document ready");
       return ($(document)).keydown(MKTS.on_keydown.bind(MKTS));

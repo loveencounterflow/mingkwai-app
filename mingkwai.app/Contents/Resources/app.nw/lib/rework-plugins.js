@@ -142,6 +142,8 @@
                 value: value
               });
               idx = rules.length - 1;
+
+              /* TAINT selectors not properly ordered */
               for (_l = 0, _len2 = selectors.length; _l < _len2; _l++) {
                 selector = selectors[_l];
                 ((_base = Z['%selectors'])[selector] != null ? _base[selector] : _base[selector] = []).push(idx);
