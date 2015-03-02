@@ -61,7 +61,7 @@ artboard
 
 /* ------------------------------------------------------------------------------------------------------ */
 paper
-  // margin:                 5mm
+  /* assuming `<page class='a4 portrait'>` */
   float:                  left
   width:                  $paper-width
   height:                 $paper-height
@@ -81,6 +81,28 @@ galley
   top:                    $margin-top
   display:                flex
   flex-direction:         column
+
+/* ------------------------------------------------------------------------------------------------------ */
+paper.a4.portrait.endless
+  /* assuming `<page class='a4 portrait'>` */
+  height:                 auto
+  // min-height:             $paper-height
+  padding-top:            $gutter-top    + $margin-top
+  padding-bottom:         $gutter-bottom + $margin-bottom
+
+/* ------------------------------------------------------------------------------------------------------ */
+paper.a4.portrait.endless page
+  height:                 auto
+  // min-height:             $page-height
+  // margin-bottom:          $gutter-top + $gutter-bottom // ?
+  top:                    0
+
+/* ------------------------------------------------------------------------------------------------------ */
+paper.a4.portrait.endless galley
+  height:                 auto
+  min-height:             $galley-height / 3
+  top:                    0
+  // margin-bottom:          $margin-top + $margin-bottom // ?
 
 /* ------------------------------------------------------------------------------------------------------ */
 wrap
@@ -143,45 +165,45 @@ tool.print
   display:                none
 
 
-/* ------------------------------------------------------------------------------------------------------ */
-body
-.paper
-.page
-  background-color:       white
-
-/* ------------------------------------------------------------------------------------------------------ */
-.paper
-  margin:                 10mm
-  width:                  $paper-width
-  height:                 $paper-height
-  // 'margins' in typographic terms (areas outside the main content) become 'paddings' in CSS:
-  padding-left:           $gutter-left
-  padding-right:          $gutter-right
-  padding-top:            $gutter-top
-  padding-bottom:         $gutter-bottom
-  position:               relative
-
-
-/* ------------------------------------------------------------------------------------------------------ */
-.page
-  width:                  $page-width
-  height:                 $page-height
-  // 'margins' in typographic terms become 'paddings' in CSS:
-  padding-left:           $margin-left
-  padding-right:          $margin-right
-  padding-top:            $margin-top
-  padding-bottom:         $margin-bottom
-  margin:                 0
-  position:               relative
-
-/* ------------------------------------------------------------------------------------------------------ */
-.grid
-  width:                  100%
-  height:                 100%
-  background-color:       transparent
-  position:               absolute
-  top:                    0
-  left:                   0
+// /* ------------------------------------------------------------------------------------------------------ */
+// body
+// .paper
+// .page
+//   background-color:       white
+//
+// /* ------------------------------------------------------------------------------------------------------ */
+// .paper
+//   margin:                 10mm
+//   width:                  $paper-width
+//   height:                 $paper-height
+//   // 'margins' in typographic terms (areas outside the main content) become 'paddings' in CSS:
+//   padding-left:           $gutter-left
+//   padding-right:          $gutter-right
+//   padding-top:            $gutter-top
+//   padding-bottom:         $gutter-bottom
+//   position:               relative
+//
+//
+// /* ------------------------------------------------------------------------------------------------------ */
+// .page
+//   width:                  $page-width
+//   height:                 $page-height
+//   // 'margins' in typographic terms become 'paddings' in CSS:
+//   padding-left:           $margin-left
+//   padding-right:          $margin-right
+//   padding-top:            $margin-top
+//   padding-bottom:         $margin-bottom
+//   margin:                 0
+//   position:               relative
+//
+// /* ------------------------------------------------------------------------------------------------------ */
+// .grid
+//   width:                  100%
+//   height:                 100%
+//   background-color:       transparent
+//   position:               absolute
+//   top:                    0
+//   left:                   0
 
 // /* ------------------------------------------------------------------------------------------------------ */
 // .grid-1cm
@@ -196,7 +218,7 @@ body
 // offset-top( dy )
 //   top
 
-/* ------------------------------------------------------------------------------------------------------ */
+// /* ------------------------------------------------------------------------------------------------------ */
 // .baseline-grid
 //   baseline-grid           4.9mm $red
 //   top:                    3mm

@@ -185,17 +185,40 @@
             });
             return OUTER(function() {
               PANEL('.top', function() {
-                return "top";
+                return RIBBON('.bar.horizontal.top', function() {
+                  TOOL('.save.square.button', "X");
+                  TOOL('.open.square.button', "X");
+                  return TOOL('.print.square.button', "X");
+                });
               });
               GRIP('.horizontal', function() {});
               PANEL('.center', '.main', function() {
                 DIV('#mkts-top');
                 ARTBOARD(function() {
                   var page_nr, _i, _len, _ref;
+                  PAPER('.a4.portrait.endless', function() {
+                    return PAGE(function() {
+                      return GALLEY(function() {
+                        return WRAP(function() {
+                          COLUMN(function() {
+                            return RAW('1');
+                          });
+                          VGAP(function() {});
+                          COLUMN(function() {
+                            return RAW("<h1 id='dYPFk'>helo</h1>\n<p>Just as she said this, she no­ticed that one of the trees had a door lead­ing right into it.\n‘That’s very cu­ri­ous!’ she thought. ‘But every­thing’s cu­ri­ous to­day. I think I may as\nwell go in at once.’ And in she went.</p>");
+                          });
+                          VGAP(function() {});
+                          return COLUMN(function() {
+                            return RAW('3');
+                          });
+                        });
+                      });
+                    });
+                  });
                   _ref = [1];
                   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                     page_nr = _ref[_i];
-                    PAPER(function() {
+                    PAPER('.a4.portrait', function() {
                       return PAGE(function() {
                         return GALLEY(function() {
                           return WRAP(function() {
@@ -215,7 +238,7 @@
                       });
                     });
                   }
-                  return PAPER(function() {
+                  return PAPER('.a4.portrait', function() {
                     return PAGE(function() {
                       return GALLEY(function() {
                         WRAP(function() {

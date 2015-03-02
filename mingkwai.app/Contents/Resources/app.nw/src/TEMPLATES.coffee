@@ -83,11 +83,11 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
             TOOL '.open', "open"
             TOOL '.print', "print"
         OUTER =>
-          PANEL '.top', => "top"
-          # RIBBON '.bar.horizontal.top', =>
-            #   TOOL '.save', "save"
-            #   TOOL '.open', "open"
-            #   TOOL '.print', "print"
+          PANEL '.top', =>
+            RIBBON '.bar.horizontal.top', =>
+              TOOL '.save.square.button', "X"
+              TOOL '.open.square.button', "X"
+              TOOL '.print.square.button', "X"
           #...................................................................................................
           GRIP '.horizontal', =>
           #...................................................................................................
@@ -96,8 +96,23 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
             #...................................................................................................
             ARTBOARD =>
               #...............................................................................................
+              PAPER '.a4.portrait.endless', =>
+                PAGE =>
+                  GALLEY =>
+                    WRAP =>
+                      COLUMN => RAW '1'
+                      VGAP =>
+                      COLUMN =>
+                        RAW """
+                          <h1 id='dYPFk'>helo</h1>
+                          <p>Just as she said this, she no­ticed that one of the trees had a door lead­ing right into it.
+                          ‘That’s very cu­ri­ous!’ she thought. ‘But every­thing’s cu­ri­ous to­day. I think I may as
+                          well go in at once.’ And in she went.</p>"""
+                      VGAP =>
+                      COLUMN => RAW '3'
+              #...............................................................................................
               for page_nr in [ 1 ]#.. 4 ]
-                PAPER =>
+                PAPER '.a4.portrait', =>
                   PAGE =>
                     GALLEY =>
                       WRAP =>
@@ -112,7 +127,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
                         VGAP =>
                         COLUMN => RAW '3'
               #...............................................................................................
-              PAPER =>
+              PAPER '.a4.portrait', =>
                 PAGE =>
                   GALLEY =>
                     WRAP =>

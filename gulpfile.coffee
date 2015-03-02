@@ -54,10 +54,6 @@ modules_route   = join npm_route, 'node_modules'
 source_route    = 'mingkwai.app'
 
 #-----------------------------------------------------------------------------------------------------------
-gulp.task 'hello', ->
-  console.log('Hello world task called')
-
-#-----------------------------------------------------------------------------------------------------------
 gulp.task 'build', [
   'build-coffee'
   'build-stylus'
