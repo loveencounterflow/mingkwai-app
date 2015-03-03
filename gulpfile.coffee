@@ -109,7 +109,7 @@ gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ( handler ) -
         handler null
 
 #-----------------------------------------------------------------------------------------------------------
-gulp.task 'build-html', shell.task [
+gulp.task 'build-html', [ 'build-coffee', ], shell.task [
   'node --harmony ./mingkwai.app/Contents/Resources/app.nw/lib/generate-html.js'
   ]
 

@@ -188,17 +188,94 @@
             JS('./jquery-2.1.3.js');
             CSS('./jquery-ui-1.11.3.custom/jquery-ui.css');
             JS('./jquery-ui-1.11.3.custom/jquery-ui.js');
+            JS('./jquery.mobile-1.4.5.js');
             JS('./outerHTML-2.1.0.js');
             JS('./process-xcss-rules.js');
             JS('./blaidddrwg.js');
             return JS('./browser.js');
           });
-          STYLE(".panel {\n  width:          100mm;\n  height:         100mm;\n  overflow:       auto;\n}\n.tabletop {\n  background-image: url( ./background_linen.png )\n  width:          200mm;\n  height:         200mm;\n  margin:         50mm;\n}\n.artboard {\n  background-image: url( ./background_linen_lime.png )\n  width:          80mm;\n  height:         80mm;\n}");
+          STYLE('', "body {\n  height:             auto;\n}\n.panel {\n  margin:             100mm;\n  width:              100mm;\n  height:             100mm;\n  overflow:           auto;\n  outline:            1px solid red;\n}\n.tabletop {\n  background-image:   url( ./background_linen.png );\n  width:              200mm;\n  height:             200mm;\n  outline:            1px solid green;\n}\n.artboard {\n  background-image:   url( ./background_linen_lime.png );\n  position:           relative;\n  top:                60mm;\n  left:               60mm;\n  width:              80mm;\n  height:             80mm;\n  outline:            1px solid orange;\n}");
+          COFFEESCRIPT(function() {
+            return ($('document')).ready(function() {
+              var artboard, panel, scroll_to_top, state, tabletop;
+              log = console.log.bind(console);
+              panel = $('.panel');
+              tabletop = $('.tabletop');
+              artboard = $('.artboard');
+              state = 'inactive';
+              ($('document')).on('touchstart', function() {
+                log('touchstart');
+                return true;
+              });
+              ($('document')).on('touchmove', function() {
+                log('touchmove');
+                return true;
+              });
+              ($('document')).on('touchend', function() {
+                log('touchend');
+                return true;
+              });
+              ($('document')).on('touchcancel', function() {
+                log('touchcancel');
+                return true;
+              });
+              ($('document')).on('scrollstart', function() {
+                log('scrollstart');
+                return true;
+              });
+              ($('document')).on('scrollstop', function() {
+                log('scrollstop');
+                return true;
+              });
+              ($('document')).on('swipe', function() {
+                log('swipe');
+                return true;
+              });
+              ($('document')).on('swipeleft', function() {
+                log('swipeleft');
+                return true;
+              });
+              ($('document')).on('swiperight', function() {
+                log('swiperight');
+                return true;
+              });
+              ($('document')).on('tap', function() {
+                log('tap');
+                return true;
+              });
+              ($('document')).on('taphold', function() {
+                log('taphold');
+                return true;
+              });
+              ($('document')).on('mousedown', function() {
+                log('mousedown');
+                return true;
+              });
+              scroll_to_top = function() {
+                state = 'top';
+                panel.scrollTop(150);
+                return state = 'inactive';
+              };
+              panel.on('scroll', function(event) {
+                var top;
+                if (state === 'top') {
+                  log("already top");
+                  return false;
+                }
+                top = panel.scrollTop();
+                if (top < 150) {
+                  scroll_to_top();
+                }
+                return false;
+              });
+              return scroll_to_top();
+            });
+          });
           return BODY(function() {
             return DIV('.panel', function() {
               return DIV('.tabletop', function() {
                 return DIV('.artboard', function() {
-                  return helo;
+                  return "helo";
                 });
               });
             });
@@ -228,9 +305,9 @@
             CSS('./jquery-ui-1.11.3.custom/jquery-ui.css');
             JS('./jquery-ui-1.11.3.custom/jquery-ui.js');
             JS('./outerHTML-2.1.0.js');
-            JS('./process-xcss-rules.js');
             JS('./blaidddrwg.js');
-            return JS('./browser.js');
+            JS('./browser.js');
+            return JS('./process-xcss-rules.js');
           });
           return BODY(function() {
             BOXER(function() {
@@ -243,9 +320,18 @@
             return OUTER(function() {
               PANEL('.top', function() {
                 return RIBBON('.bar.horizontal.top', function() {
-                  TOOL('.save.square.button', "X");
-                  TOOL('.open.square.button', "X");
-                  return TOOL('.print.square.button', "X");
+                  TOOL('.save.square.button.ui-icon.comment', {
+                    action: 'save'
+                  });
+                  TOOL('.open.square.button.ui-icon.comment', {
+                    action: 'open'
+                  });
+                  TOOL('.print.square.button.ui-icon.ui-icon-print', {
+                    action: 'print'
+                  });
+                  return TOOL('.view-test.square.button.ui-icon.comment', {
+                    action: 'view-test'
+                  });
                 });
               });
               GRIP('.horizontal', function() {});

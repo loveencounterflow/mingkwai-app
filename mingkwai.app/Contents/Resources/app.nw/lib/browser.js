@@ -65,18 +65,29 @@
     return x.toFixed(precision);
   };
 
-  MKTS = {};
-
   app = {
     '%memo': {},
     'zoom-level': 0,
     'base-zoom-level': -0.15,
     'mm-per-px': 100 / 377.94791,
     'jQuery': $,
-    'MKTS': MKTS,
+    'NW': NW,
+    'MKTS': null,
     'window': window,
     'view-mode': 'dev'
   };
+
+
+  /* Publish app so we have access to it in both the browser and the NodeJS contexts: */
+
+  window['app'] = app;
+
+  MKTS = (require('./MKTS'))(app);
+
+
+  /* TAINT this line only for transition time: */
+
+  app['MKTS'] = MKTS;
 
   on_file_menu_what_you_should_know_C = function() {
     return ($('#content')).text("Some kind of interesting stuff.");
@@ -523,6 +534,9 @@
       selector = '#console';
     }
     console = $('#console');
+    if (!(console.length > 0)) {
+      return;
+    }
     _write = process.stderr.write.bind(process.stderr);
     process.stderr.write = function() {
       var P, line, lines, text, _i, _len;

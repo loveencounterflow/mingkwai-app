@@ -53,19 +53,35 @@
 
   ($('document')).ready((function(_this) {
     return function() {
-      var handler, property, rule, _i, _len, _ref, _results;
+      var handler, property, rule, _i, _len, _ref;
       _ref = xcss_rules['rules'];
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         rule = _ref[_i];
         property = rule.property;
         if ((handler = handler_by_properties[property]) != null) {
-          _results.push(handler(rule));
+          handler(rule);
         } else {
-          _results.push(warn("no handler for xCSS property " + (rpr(property)) + "; skipping"));
+          warn("no handler for xCSS property " + (rpr(property)) + "; skipping");
         }
       }
-      return _results;
+
+      /* Although not strictly xCSS rules, we process behaviors that rely on tag names (rather than
+      style names used in names) right here.
+       */
+      return ($('tool')).on('click', function(event) {
+        var action, method, _ref1, _ref2, _ref3;
+        if ((action = ($(this)).attr('action')) != null) {
+          if ((method = (_ref1 = window['app']) != null ? (_ref2 = _ref1['MKTS']) != null ? (_ref3 = _ref2['actions']) != null ? _ref3[action] : void 0 : void 0 : void 0) != null) {
+            help("clicked on tool; action " + (rpr(action)));
+            method();
+          } else {
+            warn("unknown action " + (rpr(action)));
+          }
+        } else {
+          warn("`<tool>` tag without `action` attribute");
+        }
+        return false;
+      });
     };
   })(this));
 

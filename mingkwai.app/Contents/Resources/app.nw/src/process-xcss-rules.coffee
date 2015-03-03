@@ -49,6 +49,25 @@ handler_by_properties =
       handler rule
     else
       warn "no handler for xCSS property #{rpr property}; skipping"
+  #.........................................................................................................
+
+
+  #=========================================================================================================
+  # TOOL ACTIONS
+  #---------------------------------------------------------------------------------------------------------
+  ### Although not strictly xCSS rules, we process behaviors that rely on tag names (rather than
+  style names used in names) right here. ###
+  ( $ 'tool' ).on 'click', ( event ) ->
+    if ( action = ( $ @ ).attr 'action' )?
+      if ( method = window[ 'app' ]?[ 'MKTS' ]?[ 'actions' ]?[ action ] )?
+        help "clicked on tool; action #{rpr action}"
+        method()
+      else
+        warn "unknown action #{rpr action}"
+    else
+      warn "`<tool>` tag without `action` attribute"
+    #.......................................................................................................
+    return false
 
 
 

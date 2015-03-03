@@ -39,13 +39,6 @@ APPLESCRIPT               = require 'applescript'
 ƒ                         = ( x, precision = 2 ) -> x.toFixed precision
 
 
-# stylefill = require 'stylefill'
-# CND.dir stylefill
-# debug '©Av5or',  stylefill.init
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS = {}
-
 #-----------------------------------------------------------------------------------------------------------
 app =
   '%memo':            {}
@@ -53,9 +46,20 @@ app =
   'base-zoom-level':  -0.15
   'mm-per-px':        100 / 377.94791
   'jQuery':           $
-  'MKTS':             MKTS
+  'NW':               NW
+  'MKTS':             null # MKTS
   'window':           window
   'view-mode':        'dev'
+
+#-----------------------------------------------------------------------------------------------------------
+### Publish app so we have access to it in both the browser and the NodeJS contexts: ###
+window[ 'app' ] = app
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS = ( require './MKTS' ) app
+### TAINT this line only for transition time: ###
+app[ 'MKTS' ] = MKTS
+
 
 #-----------------------------------------------------------------------------------------------------------
 on_file_menu_what_you_should_know_C = ->
@@ -430,6 +434,7 @@ MKTS.on_keydown = ( event ) ->
 #-----------------------------------------------------------------------------------------------------------
 MKTS.enable_console = ( selector = '#console' ) ->
   console = $ '#console'
+  return unless console.length > 0
   _write  = process.stderr.write.bind process.stderr
   process.stderr.write = ( P... ) ->
       # process.stdout.write '***' + P[ 0 ]

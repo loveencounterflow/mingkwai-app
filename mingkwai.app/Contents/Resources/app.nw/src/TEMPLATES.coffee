@@ -72,36 +72,88 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         JS  './jquery-2.1.3.js'
         CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
+        JS  './jquery.mobile-1.4.5.js'
         JS  './outerHTML-2.1.0.js'
         JS  './process-xcss-rules.js'
         JS  './blaidddrwg.js'
         JS  './browser.js'
-      STYLE """
+      STYLE '', """
+          body {
+            height:             auto;
+          }
           .panel {
-            width:          100mm;
-            height:         100mm;
-            overflow:       auto;
+            margin:             100mm;
+            width:              100mm;
+            height:             100mm;
+            overflow:           auto;
+            outline:            1px solid red;
           }
           .tabletop {
-            background-image: url( ./background_linen.png )
-            width:          200mm;
-            height:         200mm;
-            margin:         50mm;
+            background-image:   url( ./background_linen.png );
+            width:              200mm;
+            height:             200mm;
+            outline:            1px solid green;
           }
           .artboard {
-            background-image: url( ./background_linen_lime.png )
-            width:          80mm;
-            height:         80mm;
+            background-image:   url( ./background_linen_lime.png );
+            position:           relative;
+            top:                60mm;
+            left:               60mm;
+            width:              80mm;
+            height:             80mm;
+            outline:            1px solid orange;
           }
         """
       #=====================================================================================================
-      # COFFEESCRIPT =>
+      COFFEESCRIPT ->
+        ( $ 'document' ).ready ->
+          log = console.log.bind console
+          panel     = $ '.panel'
+          tabletop  = $ '.tabletop'
+          artboard  = $ '.artboard'
+          state     = 'inactive'
+
+          ( $ 'document' ).on 'touchstart',  -> log 'touchstart'; return true
+          ( $ 'document' ).on 'touchmove',   -> log 'touchmove'; return true
+          ( $ 'document' ).on 'touchend',    -> log 'touchend'; return true
+          ( $ 'document' ).on 'touchcancel', -> log 'touchcancel'; return true
+          ( $ 'document' ).on 'scrollstart', -> log 'scrollstart'; return true
+          ( $ 'document' ).on 'scrollstop',  -> log 'scrollstop'; return true
+          ( $ 'document' ).on 'swipe',       -> log 'swipe'; return true
+          ( $ 'document' ).on 'swipeleft',   -> log 'swipeleft'; return true
+          ( $ 'document' ).on 'swiperight',  -> log 'swiperight'; return true
+          ( $ 'document' ).on 'tap',         -> log 'tap'; return true
+          ( $ 'document' ).on 'taphold',     -> log 'taphold'; return true
+          ( $ 'document' ).on 'mousedown',     -> log 'mousedown'; return true
+
+          # offset_0  = panel.offset()
+          # top_0     = offset_0[ 'top'  ]
+          # left_0    = offset_0[ 'left' ]
+          #.................................................................................................
+          scroll_to_top = ->
+            state = 'top'
+            # panel.stop().animate { scrollTop: 150 }, 1500, ->
+            # panel.animate { scrollTop: 150 }, 1500, ->
+            #   log "top ok"
+            #   state = 'inactive'
+            panel.scrollTop 150
+            state = 'inactive'
+          #.................................................................................................
+          panel.on 'scroll', ( event ) ->
+            if state is 'top'
+              log "already top"
+              return false
+            top = panel.scrollTop()
+            scroll_to_top() if top < 150
+            return false
+          #.................................................................................................
+          scroll_to_top()
       #=====================================================================================================
       BODY =>
         DIV '.panel', =>
           DIV '.tabletop', =>
             DIV '.artboard', =>
-              helo
+              "helo"
 
 #-----------------------------------------------------------------------------------------------------------
 @layout = ->
@@ -121,9 +173,9 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
         JS  './outerHTML-2.1.0.js'
-        JS  './process-xcss-rules.js'
         JS  './blaidddrwg.js'
         JS  './browser.js'
+        JS  './process-xcss-rules.js'
       #=====================================================================================================
       # COFFEESCRIPT =>
       #=====================================================================================================
@@ -137,9 +189,10 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         OUTER =>
           PANEL '.top', =>
             RIBBON '.bar.horizontal.top', =>
-              TOOL '.save.square.button', "X"
-              TOOL '.open.square.button', "X"
-              TOOL '.print.square.button', "X"
+              TOOL '.save.square.button.ui-icon.comment',         action: 'save'
+              TOOL '.open.square.button.ui-icon.comment',         action: 'open'
+              TOOL '.print.square.button.ui-icon.ui-icon-print',  action: 'print'
+              TOOL '.view-test.square.button.ui-icon.comment',    action: 'view-test'
           #...................................................................................................
           GRIP '.horizontal', =>
           #...................................................................................................
