@@ -91,7 +91,7 @@ XCSS                      = require './XCSS'
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@demo = ( app, md, handler ) ->
+@demo_1 = ( app, md, handler ) ->
   #.........................................................................................................
   jQuery              = app[ 'jQuery' ]
   MKTS                = app[ 'MKTS'   ]
@@ -285,7 +285,7 @@ XCSS                      = require './XCSS'
   input   = D.create_throughstream()
   live    = yes
   live    = no
-  t0      = 1 * new Date()
+  t0      = +new Date()
   t1_a    = null
   #.........................................................................................................
   input
@@ -335,7 +335,7 @@ XCSS                      = require './XCSS'
         if end?
           # yield set_lines live, resume
           warn 'ended'
-          t1    = 1 * new Date()
+          t1    = +new Date()
           dt    = t1   - t0
           dt_a  = t1_a - t0
           help "demo took #{ƒ dt / 1000}s"
@@ -349,6 +349,99 @@ XCSS                      = require './XCSS'
   input.end()
 
 
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@demo = ( app, md, handler ) ->
+
+  #---------------------------------------------------------------------------------------------------------
+  jQuery              = app[ 'jQuery' ]
+  MKTS                = app[ 'MKTS'   ]
+  window              = app[ 'window' ]
+  BD                  = window[ 'BD'  ]
+  page                = ( jQuery 'page' ).eq 0
+  container           = ( jQuery 'wrap' ).eq 0
+  # columns             = container.find 'column'
+  columns             = jQuery 'column'
+  # column_count        = columns.length
+  # seen_lines          = null
+  # # last_line_height    = null
+
+  #---------------------------------------------------------------------------------------------------------
+  mm_from_px  = ( px ) -> px * app[ 'mm-per-px' ]
+  ƒ           = ( x, precision = 2 ) -> x.toFixed precision
+
+  # line_count                = 0
+  # available_height          = BD.height_of  container
+  # available_width           = BD.width_of   ( container.find 'column' ).eq 0
+  # available_width_mm        = mm_from_px available_width
+  # column_idx                = 0
+  # has_warned                = no
+  # column_linecount          = 0
+
+  #---------------------------------------------------------------------------------------------------------
+  input   = D.create_throughstream()
+  live    = yes
+  live    = no
+  t0      = +new Date()
+  t1_a    = null
+  #.........................................................................................................
+  input
+    #.......................................................................................................
+    # .pipe D.TYPO.$quotes()
+    # .pipe D.TYPO.$dashes()
+    .pipe D.MD.$as_html()
+    .pipe D.HTML.$parse yes, yes
+    .pipe D.HTML.$slice_toplevel_tags()
+    .pipe D.$show()
+    # #.......................................................................................................
+    # .pipe $ ( block_hotml, send ) =>
+    #   for element, idx in block_hotml
+    #     ### TAINT use library method ###
+    #     element[ 0 ].push     [ 'span', { class: 'shred', }, ]
+    #     element[ 2 ].unshift  [ 'span', ]
+    #   #.....................................................................................................
+    #   send block_hotml
+    #.......................................................................................................
+    .pipe $ ( block_hotml, send ) =>
+      for idx in [ block_hotml.length - 1 .. 1 ] by -1
+        this_element      = block_hotml[ idx     ]
+        previous_element  = block_hotml[ idx - 1 ]
+        #...................................................................................................
+        if CND.isa_text this_text = this_element[ 1 ]
+          if CND.isa_text previous_text = previous_element[ 1 ]
+            if previous_text[ previous_text.length - 1 ] is '\u00ad'
+              this_element[     1 ] = '\u00ad' + this_text
+              previous_element[ 1 ] = previous_text[ ... previous_text.length - 1 ]
+        #...................................................................................................
+        block_hotml.splice idx, 0, [ [ [ 'cork', {}, ], ], '', [ [ 'cork', ], ], ]
+      #.....................................................................................................
+      send block_hotml
+    #.......................................................................................................
+    .pipe do =>
+      return $ ( block_hotml, send ) =>
+        send html = HOTMETAL.as_html block_hotml, no
+        # debug '©gFRZM', html
+    #.......................................................................................................
+    .pipe D.$throttle_items 10 / 1
+    .pipe $ ( block_html, send, end ) =>
+      step ( resume ) =>
+        yield MKTS.wait resume
+        # yield sleep 0.5, resume
+        if block_html?
+          ( columns.eq 0 ).append jQuery block_html
+        if end?
+          warn 'ended'
+          t1    = +new Date()
+          dt    = t1   - t0
+          dt_a  = t1_a - t0
+          help "demo took #{ƒ dt / 1000}s"
+          handler null
+          end()
+  #.........................................................................................................
+  input.write md
+  input.end()
 
 
 

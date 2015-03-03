@@ -235,7 +235,7 @@ MKTS._capture = ( win, handler ) ->
   win.capturePage ( ( img ) => handler null, img ), format: 'png', datatype: 'buffer'
 
 #-----------------------------------------------------------------------------------------------------------
-MKTS.demo = ( me ) ->
+MKTS.demo_1 = ( me ) ->
   # md = require './demo-text'
   md = """
 
@@ -247,6 +247,33 @@ MKTS.demo = ( me ) ->
     she went.
   """
   MKTS.zoom me, 2
+  LINESETTER.demo_1 me, md, ( error ) =>
+    MKTS.revert_zoom me
+    help "MKTS.demo ok"
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.demo = ( me ) ->
+  # md = require './demo-text'
+  ### every&#8203;<cork></cork>­&shy;thing ###
+  ### every<cork></cork>­&shy;thing ###
+  md = """And in she went. every&#x200b;&#x4e00;&shy;thing"""
+  md = """
+
+    # Behind the Looking-Glass
+
+    Just as she said this, she noticed that one of the trees had a door
+    leading right into it. 'That's very curious!' she thought. 'But
+    <span>every</span>&shy;<span>thing's </span>curious today. I think I may as well go in at once.' And in
+    she went.
+
+    # Behind the Looking-Glass
+
+    Just as she said this, she noticed that one of the trees had a door
+    leading right into it. 'That's very curious!' she thought. 'But
+    everything's curious today. I think I may as well go in at once.' And in
+    she went."""
+  # MKTS.zoom me, 2
   LINESETTER.demo me, md, ( error ) =>
     MKTS.revert_zoom me
     help "MKTS.demo ok"

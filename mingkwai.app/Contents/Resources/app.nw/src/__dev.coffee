@@ -30,88 +30,122 @@ sleep                     = suspend.sleep
 #...........................................................................................................
 D                         = PIPEDREAMS = require 'pipedreams2'
 $                         = D.remit.bind D
-# TEACUP                    = require 'coffeenode-teacup'
-# LODASH                    = require 'lodash'
-# LINESETTER                = require './LINESETTER'
-# LineBreaker               = require 'linebreak'
-HOTMETAL                  = require 'hotmetal'
+HOTMETAL                  = D.HOTMETAL
 
 
 #===========================================================================================================
-# HTML
-#-----------------------------------------------------------------------------------------------------------
-@HTML = {}
-
-#-----------------------------------------------------------------------------------------------------------
-@HTML._new_parser = ( settings, stream ) ->
-  ### NB.: Will not send empty text nodes; will not join ('normalize') adjacent text nodes. ###
-  lone_tags = """area base br col command embed hr img input keygen link meta param
-    source track wbr""".split /\s+/
-  #.........................................................................................................
-  handlers =
-    #.......................................................................................................
-    onopentag:  ( name, attributes )  ->
-      if name in lone_tags
-        if name is 'wbr'
-          throw new Error "illegal <wbr> tag with attributes" if ( Object.keys attributes ).length > 0
-          ### as per https://developer.mozilla.org/en/docs/Web/HTML/Element/wbr ###
-          stream.write [ 'text', '\u200b' ]
-        else
-          stream.write [ 'lone-tag', name, attributes, ]
-      else
-        stream.write [ 'open-tag', name, attributes, ]
-    #.......................................................................................................
-    onclosetag: ( name ) ->
-      unless name in lone_tags
-        stream.write [ 'close-tag', name, ]
-    #.......................................................................................................
-    ontext: ( text ) ->
-      stream.write [ 'text', CND.escape_html text, ]
-    #.......................................................................................................
-    onend: ->
-      stream.write [ 'end', ]
-      stream.end()
-    #.......................................................................................................
-    onerror: ( error ) ->
-      throw error
-  #.........................................................................................................
-  Htmlparser = ( require '/Volumes/Storage/io/pipedreams2/node_modules/htmlparser2' ).Parser
-  return new Htmlparser handlers, settings
-
-#-----------------------------------------------------------------------------------------------------------
-@HTML.$parse = ->
-  settings    = decodeEntities: yes
-  stream      = PIPEDREAMS.create_throughstream()
-  html_parser = @_new_parser settings, stream
-  _send       = null
-  #.........................................................................................................
-  stream.on 'data', ( data ) -> _send data
-  stream.on 'end',           -> _send.end()
-  #.........................................................................................................
-  return $ ( source, send, end ) =>
-    _send = send
-    if source?
-      html_parser.write source
-    if end?
-      html_parser.end()
-
+#
 #-----------------------------------------------------------------------------------------------------------
 @demo = ->
-  html = """<div>Helo world. It's <img src=y.png'> <i class='foo' id='bar'>possible</i>!</div>"""
-  input = D.create_throughstream()
+
+  #---------------------------------------------------------------------------------------------------------
+  # jQuery              = app[ 'jQuery' ]
+  # MKTS                = app[ 'MKTS'   ]
+  # window              = app[ 'window' ]
+  # BD                  = window[ 'BD'  ]
+  # page                = ( jQuery 'page' ).eq 0
+  # container           = ( jQuery 'wrap' ).eq 0
+  # # columns             = container.find 'column'
+  # columns             = jQuery 'column'
+  # # column_count        = columns.length
+  # # seen_lines          = null
+  # # # last_line_height    = null
+
+  md = """
+
+    # Behind the Looking-Glass
+
+    Just as she said this, she noticed that one of the trees had a door
+    leading right into it. 'That's very curious!' she thought. 'But
+    everything's curious today. I think I may as well go in at once.' And in
+    she went.
+
+    # Behind the Looking-Glass
+
+    Just as she said this, she noticed that one of the trees had a door
+    leading right into it. 'That's very curious!' she thought. 'But
+    everything's curious today. I think I may as well go in at once.' And in
+    she went."""
+
+  md = """'But everything's curious today.
+
+  x y v"""
+
+  #---------------------------------------------------------------------------------------------------------
+  mm_from_px  = ( px ) -> px * app[ 'mm-per-px' ]
+  ƒ           = ( x, precision = 2 ) -> x.toFixed precision
+
+  # line_count                = 0
+  # available_height          = BD.height_of  container
+  # available_width           = BD.width_of   ( container.find 'column' ).eq 0
+  # available_width_mm        = mm_from_px available_width
+  # column_idx                = 0
+  # has_warned                = no
+  # column_linecount          = 0
+
+  #---------------------------------------------------------------------------------------------------------
+  input   = D.create_throughstream()
+  live    = yes
+  live    = no
+  t0      = +new Date()
+  t1_a    = null
   #.........................................................................................................
   input
-    .pipe @HTML.$parse()
     #.......................................................................................................
-    .pipe $ ( data, send, end ) =>
-      if data?
-        urge data
-        send data
-      if end?
-        warn 'ended'
-        end()
+    # .pipe D.TYPO.$quotes()
+    # .pipe D.TYPO.$dashes()
+    .pipe D.MD.$as_html()
+    .pipe D.HTML.$parse yes, yes
+    .pipe D.HTML.$slice_toplevel_tags()
+    # #.......................................................................................................
+    # .pipe $ ( block_hotml, send ) =>
+    #   for element, idx in block_hotml
+    #     ### TAINT use library method ###
+    #     element[ 0 ].push     [ 'span', { class: 'shred', }, ]
+    #     element[ 2 ].unshift  [ 'span', ]
+    #   #.....................................................................................................
+    #   send block_hotml
+    #.......................................................................................................
+    .pipe $ ( block_hotml, send ) =>
+      for idx in [ block_hotml.length - 1 .. 1 ] by -1
+        this_element      = block_hotml[ idx     ]
+        previous_element  = block_hotml[ idx - 1 ]
+        #...................................................................................................
+        if CND.isa_text this_text = this_element[ 1 ]
+          if CND.isa_text previous_text = previous_element[ 1 ]
+            if previous_text[ previous_text.length - 1 ] is '\u00ad'
+              this_element[     1 ] = '\u00ad' + this_text
+              previous_element[ 1 ] = previous_text[ ... previous_text.length - 1 ]
+        #...................................................................................................
+        block_hotml.splice idx, 0, [ [ [ 'cork', {}, ], ], '', [ [ 'cork', ], ], ]
+      #.....................................................................................................
+      send block_hotml
+    #.......................................................................................................
+    .pipe D.$show()
+    #.......................................................................................................
+    .pipe do =>
+      return $ ( block_hotml, send ) =>
+        send html = HOTMETAL.as_html block_hotml, no
+    #     # debug '©gFRZM', html
+    #.......................................................................................................
+    .pipe D.$show()
+    #.......................................................................................................
+    # .pipe D.$throttle_items 10 / 1
+    # .pipe $ ( block_html, send ) =>
+    #     if block_html?
+    #       ( columns.eq 0 ).append jQuery block_html
+    #     if end?
+    #       warn 'ended'
+    #       t1    = +new Date()
+    #       dt    = t1   - t0
+    #       dt_a  = t1_a - t0
+    #       help "demo took #{ƒ dt / 1000}s"
+    #       handler null
+    #       end()
   #.........................................................................................................
-  input.write html
+  input.write md
+  input.end()
+
 
 ############################################################################################################
 unless module.parent?

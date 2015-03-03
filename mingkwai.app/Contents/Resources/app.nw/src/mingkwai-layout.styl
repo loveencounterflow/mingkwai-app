@@ -41,7 +41,14 @@ box
 column
 wrap
 gap
+tabletop
   position:               relative
+
+/* ------------------------------------------------------------------------------------------------------ */
+tabletop
+  width:                  800mm  + 60mm
+  height:                 1700mm + 60mm
+  margin:                 30mm
 
 /* ------------------------------------------------------------------------------------------------------ */
 artboard
@@ -50,8 +57,8 @@ artboard
   // justify-content:        flex-start
   // ### TAINT: width should be so that it fills entire width either when fully zoomed out or
   // adjusted to available width on current zoom (so pages rearrange) ###
-  width:                  500mm
-  height:                 700mm
+  width:                  800mm
+  height:                 1700mm
   // position:               absolute
   top:                    0
   left:                   0
@@ -92,17 +99,10 @@ paper.a4.portrait.endless
 
 /* ------------------------------------------------------------------------------------------------------ */
 paper.a4.portrait.endless page
-  height:                 auto
-  // min-height:             $page-height
-  // margin-bottom:          $gutter-top + $gutter-bottom // ?
-  top:                    0
-
-/* ------------------------------------------------------------------------------------------------------ */
 paper.a4.portrait.endless galley
+paper.a4.portrait.endless wrap
   height:                 auto
-  min-height:             $galley-height / 3
   top:                    0
-  // margin-bottom:          $margin-top + $margin-bottom // ?
 
 /* ------------------------------------------------------------------------------------------------------ */
 wrap
@@ -145,6 +145,7 @@ vgap
 
 /* ###################################################################################################### */
 ribbon
+overlay
   display:                none
 
 
@@ -160,9 +161,6 @@ tool.open
 tool.print
   background-color:       green
 
-/* ###################################################################################################### */
-.cork
-  display:                none
 
 
 // /* ------------------------------------------------------------------------------------------------------ */

@@ -108,7 +108,7 @@
     })(this);
   };
 
-  this.demo = function(app, md, handler) {
+  this.demo_1 = function(app, md, handler) {
     var BD, MKTS, available_height, available_width, available_width_mm, cache_hits, cache_misses, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, line_count, live, mm_from_px, new_line_entry, page, seen_lines, t0, t1_a, test_line, window, ƒ;
     jQuery = app['jQuery'];
     MKTS = app['MKTS'];
@@ -280,7 +280,7 @@
     input = D.create_throughstream();
     live = true;
     live = false;
-    t0 = 1 * new Date();
+    t0 = +new Date();
     t1_a = null;
     input.pipe(D.MD.$as_html()).pipe(D.HTML.$parse(true, true)).pipe(D.HTML.$slice_toplevel_tags()).pipe($((function(_this) {
       return function(data, send) {
@@ -316,7 +316,7 @@
           }
           if (end != null) {
             warn('ended');
-            t1 = 1 * new Date();
+            t1 = +new Date();
             dt = t1 - t0;
             dt_a = t1_a - t0;
             help("demo took " + (ƒ(dt / 1000)) + "s");
@@ -329,6 +329,78 @@
         });
       };
     })(this)());
+    input.write(md);
+    return input.end();
+  };
+
+  this.demo = function(app, md, handler) {
+    var BD, MKTS, columns, container, input, jQuery, live, mm_from_px, page, t0, t1_a, window, ƒ;
+    jQuery = app['jQuery'];
+    MKTS = app['MKTS'];
+    window = app['window'];
+    BD = window['BD'];
+    page = (jQuery('page')).eq(0);
+    container = (jQuery('wrap')).eq(0);
+    columns = jQuery('column');
+    mm_from_px = function(px) {
+      return px * app['mm-per-px'];
+    };
+    ƒ = function(x, precision) {
+      if (precision == null) {
+        precision = 2;
+      }
+      return x.toFixed(precision);
+    };
+    input = D.create_throughstream();
+    live = true;
+    live = false;
+    t0 = +new Date();
+    t1_a = null;
+    input.pipe(D.MD.$as_html()).pipe(D.HTML.$parse(true, true)).pipe(D.HTML.$slice_toplevel_tags()).pipe(D.$show()).pipe($((function(_this) {
+      return function(block_hotml, send) {
+        var idx, previous_element, previous_text, this_element, this_text, _i, _ref;
+        for (idx = _i = _ref = block_hotml.length - 1; _i >= 1; idx = _i += -1) {
+          this_element = block_hotml[idx];
+          previous_element = block_hotml[idx - 1];
+          if (CND.isa_text(this_text = this_element[1])) {
+            if (CND.isa_text(previous_text = previous_element[1])) {
+              if (previous_text[previous_text.length - 1] === '\u00ad') {
+                this_element[1] = '\u00ad' + this_text;
+                previous_element[1] = previous_text.slice(0, previous_text.length - 1);
+              }
+            }
+          }
+          block_hotml.splice(idx, 0, [[['cork', {}]], '', [['cork']]]);
+        }
+        return send(block_hotml);
+      };
+    })(this))).pipe((function(_this) {
+      return function() {
+        return $(function(block_hotml, send) {
+          var html;
+          return send(html = HOTMETAL.as_html(block_hotml, false));
+        });
+      };
+    })(this)()).pipe(D.$throttle_items(10 / 1)).pipe($((function(_this) {
+      return function(block_html, send, end) {
+        return step(function*(resume) {
+          var dt, dt_a, t1;
+          (yield MKTS.wait(resume));
+          if (block_html != null) {
+            (columns.eq(0)).append(jQuery(block_html));
+          }
+          if (end != null) {
+            warn('ended');
+            t1 = +new Date();
+            dt = t1 - t0;
+            dt_a = t1_a - t0;
+            help("demo took " + (ƒ(dt / 1000)) + "s");
+            handler(null);
+            return end();
+          }
+        });
+      };
+    })(this)));
     input.write(md);
     return input.end();
   };

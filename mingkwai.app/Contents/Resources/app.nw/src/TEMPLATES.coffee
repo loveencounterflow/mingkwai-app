@@ -48,9 +48,60 @@ PANEL       = new_tag ( p... ) -> TAG 'panel',    p...
 GRIP        = new_tag ( p... ) -> TAG 'grip',     p...
 OUTER       = new_tag ( p... ) -> TAG 'outer',    p...
 LINE        = new_tag ( p... ) -> TAG 'line',     p...
+OVERLAY     = new_tag ( p... ) -> TAG 'overlay',  p...
+CORK        = new_tag ( p... ) -> TAG 'cork',     p...
+TABLETOP    = new_tag ( p... ) -> TAG 'tabletop', p...
 #...........................................................................................................
 JS          = new_tag ( route ) -> SCRIPT type: 'text/javascript',  src: route
 CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
+
+#-----------------------------------------------------------------------------------------------------------
+@test_page = ->
+  #.........................................................................................................
+  return render =>
+    DOCTYPE 5
+    HTML =>
+      HEAD =>
+        META charset: 'utf-8'
+        # META name: 'viewport', content: 'width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;'
+        TITLE 'mingkwai'
+        # TITLE '眀快排字机'
+        LINK rel: 'shortcut icon', href: './favicon.icon'
+        CSS './html5doctor-css-reset.css'
+        CSS './mingkwai-main.css'
+        JS  './jquery-2.1.3.js'
+        CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
+        JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
+        JS  './outerHTML-2.1.0.js'
+        JS  './process-xcss-rules.js'
+        JS  './blaidddrwg.js'
+        JS  './browser.js'
+      STYLE """
+          .panel {
+            width:          100mm;
+            height:         100mm;
+            overflow:       auto;
+          }
+          .tabletop {
+            background-image: url( ./background_linen.png )
+            width:          200mm;
+            height:         200mm;
+            margin:         50mm;
+          }
+          .artboard {
+            background-image: url( ./background_linen_lime.png )
+            width:          80mm;
+            height:         80mm;
+          }
+        """
+      #=====================================================================================================
+      # COFFEESCRIPT =>
+      #=====================================================================================================
+      BODY =>
+        DIV '.panel', =>
+          DIV '.tabletop', =>
+            DIV '.artboard', =>
+              helo
 
 #-----------------------------------------------------------------------------------------------------------
 @layout = ->
@@ -60,6 +111,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
     HTML =>
       HEAD =>
         META charset: 'utf-8'
+        # META name: 'viewport', content: 'width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;'
         TITLE 'mingkwai'
         # TITLE '眀快排字机'
         LINK rel: 'shortcut icon', href: './favicon.icon'
@@ -94,25 +146,11 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
           PANEL '.center', '.main', =>
             DIV '#mkts-top'
             #...................................................................................................
-            ARTBOARD =>
-              #...............................................................................................
-              PAPER '.a4.portrait.endless', =>
-                PAGE =>
-                  GALLEY =>
-                    WRAP =>
-                      COLUMN => RAW '1'
-                      VGAP =>
-                      COLUMN =>
-                        RAW """
-                          <h1 id='dYPFk'>helo</h1>
-                          <p>Just as she said this, she no­ticed that one of the trees had a door lead­ing right into it.
-                          ‘That’s very cu­ri­ous!’ she thought. ‘But every­thing’s cu­ri­ous to­day. I think I may as
-                          well go in at once.’ And in she went.</p>"""
-                      VGAP =>
-                      COLUMN => RAW '3'
-              #...............................................................................................
-              for page_nr in [ 1 ]#.. 4 ]
-                PAPER '.a4.portrait', =>
+            TABLETOP =>
+              ARTBOARD =>
+                #...............................................................................................
+                PAPER '.a4.portrait.endless', =>
+                  OVERLAY "Galley"
                   PAGE =>
                     GALLEY =>
                       WRAP =>
@@ -126,40 +164,58 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
                             well go in at once.’ And in she went.</p>"""
                         VGAP =>
                         COLUMN => RAW '3'
-              #...............................................................................................
-              PAPER '.a4.portrait', =>
-                PAGE =>
-                  GALLEY =>
-                    WRAP =>
-                      COLUMN => RAW """<p>1 debug '©bMb79', debug '©9WcnO', debug '©UkKnj', 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 </p>"""
-                      VGAP =>
-                      COLUMN => RAW """<p>2 debug '©H8oZl', debug '©rhPuG', debug '©lEad4', </p>"""
-                      VGAP =>
-                      COLUMN => RAW """<p>3 debug '©fL3qd', debug '©BCjqd', debug '©Hbfrn', </p>"""
-                    HGAP =>
-                    WRAP style: 'height:10mm;', =>
-                      COLUMN => RAW """<h1>Another Headline</h1>"""
-                    # HGAP =>
-                    WRAP style: 'height:30mm;', =>
-                      COLUMN => RAW """<p>5 debug '©yJMKj', debug '©FCRML', debug '©JW54V', </p>"""
-                      VGAP =>
-                      COLUMN => RAW """<p>6 debug '©2wxUf', debug '©DjXRj', debug '©oUQGv', </p>"""
-                      VGAP =>
-                      COLUMN => RAW """<p>7 debug '©PbmPW', debug '©85SdO', debug '©XzTS6', </p>"""
-                    HGAP =>
-                    WRAP style: 'height:10mm;', =>
-                      COLUMN => RAW """<h1>Another Headline</h1>"""
-                    WRAP =>
-                      COLUMN => RAW """<p>5 debug '©yJMKj', debug '©FCRML', debug '©JW54V', </p>"""
-                      VGAP =>
-                      COLUMN => RAW """<p>6 debug '©2wxUf', debug '©DjXRj', debug '©oUQGv', </p>"""
-                      VGAP =>
-                      COLUMN => RAW """<p>7 debug '©PbmPW', debug '©85SdO', debug '©XzTS6', </p>"""
-                    XHGAP =>
-                    WRAP style: 'height:50mm;', =>
-                      IMG style: 'height:50mm;width:50mm;', src: './132419489_41n.jpg'
-            #...................................................................................................
-            DIV '#mkts-bottom'
+                #...............................................................................................
+                for page_nr in [ 1 .. 4 ]
+                  PAPER '.a4.portrait', =>
+                    OVERLAY page_nr
+                    PAGE =>
+                      GALLEY =>
+                        WRAP =>
+                          COLUMN => RAW '1'
+                          VGAP =>
+                          COLUMN =>
+                            RAW """
+                              <h1 id='dYPFk'>helo</h1>
+                              <p>Just as she said this, she no­ticed that one of the trees had a door lead­ing right into it.
+                              ‘That’s very cu­ri­ous!’ she thought. ‘But every­thing’s cu­ri­ous to­day. I think I may as
+                              well go in at once.’ And in she went.</p>"""
+                          VGAP =>
+                          COLUMN => RAW '3'
+                #...............................................................................................
+                PAPER '.a4.portrait', =>
+                  OVERLAY "n"
+                  PAGE =>
+                    GALLEY =>
+                      WRAP =>
+                        COLUMN => RAW """<p>1 debug '©bMb79', debug '©9WcnO', debug '©UkKnj', 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 </p>"""
+                        VGAP =>
+                        COLUMN => RAW """<p>2 debug '©H8oZl', debug '©rhPuG', debug '©lEad4', </p>"""
+                        VGAP =>
+                        COLUMN => RAW """<p>3 debug '©fL3qd', debug '©BCjqd', debug '©Hbfrn', </p>"""
+                      HGAP =>
+                      WRAP style: 'height:10mm;', =>
+                        COLUMN => RAW """<h1>Another Headline</h1>"""
+                      # HGAP =>
+                      WRAP style: 'height:30mm;', =>
+                        COLUMN => RAW """<p>5 debug '©yJMKj', debug '©FCRML', debug '©JW54V', </p>"""
+                        VGAP =>
+                        COLUMN => RAW """<p>6 debug '©2wxUf', debug '©DjXRj', debug '©oUQGv', </p>"""
+                        VGAP =>
+                        COLUMN => RAW """<p>7 debug '©PbmPW', debug '©85SdO', debug '©XzTS6', </p>"""
+                      HGAP =>
+                      WRAP style: 'height:10mm;', =>
+                        COLUMN => RAW """<h1>Another Headline</h1>"""
+                      WRAP =>
+                        COLUMN => RAW """<p>5 debug '©yJMKj', debug '©FCRML', debug '©JW54V', </p>"""
+                        VGAP =>
+                        COLUMN => RAW """<p>6 debug '©2wxUf', debug '©DjXRj', debug '©oUQGv', </p>"""
+                        VGAP =>
+                        COLUMN => RAW """<p>7 debug '©PbmPW', debug '©85SdO', debug '©XzTS6', </p>"""
+                      XHGAP =>
+                      WRAP style: 'height:50mm;', =>
+                        IMG style: 'height:50mm;width:50mm;', src: './132419489_41n.jpg'
+              #...................................................................................................
+              DIV '#mkts-bottom'
           #...................................................................................................
           GRIP '.horizontal'
           #...................................................................................................

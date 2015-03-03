@@ -66,7 +66,8 @@ gulp.task 'build-coffee', ->
   return gulp.src join module_root, 'src/*.coffee'
     # .pipe D.$show()
     .pipe sourcemaps.init()
-    .pipe coffee().on 'error', warn
+    .pipe coffee().on 'error', ( error ) -> throw error
+    # .pipe coffee().on 'error', warn
     .pipe sourcemaps.write()
     .pipe gulp.dest join module_root, 'lib'
 
@@ -74,7 +75,8 @@ gulp.task 'build-coffee', ->
 gulp.task 'build-stylus', ->
   return gulp.src join module_root, 'src/mingkwai-main.styl'
     .pipe sourcemaps.init()
-    .pipe stylus().on 'error', warn
+    .pipe stylus().on 'error', ( error ) -> throw error
+    # .pipe stylus().on 'error', warn
     .pipe sourcemaps.write()
     .pipe gulp.dest join module_root, 'lib'
 

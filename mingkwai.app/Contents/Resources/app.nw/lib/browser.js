@@ -286,10 +286,27 @@
     });
   };
 
-  MKTS.demo = function(me) {
+  MKTS.demo_1 = function(me) {
     var md;
     md = "\n# Behind the Looking-Glass\n\nJust as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe went.";
     MKTS.zoom(me, 2);
+    LINESETTER.demo_1(me, md, (function(_this) {
+      return function(error) {
+        MKTS.revert_zoom(me);
+        return help("MKTS.demo ok");
+      };
+    })(this));
+    return null;
+  };
+
+  MKTS.demo = function(me) {
+
+    /* every&#8203;<cork></cork>­&shy;thing */
+
+    /* every<cork></cork>­&shy;thing */
+    var md;
+    md = "And in she went. every&#x200b;&#x4e00;&shy;thing";
+    md = "\n# Behind the Looking-Glass\n\nJust as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\n<span>every</span>&shy;<span>thing's </span>curious today. I think I may as well go in at once.' And in\nshe went.\n\n# Behind the Looking-Glass\n\nJust as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe went.";
     LINESETTER.demo(me, md, (function(_this) {
       return function(error) {
         MKTS.revert_zoom(me);
