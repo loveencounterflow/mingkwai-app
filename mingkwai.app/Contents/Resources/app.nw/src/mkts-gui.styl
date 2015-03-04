@@ -1,0 +1,45 @@
+
+
+body
+html
+  height:                 100%
+
+body
+  display:                flex
+  flex-direction:         column
+
+box
+hbox
+panel
+hpanel
+  flex-shrink:            1
+  flex-grow:              1
+  display:                flex
+  flex-direction:         row
+
+vbox
+vpanel
+  flex-shrink:            1
+  flex-grow:              1
+  display:                flex
+  flex-direction:         column
+
+/* materialdesign-css buttons: */
+.btn
+  display:                none
+
+@media screen
+  panel
+  hpanel
+  vpanel
+    box-shadow:             inset 5px 5px 10px 5px rgba(0,0,0,0.1);
+
+  .btn
+    display:                block
+    width:                  100%
+    // height:                 100%
+
+
+
+
+

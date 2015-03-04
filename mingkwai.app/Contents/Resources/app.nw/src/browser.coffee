@@ -38,7 +38,6 @@ APPLESCRIPT               = require 'applescript'
 #...........................................................................................................
 ƒ                         = ( x, precision = 2 ) -> x.toFixed precision
 
-
 #-----------------------------------------------------------------------------------------------------------
 app =
   '%memo':            {}
@@ -451,8 +450,8 @@ MKTS.enable_console = ( selector = '#console' ) ->
 win.on 'document-end', ->
   MKTS.enable_console()
   step ( resume ) ->
-    # win.showDevTools()
-    MKTS.maximize app
+    win.showDevTools()
+    # MKTS.maximize app
     # MKTS.zoom_to app, 1.85
     yield step.wrap ( $ 'document' ).ready, resume
     help "document ready"

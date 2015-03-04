@@ -30,7 +30,21 @@ TEACUP                    = require 'coffeenode-teacup'
 # TEACUP NAMESPACE ACQUISITION
 #-----------------------------------------------------------------------------------------------------------
 for name_ of TEACUP
-  eval "#{name_} = TEACUP[ #{rpr name_} ]"
+  eval "var #{name_} = TEACUP[ #{rpr name_} ]"
+
+# #-----------------------------------------------------------------------------------------------------------
+# make_tag = ( name ) ->
+#   method_name = name.toUpperCase()
+#   tag_name    = name.toLowerCase()
+#   # eval "var #{method_name} = new_tag( function() { return TAG.apply '#{method_name}', p...)}"
+#   eval """
+#     var #{method_name} = new_tag(function() {
+#       var p;
+#       p = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+#       return TAG.apply(null, ['#{method_name}'].concat(slice.call(p)));
+#     });"""
+
+#-----------------------------------------------------------------------------------------------------------
 ARTBOARD    = new_tag ( p... ) -> TAG 'artboard', p...
 PAGE        = new_tag ( p... ) -> TAG 'page',     p...
 PAPER       = new_tag ( p... ) -> TAG 'paper',    p...
@@ -51,6 +65,18 @@ LINE        = new_tag ( p... ) -> TAG 'line',     p...
 OVERLAY     = new_tag ( p... ) -> TAG 'overlay',  p...
 CORK        = new_tag ( p... ) -> TAG 'cork',     p...
 TABLETOP    = new_tag ( p... ) -> TAG 'tabletop', p...
+#...........................................................................................................
+BOX         = new_tag ( p... ) -> TAG 'box',      p...
+HBOX        = new_tag ( p... ) -> TAG 'hbox',     p...
+VBOX        = new_tag ( p... ) -> TAG 'vbox',     p...
+PANEL       = new_tag ( p... ) -> TAG 'panel',    p...
+HPANEL      = new_tag ( p... ) -> TAG 'hpanel',   p...
+VPANEL      = new_tag ( p... ) -> TAG 'vpanel',   p...
+#...........................................................................................................
+BUTTON = ->
+  A '.btn.waves-effect.waves-light', href: '#', =>
+    TEXT "Demo"
+    I '.mdi-action-search.right'
 #...........................................................................................................
 JS          = new_tag ( route ) -> SCRIPT type: 'text/javascript',  src: route
 CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
@@ -157,6 +183,61 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
 
 #-----------------------------------------------------------------------------------------------------------
 @layout = ->
+  #.........................................................................................................
+  return render =>
+    DOCTYPE 5
+    HTML =>
+      HEAD =>
+        META charset: 'utf-8'
+        # META name: 'viewport', content: 'width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;'
+        TITLE 'mingkwai'
+        # TITLE '眀快排字机'
+        LINK rel: 'shortcut icon', href: './favicon.icon'
+        CSS './html5doctor-css-reset.css'
+        JS  './jquery-2.1.3.js'
+        CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
+        JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
+        JS  './outerHTML-2.1.0.js'
+        JS  './blaidddrwg.js'
+        JS  './browser.js'
+        JS  './process-xcss-rules.js'
+        CSS './materialize/css/materialize.min.css'
+        JS  './materialize/js/materialize.min.js'
+        CSS './mkts-main.css'
+      #=====================================================================================================
+      # COFFEESCRIPT =>
+      #=====================================================================================================
+      BODY =>
+        #...............................................................................................
+        HPANEL => '1'
+        HBOX =>
+          VPANEL =>
+            HPANEL => 'x1'
+            HPANEL =>
+              HPANEL => 'x2x1'
+              HPANEL => 'x2x2'
+              HPANEL => 'x2x3'
+            HPANEL =>
+              VPANEL => 'x3x1'
+              VPANEL => 'x3x2'
+              VPANEL => 'x3x3'
+            HPANEL => 'x4'
+          VPANEL => 'B'
+          VBOX =>
+            HPANEL =>
+              BUTTON =>
+              BUTTON =>
+              BUTTON =>
+            VPANEL =>
+              BUTTON =>
+              BUTTON =>
+              BUTTON =>
+            HPANEL => 'C2'
+          VPANEL => 'D'
+        HPANEL => '3'
+
+#-----------------------------------------------------------------------------------------------------------
+@layout_old = ->
   #.........................................................................................................
   return render =>
     DOCTYPE 5

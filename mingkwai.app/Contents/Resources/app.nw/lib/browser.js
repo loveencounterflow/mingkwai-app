@@ -558,7 +558,7 @@
   win.on('document-end', function() {
     MKTS.enable_console();
     step(function*(resume) {
-      MKTS.maximize(app);
+      win.showDevTools();
       (yield step.wrap(($('document')).ready, resume));
       help("document ready");
       return ($(document)).keydown(MKTS.on_keydown.bind(MKTS));

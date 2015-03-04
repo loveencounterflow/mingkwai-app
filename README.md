@@ -4,6 +4,29 @@
 植字機
 
 
+### Structure
+
+* GUI
+  * OS GUI
+  * JCH GUI
+    * Panel
+      * Tool
+    * Tabletop
+
+* Imposition (Workspace)
+  * Artboard
+    * Spread
+    * Galley
+    * Sheet
+
+* Layout (Typography)
+  * Paper
+    * Box
+      * Chase
+      * Column
+      * Gap
+
+
 ### Why Not TeX?
 
 > TeX was one of the earliest typesetting systems, and had to make a lot of design decisions somewhat in a
