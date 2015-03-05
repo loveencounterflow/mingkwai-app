@@ -68,6 +68,12 @@
       /* Although not strictly xCSS rules, we process behaviors that rely on tag names (rather than
       style names used in names) right here.
        */
+      ($('i')).on('mouseover', function(event) {
+        return ($(this)).switchClass('small', 'medium');
+      });
+      ($('i')).on('mouseout', function(event) {
+        return ($(this)).switchClass('medium', 'small');
+      });
       return ($('tool')).on('click', function(event) {
         var action, method, _ref1, _ref2, _ref3;
         if ((action = ($(this)).attr('action')) != null) {

@@ -57,6 +57,17 @@ handler_by_properties =
   #---------------------------------------------------------------------------------------------------------
   ### Although not strictly xCSS rules, we process behaviors that rely on tag names (rather than
   style names used in names) right here. ###
+  #.........................................................................................................
+  # ( $ 'document' ).on 'mousemove', ( event ) ->
+  #   debug '©YC6EG', [ event.pageX, event.pageY, ]
+  #   window[ 'app' ][ 'mouse-position' ] = [ event.pageX, event.pageY, ]
+  #.........................................................................................................
+  ( $ 'i' ).on 'mouseover', ( event ) ->
+    ( $ @ ).switchClass 'small', 'medium'
+  #.........................................................................................................
+  ( $ 'i' ).on 'mouseout', ( event ) ->
+    ( $ @ ).switchClass 'medium', 'small'
+  #.........................................................................................................
   ( $ 'tool' ).on 'click', ( event ) ->
     if ( action = ( $ @ ).attr 'action' )?
       if ( method = window[ 'app' ]?[ 'MKTS' ]?[ 'actions' ]?[ action ] )?

@@ -55,7 +55,6 @@ WRAP        = new_tag ( p... ) -> TAG 'wrap',     p...
 VGAP        = new_tag ( p... ) -> TAG 'vgap',     p...
 HGAP        = new_tag ( p... ) -> TAG 'hgap',     p...
 XHGAP       = new_tag ( p... ) -> TAG 'xhgap',    p...
-RIBBON      = new_tag ( p... ) -> TAG 'ribbon',   p...
 TOOL        = new_tag ( p... ) -> TAG 'tool',     p...
 BOXER       = new_tag ( p... ) -> TAG 'boxer',    p...
 PANEL       = new_tag ( p... ) -> TAG 'panel',    p...
@@ -64,16 +63,26 @@ OUTER       = new_tag ( p... ) -> TAG 'outer',    p...
 LINE        = new_tag ( p... ) -> TAG 'line',     p...
 OVERLAY     = new_tag ( p... ) -> TAG 'overlay',  p...
 CORK        = new_tag ( p... ) -> TAG 'cork',     p...
-TABLETOP    = new_tag ( p... ) -> TAG 'tabletop', p...
 #...........................................................................................................
+### JCH GUI ###
 BOX         = new_tag ( p... ) -> TAG 'box',      p...
 HBOX        = new_tag ( p... ) -> TAG 'hbox',     p...
 VBOX        = new_tag ( p... ) -> TAG 'vbox',     p...
-PANEL       = new_tag ( p... ) -> TAG 'panel',    p...
-HPANEL      = new_tag ( p... ) -> TAG 'hpanel',   p...
-VPANEL      = new_tag ( p... ) -> TAG 'vpanel',   p...
+# PANEL       = new_tag ( p... ) -> TAG 'panel',    p...
+# HPANEL      = new_tag ( p... ) -> TAG 'hpanel',   p...
+# VPANEL      = new_tag ( p... ) -> TAG 'vpanel',   p...
+RIBBON      = new_tag ( p... ) -> TAG 'ribbon',   p...
+HRIBBON     = new_tag ( p... ) -> TAG 'hribbon',  p...
+VRIBBON     = new_tag ( p... ) -> TAG 'vribbon',  p...
+ZOOMER      = new_tag ( p... ) -> TAG 'zoomer',   p...
 #...........................................................................................................
+### WORKSPACE (IMPOSITION) ###
+TABLETOP    = new_tag ( p... ) -> TAG 'tabletop', p...
+
+#...........................................................................................................
+### TAINT should be implemented using Polymer / Shadow DOM ###
 BUTTON = ->
+  ### MaterializeCSS-compatible button ###
   A '.btn.waves-effect.waves-light', href: '#', =>
     TEXT "Demo"
     I '.mdi-action-search.right'
@@ -205,36 +214,69 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         JS  './materialize/js/materialize.min.js'
         CSS './mkts-main.css'
       #=====================================================================================================
-      # COFFEESCRIPT =>
+      COFFEESCRIPT =>
+        # ( $ document ).ready ->
+        ( $ document ).on 'mousemove', ( event ) ->
+          # console.log '©YC6EG', [ event.pageX, event.pageY, ]
+          window[ 'app' ][ 'mouse-position' ] = [ event.pageX, event.pageY, ]
       #=====================================================================================================
       BODY =>
         #...............................................................................................
-        HPANEL => '1'
-        HBOX =>
-          VPANEL =>
-            HPANEL => 'x1'
-            HPANEL =>
-              HPANEL => 'x2x1'
-              HPANEL => 'x2x2'
-              HPANEL => 'x2x3'
-            HPANEL =>
-              VPANEL => 'x3x1'
-              VPANEL => 'x3x2'
-              VPANEL => 'x3x3'
-            HPANEL => 'x4'
-          VPANEL => 'B'
-          VBOX =>
-            HPANEL =>
-              BUTTON =>
-              BUTTON =>
-              BUTTON =>
-            VPANEL =>
-              BUTTON =>
-              BUTTON =>
-              BUTTON =>
-            HPANEL => 'C2'
-          VPANEL => 'D'
-        HPANEL => '3'
+        # TABLETOP =>
+        ARTBOARD =>
+          ZOOMER =>
+            for page_nr in [ 1 .. 50 ]
+              PAGE =>
+                OVERLAY page_nr
+
+        HRIBBON style: 'height:20mm;', =>
+          I '.small.mdi-editor-insert-chart'
+          I '.small.mdi-action-3d-rotation'
+          I '.small.mdi-action-assignment'
+          I '.small.mdi-image-blur-on'
+          I '.small.mdi-action-print'
+          I '.small.mdi-action-cached'
+          I '.small.mdi-content-content-cut'
+          I '.small.mdi-content-content-copy'
+
+        # HBOX =>
+        #   TOOL '#console.gui-console'
+        #   DIV '#console-bottom'
+
+
+        # HPANEL '.gui-rigid', =>
+        # HPANEL '.gui-scrolling', =>
+        #   VBOX '.gui-rigid', style: 'min-width:50mm;'; => ''
+        #   VBOX =>
+        #     HBOX =>
+        #     HPANEL =>
+        #     HBOX =>
+        #     # HBOX =>
+        #   VBOX '.gui-rigid', style: 'min-width:50mm;'; => ''
+        #   # TABLETOP =>
+        #   #   HPANEL =>
+        #   #   HPANEL =>
+        #   #     HPANEL => 'x2x1'
+        #   #     HPANEL => 'x2x2'
+        #   #     HPANEL => 'x2x3'
+        #   #   HPANEL =>
+        #   #     VPANEL => 'x3x1'
+        #   #     VPANEL => 'x3x2'
+        #   #     VPANEL => 'x3x3'
+        #   #   HPANEL => 'x4'
+        #   # VPANEL => 'B'
+        #   # VBOX =>
+        #   #   HPANEL =>
+        #   #     BUTTON =>
+        #   #     BUTTON =>
+        #   #     BUTTON =>
+        #   #   VPANEL =>
+        #   #     BUTTON =>
+        #   #     BUTTON =>
+        #   #     BUTTON =>
+        #   #   HPANEL => 'C2'
+        #   # VPANEL => 'D'
+
 
 #-----------------------------------------------------------------------------------------------------------
 @layout_old = ->

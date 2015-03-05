@@ -1,4 +1,61 @@
 
+
+
+/* ------------------------------------------------------------------------------------------------------ */
+/* Experimentally detected that `$paper-height = 297mm - 0.13mm` is not enough but
+  `297mm - 0.15mm` is enough to avoid intervening blank pages in the PDF. */
+$paper-width                = 210mm
+$paper-height               = 297mm - 0.15mm
+// $paper-width                = 210mm
+// $paper-height               = 297mm
+/* ...................................................................................................... */
+// 'gutters' in typographic terms (non-printable areas) become 'paddings' in CSS:
+$gutter-left                = 4.5mm
+$gutter-right               = $gutter-left
+$gutter-top                 = 3mm
+$gutter-bottom              = 18mm
+/* ...................................................................................................... */
+// 'margins' in typographic terms (areas outside the main content) become 'paddings' in CSS:
+$margin-left                = 15mm
+$margin-right               = $margin-left
+$margin-top                 = 11mm
+$margin-bottom              = 5mm
+/* ...................................................................................................... */
+// the chase represents the printable area; inside, flanked by the margins, is the main content area:
+$chase-width                = $paper-width  - $gutter-left  - $gutter-right
+$chase-height               = $paper-height - $gutter-top   - $gutter-bottom
+
+// /* ...................................................................................................... */
+// // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// $content-width              = $page-width   - $margin-left  - $margin-right
+// $content-height             = $page-height  - $margin-top   - $margin-bottom
+// // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+// $galley-width               = $page-width   - $margin-left  - $margin-right
+// $galley-height              = $page-height  - $margin-top   - $margin-bottom
+
+/* ------------------------------------------------------------------------------------------------------ */
+paper
+page
+  width:                  $paper-width
+  height:                 $paper-height
+
+/* ------------------------------------------------------------------------------------------------------ */
+chase
+  position:               absolute
+  left:                   $gutter-left
+  top:                    $gutter-top
+
+@media screen
+  paper
+  page
+    background-color:       $paper-white
+    box-shadow              10px 10px 35px 0px rgba(0,0,0,0.5)
+    float:                  left
+    margin:                 10mm
+
+
+
 line
   position:               absolute
   line-height:            5mm

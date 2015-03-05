@@ -73,8 +73,10 @@
     'jQuery': $,
     'NW': NW,
     'MKTS': null,
+    'artboard': null,
     'window': window,
-    'view-mode': 'dev'
+    'view-mode': 'dev',
+    'mouse-position': [0, 0]
   };
 
 
@@ -206,51 +208,6 @@
     return win.resizeTo(window.screen.availWidth, window.screen.availHeight);
   };
 
-  MKTS.revert_zoom = function(me) {
-
-    /* TAINT code duplication */
-    var last_zoom_level;
-    if ((last_zoom_level = me['%memo']['last-zoom-level']) == null) {
-      return;
-    }
-    return this.zoom_to(me, last_zoom_level);
-  };
-
-  MKTS.zoom_percent_from_level = function(me, level) {
-    if (level == null) {
-      level = null;
-    }
-    if (level == null) {
-      level = win.zoomLevel;
-    }
-    return (level - me['base-zoom-level']) * 1.2 * 100;
-  };
-
-  MKTS.zoom_to = function(me, level) {
-    if (level == null) {
-      level = null;
-    }
-
-    /* TAINT code duplication */
-    me['%memo']['last-zoom-level'] = win.zoomLevel;
-    win.zoomLevel = level != null ? level : me['base-zoom-level'];
-    help("zoomed to " + (ƒ(win.zoomLevel)) + " (" + (ƒ(this.zoom_percent_from_level(me), 0)) + "%)");
-    return win.zoomLevel;
-  };
-
-  MKTS.zoom = function(me, delta) {
-    me['%memo']['last-zoom-level'] = win.zoomLevel;
-    if (delta != null) {
-      if ((delta > 0 && win.zoomLevel <= 8.8) || (delta < 0 && win.zoomLevel >= -7.5)) {
-        win.zoomLevel += delta;
-      }
-    } else {
-      win.zoomLevel = me['base-zoom-level'];
-    }
-    help("zoomed to " + (ƒ(win.zoomLevel)) + " (" + (ƒ(this.zoom_percent_from_level(me), 0)) + "%)");
-    return win.zoomLevel;
-  };
-
   MKTS.wait = function(handler) {
     return window.requestAnimationFrame(function() {
       return handler();
@@ -320,7 +277,6 @@
     md = "\n# Behind the Looking-Glass\n\nJust as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\n<span>every</span>&shy;<span>thing's </span>curious today. I think I may as well go in at once.' And in\nshe went.\n\n# Behind the Looking-Glass\n\nJust as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe went.";
     LINESETTER.demo(me, md, (function(_this) {
       return function(error) {
-        MKTS.revert_zoom(me);
         return help("MKTS.demo ok");
       };
     })(this));
@@ -479,19 +435,13 @@
 
   bindings = {
     'meta+plus': function() {
-      return MKTS.zoom(app, +1);
-    },
-    'meta+shift+asterisk': function() {
-      return MKTS.zoom(app, +0.1);
-    },
-    'meta+0': function() {
-      return MKTS.zoom(app, null);
+      return MKTS.ZOOM.by(1 * 1.25);
     },
     'meta+minus': function() {
-      return MKTS.zoom(app, -1);
+      return MKTS.ZOOM.by(1 / 1.25);
     },
-    'meta+shift+minus': function() {
-      return MKTS.zoom(app, -0.1);
+    'meta+0': function() {
+      return MKTS.ZOOM.to(1);
     },
     'meta+left': function() {
       return MKTS.scroll_to_top();
@@ -556,6 +506,8 @@
   };
 
   win.on('document-end', function() {
+    app['artboard'] = $('artboard');
+    app['zoomer'] = $('zoomer');
     MKTS.enable_console();
     step(function*(resume) {
       win.showDevTools();

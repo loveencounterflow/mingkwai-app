@@ -46,9 +46,11 @@ app =
   'mm-per-px':        100 / 377.94791
   'jQuery':           $
   'NW':               NW
-  'MKTS':             null # MKTS
+  'MKTS':             null
+  'artboard':         null
   'window':           window
   'view-mode':        'dev'
+  'mouse-position':   [ 0, 0, ]
 
 #-----------------------------------------------------------------------------------------------------------
 ### Publish app so we have access to it in both the browser and the NodeJS contexts: ###
@@ -173,41 +175,6 @@ MKTS.maximize = ( app ) ->
   win.moveTo   window.screen.availLeft,  window.screen.availTop
   win.resizeTo window.screen.availWidth, window.screen.availHeight
 
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.revert_zoom = ( me ) ->
-  ### TAINT code duplication ###
-  return unless ( last_zoom_level = me[ '%memo' ][ 'last-zoom-level' ] )?
-  return @zoom_to me, last_zoom_level
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.zoom_percent_from_level = ( me, level = null ) ->
-  level ?= win.zoomLevel
-  return ( level - me[ 'base-zoom-level' ] ) * 1.2 * 100
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.zoom_to = ( me, level = null ) ->
-  ### TAINT code duplication ###
-  me[ '%memo' ][ 'last-zoom-level' ]  = win.zoomLevel
-  win.zoomLevel                       = level ? me[ 'base-zoom-level' ]
-  #.........................................................................................................
-  help "zoomed to #{ƒ win.zoomLevel} (#{ƒ ( @zoom_percent_from_level me ), 0}%)"
-  return win.zoomLevel
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.zoom = ( me, delta ) ->
-  me[ '%memo' ][ 'last-zoom-level' ]  = win.zoomLevel
-  #.........................................................................................................
-  if delta?
-    if ( delta > 0 and win.zoomLevel <= 8.8 ) or ( delta < 0 and win.zoomLevel >= -7.5 )
-      win.zoomLevel += delta
-  #.........................................................................................................
-  else
-    win.zoomLevel = me[ 'base-zoom-level' ]
-  #.........................................................................................................
-  help "zoomed to #{ƒ win.zoomLevel} (#{ƒ ( @zoom_percent_from_level me ), 0}%)"
-  return win.zoomLevel
-
 #-----------------------------------------------------------------------------------------------------------
 MKTS.wait = ( handler ) ->
   window.requestAnimationFrame -> handler()
@@ -278,7 +245,7 @@ MKTS.demo = ( me ) ->
     she went."""
   # MKTS.zoom me, 2
   LINESETTER.demo me, md, ( error ) =>
-    MKTS.revert_zoom me
+    # MKTS.revert_zoom me
     help "MKTS.demo ok"
   return null
 
@@ -395,11 +362,14 @@ keyboard.set 39,  'right'
 
 #-----------------------------------------------------------------------------------------------------------
 bindings =
-  'meta+plus':            -> MKTS.zoom app, +1
-  'meta+shift+asterisk':  -> MKTS.zoom app, +0.1
-  'meta+0':               -> MKTS.zoom app, null
-  'meta+minus':           -> MKTS.zoom app, -1
-  'meta+shift+minus':     -> MKTS.zoom app, -0.1
+  'meta+plus':            -> MKTS.ZOOM.by 1 * 1.25
+  'meta+minus':           -> MKTS.ZOOM.by 1 / 1.25
+  # 'meta+plus':            -> MKTS.ZOOM.to_delta +0.1
+  # 'meta+minus':           -> MKTS.ZOOM.to_delta -0.1
+  'meta+0':               -> MKTS.ZOOM.to 1
+
+  # 'meta+shift+asterisk':  -> MKTS.zoom app, +0.1
+  # 'meta+shift+minus':     -> MKTS.zoom app, -0.1
   'meta+left':            -> MKTS.scroll_to_top()
   'meta+right':           -> MKTS.scroll_to_bottom()
   #.........................................................................................................
@@ -448,6 +418,8 @@ MKTS.enable_console = ( selector = '#console' ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 win.on 'document-end', ->
+  app[ 'artboard' ] = $ 'artboard'
+  app[ 'zoomer'   ] = $ 'zoomer'
   MKTS.enable_console()
   step ( resume ) ->
     win.showDevTools()
