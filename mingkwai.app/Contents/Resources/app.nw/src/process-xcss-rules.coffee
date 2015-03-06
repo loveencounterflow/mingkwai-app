@@ -68,9 +68,9 @@ handler_by_properties =
   ( $ 'i' ).on 'mouseout', ( event ) ->
     ( $ @ ).switchClass 'medium', 'small'
   #.........................................................................................................
-  ( $ 'tool' ).on 'click', ( event ) ->
+  ( $ 'tool, i' ).on 'click', ( event ) ->
     if ( action = ( $ @ ).attr 'action' )?
-      if ( method = window[ 'app' ]?[ 'MKTS' ]?[ 'actions' ]?[ action ] )?
+      if ( method = window[ 'app' ]?[ 'MKTS' ]?[ 'ACTIONS' ]?[ action ] )?
         help "clicked on tool; action #{rpr action}"
         method()
       else

@@ -206,8 +206,11 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         JS  './jquery-2.1.3.js'
         CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
+        JS  './jquery.event.drag-2.2/jquery.event.drag-2.2.js'
         JS  './outerHTML-2.1.0.js'
         JS  './blaidddrwg.js'
+        JS  './convertPointFromPageToNode.js'
+        JS  './jquery-transit.js'
         JS  './browser.js'
         JS  './process-xcss-rules.js'
         CSS './materialize/css/materialize.min.css'
@@ -215,29 +218,57 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         CSS './mkts-main.css'
       #=====================================================================================================
       COFFEESCRIPT =>
-        # ( $ document ).ready ->
-        ( $ document ).on 'mousemove', ( event ) ->
-          # console.log '©YC6EG', [ event.pageX, event.pageY, ]
-          window[ 'app' ][ 'mouse-position' ] = [ event.pageX, event.pageY, ]
+        ( $ document ).ready ->
+          # getBoundingClientRect
+          window.zoomer = $ 'zoomer'
+          zoomer.draggable()
+          ( $ document ).on 'drag',        -> console.log 'drag'; return true
+          ( $ document ).on 'touchstart',  -> console.log 'touchstart'; return true
+          ( $ document ).on 'touchmove',   -> console.log 'touchmove'; return true
+          ( $ document ).on 'touchend',    -> console.log 'touchend'; return true
+          ( $ document ).on 'touchcancel', -> console.log 'touchcancel'; return true
+          ( $ document ).on 'scrollstart', -> console.log 'scrollstart'; return true
+          ( $ document ).on 'scrollstop',  -> console.log 'scrollstop'; return true
+          ( $ document ).on 'swipe',       -> console.log 'swipe'; return true
+          ( $ document ).on 'swipeleft',   -> console.log 'swipeleft'; return true
+          ( $ document ).on 'swiperight',  -> console.log 'swiperight'; return true
+          ( $ document ).on 'tap',         -> console.log 'tap'; return true
+          ( $ document ).on 'taphold',     -> console.log 'taphold'; return true
+          ( $ document ).on 'mousedown',   -> console.log 'mousedown'; return true
+          ( $ document ).on 'mouseup',     -> console.log 'mouseup'; return true
+          # ( $ document ).on 'mousemove',   -> console.log 'mousemove'; return true
+        # ( $ document ).on 'mousemove', ( event ) ->
+        #   app                 = window[ 'app' ]
+        #   [ page_x, page_y, ] = [ event.pageX, event.pageY, ]
+        #   zmr                 = window.convertPointFromPageToNode ( app[ 'zoomer' ].get 0 ), page_x, page_y
+        #   console.log '©YC6EG', [ page_x, page_y, ], zmr
+        #   window[ 'app' ][ 'mouse-position' ] = [ page_x, page_y, ]
+        #   ( $ '#tg' ).css 'left', "#{zmr[ 'x' ]}px"
+        #   ( $ '#tg' ).css 'top',  "#{zmr[ 'y' ]}px"
+        # ( $ document ).on 'mousemove', ( event ) ->
+        #   # console.log '©YC6EG', [ event.pageX, event.pageY, ]
+        #   window[ 'app' ][ 'mouse-position' ] = [ event.pageX, event.pageY, ]
       #=====================================================================================================
       BODY =>
         #...............................................................................................
         # TABLETOP =>
         ARTBOARD =>
           ZOOMER =>
+            DIV '#tg', style: 'position:absolute;top:0;left:0;width:10px; height:10px;outline:2px solid red;'
             for page_nr in [ 1 .. 50 ]
               PAGE =>
                 OVERLAY page_nr
 
-        HRIBBON style: 'height:20mm;', =>
-          I '.small.mdi-editor-insert-chart'
-          I '.small.mdi-action-3d-rotation'
-          I '.small.mdi-action-assignment'
-          I '.small.mdi-image-blur-on'
-          I '.small.mdi-action-print'
-          I '.small.mdi-action-cached'
-          I '.small.mdi-content-content-cut'
-          I '.small.mdi-content-content-copy'
+        HRIBBON '.draggable', style: 'height:20mm;', =>
+          I '.small.mkts-tool-hand',            action: 'tool-mode-hand'
+          I '.small.mdi-editor-insert-chart',   action: 'editor-insert-chart'
+          I '.small.mdi-action-3d-rotation',    action: 'action-3d-rotation'
+          I '.small.mdi-action-assignment',     action: 'action-assignment'
+          I '.small.mdi-image-blur-on',         action: 'image-blur-on'
+          I '.small.mdi-action-print',          action: 'action-print'
+          I '.small.mdi-action-cached',         action: 'action-cached'
+          I '.small.mdi-content-content-cut',   action: 'content-content-cut'
+          I '.small.mdi-content-content-copy',  action: 'content-content-copy'
 
         # HBOX =>
         #   TOOL '#console.gui-console'

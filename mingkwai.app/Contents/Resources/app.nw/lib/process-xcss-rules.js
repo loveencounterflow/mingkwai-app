@@ -74,10 +74,10 @@
       ($('i')).on('mouseout', function(event) {
         return ($(this)).switchClass('medium', 'small');
       });
-      return ($('tool')).on('click', function(event) {
+      return ($('tool, i')).on('click', function(event) {
         var action, method, _ref1, _ref2, _ref3;
         if ((action = ($(this)).attr('action')) != null) {
-          if ((method = (_ref1 = window['app']) != null ? (_ref2 = _ref1['MKTS']) != null ? (_ref3 = _ref2['actions']) != null ? _ref3[action] : void 0 : void 0 : void 0) != null) {
+          if ((method = (_ref1 = window['app']) != null ? (_ref2 = _ref1['MKTS']) != null ? (_ref3 = _ref2['ACTIONS']) != null ? _ref3[action] : void 0 : void 0 : void 0) != null) {
             help("clicked on tool; action " + (rpr(action)));
             method();
           } else {

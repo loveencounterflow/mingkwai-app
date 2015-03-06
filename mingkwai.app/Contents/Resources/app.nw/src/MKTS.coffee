@@ -76,57 +76,90 @@ module.exports = ( _app ) ->
 #   help "zoomed to #{ƒ win.zoomLevel} (#{ƒ ( @zoom_percent_from_level me ), 0}%)"
 #   return win.zoomLevel
 
-#-----------------------------------------------------------------------------------------------------------
-@ZOOM._get_zoom_levels = =>
-  R           = []
-  matcher     = /[-.e0-9]+/g
-  idx         = -1
-  matrix_txt  = app[ 'zoomer' ].css 'transform'
-  while ( match = matcher.exec matrix_txt )?
-    idx += 1
-    R.push parseFloat match[ 0 ] if idx in [ 0, 3, ]
-  return R
+# #-----------------------------------------------------------------------------------------------------------
+# @ZOOM._get_zoom_levels = =>
+#   ### TAINT more efficient to cache value as `app[ 'zoom' ]` or `app[ 'scale' ]` ###
+#   R           = []
+#   matcher     = /[-.e0-9]+/g
+#   idx         = -1
+#   matrix_txt  = app[ 'zoomer' ].css 'transform'
+#   while ( match = matcher.exec matrix_txt )?
+#     idx += 1
+#     R.push parseFloat match[ 0 ] if idx in [ 0, 3, ]
+#   return R
 
-#-----------------------------------------------------------------------------------------------------------
-@ZOOM.to_delta = ( delta ) =>
-  [ scale_x, scale_y, ] = @ZOOM._get_zoom_levels()
-  scale_x              += delta
-  scale_y              += delta
-  app[ 'zoomer' ].css 'transform', "matrix(#{scale_x}, 0, 0, #{scale_y}, 0, 0)"
-  help "zoomed to [ #{ƒ scale_x}, #{ƒ scale_y}, ]"
+# #-----------------------------------------------------------------------------------------------------------
+# @ZOOM.to_delta = ( delta ) =>
+#   [ scale_x, scale_y, ] = @ZOOM._get_zoom_levels()
+#   scale_x              += delta
+#   scale_y              += delta
+#   app[ 'zoomer' ].css 'transform', "matrix(#{scale_x}, 0, 0, #{scale_y}, 0, 0)"
+#   help "zoomed to [ #{ƒ scale_x}, #{ƒ scale_y}, ]"
 
 #-----------------------------------------------------------------------------------------------------------
 @ZOOM.by = ( factor ) =>
-  [ center_x, center_y, ] = app[ 'mouse-position' ]
-  [ scale_x, scale_y, ]   = @ZOOM._get_zoom_levels()
-  scale_x                *= factor
-  scale_y                *= factor
-  # app[ 'zoomer' ].css 'transform-origin', "#{center_x}px #{center_y}px"
-  app[ 'zoomer' ].css 'transform',        "matrix(#{scale_x}, 0, 0, #{scale_y}, 0, 0)"
-  help "zoomed to [ #{ƒ scale_x}, #{ƒ scale_y}, ]"
+  window                  = app[ 'window' ]
+  q                       = app[ 'jQuery' ]
+  document                = window.document
+  width                   = ( q window ).width()
+  height                  = ( q window ).height()
+  left                    = ( q document ).scrollLeft()
+  top                     = ( q document ).scrollTop()
+  page_x                  = left + width  / 2
+  page_y                  =  top + height / 2
+  zmr                     = window.convertPointFromPageToNode ( app[ 'zoomer' ].get 0 ), page_x, page_y
+  zoom_0                  = app[ 'zoom' ]
+  zoom_1                  = zoom_0 * factor
+  app[ 'zoom' ]           = zoom_1
+  #.........................................................................................................
+  ( q '#tg' ).css 'left', zmr[ 'x' ] - 5
+  ( q '#tg' ).css 'top',  zmr[ 'y' ] - 5
+  matrix  = app[ 'zoomer' ].css 'transform'
+  # app[ 'zoomer' ].css 'transform',        "matrix(1, 0, 0, 1, 0, 0)"
+  app[ 'zoomer' ].css 'transform-origin', "#{zmr[ 'x' ]}px #{zmr[ 'y' ]}px"
+  # app[ 'zoomer' ].css 'transform', matrix
+  app[ 'zoomer' ].transition scale: zoom_1, 100, 'linear'
+  #.........................................................................................................
+  whisper 'factor:  ', ƒ factor
+  whisper 'zoom_0:  ', ƒ zoom_0
+  whisper 'zoom_1:  ', ƒ zoom_1
+  whisper 'width:   ', ƒ width
+  whisper 'height:  ', ƒ height
+  whisper 'left:    ', ƒ left
+  whisper 'top:     ', ƒ top
+  whisper 'page_x:  ', ƒ page_x
+  whisper 'page_y:  ', ƒ page_y
+  help "zoomed to [ #{ƒ zoom_1}, ]"
 
 #-----------------------------------------------------------------------------------------------------------
-@ZOOM.to = ( scale_x, scale_y = null ) =>
-  scale_y ?= scale_x
-  app[ 'zoomer' ].css 'transform', "matrix(#{scale_x}, 0, 0, #{scale_y}, 0, 0)"
-  help "zoomed to [ #{ƒ scale_x}, #{ƒ scale_y}, ]"
+@ZOOM.to = ( zoom_1 ) =>
+  zoom_0                  = app[ 'zoom' ]
+  app[ 'zoom' ]           = zoom_1
+  app[ 'zoomer' ].transition scale: zoom_1, 100, 'linear'
+  whisper 'zoom_0:  ', ƒ zoom_0
+  whisper 'zoom_1:  ', ƒ zoom_1
+  help "zoomed to [ #{ƒ zoom_1}, ]"
 
 
 #===========================================================================================================
 # ACTIONS
 #-----------------------------------------------------------------------------------------------------------
-@actions = {}
+@ACTIONS = {}
 
-@actions[ 'demo' ]
-@actions[ 'demo-1' ]
-@actions[ 'print' ]
-@actions[ 'print-preview' ]
-@actions[ 'open' ]
-@actions[ 'save' ]
-@actions[ 'save-as' ]
+@ACTIONS[ 'demo' ]
+@ACTIONS[ 'demo-1' ]
+@ACTIONS[ 'print' ]
+@ACTIONS[ 'print-preview' ]
+@ACTIONS[ 'open' ]
+@ACTIONS[ 'save' ]
+@ACTIONS[ 'save-as' ]
 
 #-----------------------------------------------------------------------------------------------------------
-@actions[ 'view-test' ] = =>
+@ACTIONS[ 'view-test' ] = =>
   window.location.href = './test.html'
+
+#-----------------------------------------------------------------------------------------------------------
+@ACTIONS[ 'tool-mode-hand' ] = =>
+  @push_tool_mode 'hand'
 
 

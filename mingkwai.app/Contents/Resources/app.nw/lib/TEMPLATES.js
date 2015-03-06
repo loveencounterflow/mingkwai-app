@@ -361,8 +361,11 @@
             JS('./jquery-2.1.3.js');
             CSS('./jquery-ui-1.11.3.custom/jquery-ui.css');
             JS('./jquery-ui-1.11.3.custom/jquery-ui.js');
+            JS('./jquery.event.drag-2.2/jquery.event.drag-2.2.js');
             JS('./outerHTML-2.1.0.js');
             JS('./blaidddrwg.js');
+            JS('./convertPointFromPageToNode.js');
+            JS('./jquery-transit.js');
             JS('./browser.js');
             JS('./process-xcss-rules.js');
             CSS('./materialize/css/materialize.min.css');
@@ -370,14 +373,74 @@
             return CSS('./mkts-main.css');
           });
           COFFEESCRIPT(function() {
-            return ($(document)).on('mousemove', function(event) {
-              return window['app']['mouse-position'] = [event.pageX, event.pageY];
+            return ($(document)).ready(function() {
+              window.zoomer = $('zoomer');
+              zoomer.draggable();
+              ($(document)).on('drag', function() {
+                console.log('drag');
+                return true;
+              });
+              ($(document)).on('touchstart', function() {
+                console.log('touchstart');
+                return true;
+              });
+              ($(document)).on('touchmove', function() {
+                console.log('touchmove');
+                return true;
+              });
+              ($(document)).on('touchend', function() {
+                console.log('touchend');
+                return true;
+              });
+              ($(document)).on('touchcancel', function() {
+                console.log('touchcancel');
+                return true;
+              });
+              ($(document)).on('scrollstart', function() {
+                console.log('scrollstart');
+                return true;
+              });
+              ($(document)).on('scrollstop', function() {
+                console.log('scrollstop');
+                return true;
+              });
+              ($(document)).on('swipe', function() {
+                console.log('swipe');
+                return true;
+              });
+              ($(document)).on('swipeleft', function() {
+                console.log('swipeleft');
+                return true;
+              });
+              ($(document)).on('swiperight', function() {
+                console.log('swiperight');
+                return true;
+              });
+              ($(document)).on('tap', function() {
+                console.log('tap');
+                return true;
+              });
+              ($(document)).on('taphold', function() {
+                console.log('taphold');
+                return true;
+              });
+              ($(document)).on('mousedown', function() {
+                console.log('mousedown');
+                return true;
+              });
+              return ($(document)).on('mouseup', function() {
+                console.log('mouseup');
+                return true;
+              });
             });
           });
           return BODY(function() {
             ARTBOARD(function() {
               return ZOOMER(function() {
                 var page_nr, _i, _results;
+                DIV('#tg', {
+                  style: 'position:absolute;top:0;left:0;width:10px; height:10px;outline:2px solid red;'
+                });
                 _results = [];
                 for (page_nr = _i = 1; _i <= 50; page_nr = ++_i) {
                   _results.push(PAGE(function() {
@@ -387,17 +450,36 @@
                 return _results;
               });
             });
-            return HRIBBON({
+            return HRIBBON('.draggable', {
               style: 'height:20mm;'
             }, function() {
-              I('.small.mdi-editor-insert-chart');
-              I('.small.mdi-action-3d-rotation');
-              I('.small.mdi-action-assignment');
-              I('.small.mdi-image-blur-on');
-              I('.small.mdi-action-print');
-              I('.small.mdi-action-cached');
-              I('.small.mdi-content-content-cut');
-              return I('.small.mdi-content-content-copy');
+              I('.small.mkts-tool-hand', {
+                action: 'tool-mode-hand'
+              });
+              I('.small.mdi-editor-insert-chart', {
+                action: 'editor-insert-chart'
+              });
+              I('.small.mdi-action-3d-rotation', {
+                action: 'action-3d-rotation'
+              });
+              I('.small.mdi-action-assignment', {
+                action: 'action-assignment'
+              });
+              I('.small.mdi-image-blur-on', {
+                action: 'image-blur-on'
+              });
+              I('.small.mdi-action-print', {
+                action: 'action-print'
+              });
+              I('.small.mdi-action-cached', {
+                action: 'action-cached'
+              });
+              I('.small.mdi-content-content-cut', {
+                action: 'content-content-cut'
+              });
+              return I('.small.mdi-content-content-copy', {
+                action: 'content-content-copy'
+              });
             });
           });
         });

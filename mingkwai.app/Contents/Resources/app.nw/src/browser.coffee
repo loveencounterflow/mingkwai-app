@@ -41,16 +41,17 @@ APPLESCRIPT               = require 'applescript'
 #-----------------------------------------------------------------------------------------------------------
 app =
   '%memo':            {}
-  'zoom-level':       0
-  'base-zoom-level':  -0.15
-  'mm-per-px':        100 / 377.94791
-  'jQuery':           $
-  'NW':               NW
-  'MKTS':             null
-  'artboard':         null
-  'window':           window
-  'view-mode':        'dev'
-  'mouse-position':   [ 0, 0, ]
+  'mm-per-px':          100 / 377.94791
+  'jQuery':             $
+  'NW':                 NW
+  'MKTS':               null
+  'artboard':           null
+  'window':             window
+  'view-mode':          'dev'
+  'zoom-delta-factor':  1.25
+  'zoom':               1
+  'tool-modes':         []
+  'tool-modes-default': 'default'
 
 #-----------------------------------------------------------------------------------------------------------
 ### Publish app so we have access to it in both the browser and the NodeJS contexts: ###
@@ -345,29 +346,18 @@ MKTS.open_print_preview = ( me ) ->
 ###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
 
 ### TAINT should live in its own module ###
-### TAINT cosider using e.g. https://www.npmjs.com/package/combokeys ###
+### TAINT consider using e.g. https://www.npmjs.com/package/combokeys ###
 #-----------------------------------------------------------------------------------------------------------
-keyboard = new Map()
-keyboard.set 187, 'plus'
-keyboard.set 189, 'minus'
-keyboard.set 221, 'asterisk'
-keyboard.set 48,  '0'
-keyboard.set 80,  'p'
-keyboard.set 81,  'q'
-keyboard.set 82,  'r'
-keyboard.set 83,  's'
-keyboard.set 89,  'y'
-keyboard.set 37,  'left'
-keyboard.set 39,  'right'
+keycodes = require './BLAIDDDRWG-keycodes'
 
 #-----------------------------------------------------------------------------------------------------------
 bindings =
-  'meta+plus':            -> MKTS.ZOOM.by 1 * 1.25
-  'meta+minus':           -> MKTS.ZOOM.by 1 / 1.25
+  'meta+plus':            -> MKTS.ZOOM.by 1 * app[ 'zoom-delta-factor' ]
+  'meta+minus':           -> MKTS.ZOOM.by 1 / app[ 'zoom-delta-factor' ]
   # 'meta+plus':            -> MKTS.ZOOM.to_delta +0.1
   # 'meta+minus':           -> MKTS.ZOOM.to_delta -0.1
   'meta+0':               -> MKTS.ZOOM.to 1
-
+  'h':                    -> MKTS.toggle_tool_mode 'hand'
   # 'meta+shift+asterisk':  -> MKTS.zoom app, +0.1
   # 'meta+shift+minus':     -> MKTS.zoom app, -0.1
   'meta+left':            -> MKTS.scroll_to_top()
@@ -389,7 +379,7 @@ MKTS.on_keydown = ( event ) ->
   key_name.push 'ctrl'  if event.ctrlKey
   key_name.push 'meta'  if event.metaKey
   key_name.push 'shift' if event.shiftKey
-  key_name.push ( keyboard.get code ) ? code
+  key_name.push ( keycodes.get code ) ? code
   key_name  = key_name.join '+'
   #.........................................................................................................
   echo ( rpr key_name ), code
@@ -399,6 +389,35 @@ MKTS.on_keydown = ( event ) ->
   #.........................................................................................................
   else
     return true
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.toggle_tool_mode = ( mode ) ->
+  return @pop_tool_mode() if ( CND.last_of app[ 'tool-modes' ] ) is mode
+  return @push_tool_mode mode
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.push_tool_mode = ( mode ) ->
+  debug '©2ryq9', app[ 'tool-modes' ]
+  app[ 'tool-modes' ].push mode unless ( CND.last_of app[ 'tool-modes' ] ) is mode
+  app[ 'tool-modes' ].shift() if app[ 'tool-modes' ].length > 10
+  # ( $ 'body' ).css 'cursor', 'url(./icons/mkts-tool-hand.png)'
+  # ( $ 'body' ).attr 'style', 'cursor:url(./icons/mkts-tool-hand-cursor.png), auto;'
+  ### TAINT must swap classes ###
+  ### TAINT how to make cursor visible after change? ###
+  ( $ 'body' ).addClass 'cursor-hand'
+  # ( $ app[ 'document' ] ).trigger 'mousemove'
+  return mode
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.pop_tool_mode = ->
+  debug '©2ryq9', app[ 'tool-modes' ]
+  if app[ 'tool-modes' ].length < 1
+    R = app[ 'tool-modes-default' ]
+  else
+    R = app[ 'tool-modes' ].pop()
+  ### TAINT must swap classes ###
+  ( $ 'body' ).removeClass 'cursor-hand'
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.enable_console = ( selector = '#console' ) ->
@@ -423,9 +442,10 @@ win.on 'document-end', ->
   MKTS.enable_console()
   step ( resume ) ->
     win.showDevTools()
-    # MKTS.maximize app
-    # MKTS.zoom_to app, 1.85
-    yield step.wrap ( $ 'document' ).ready, resume
+    MKTS.maximize app
+    # MKTS.ZOOM.to app, 1.85
+    MKTS.ZOOM.to app[ 'zoom' ]
+    yield step.wrap ( $ document ).ready, resume
     help "document ready"
     #.......................................................................................................
     ( $ document ).keydown MKTS.on_keydown.bind MKTS
