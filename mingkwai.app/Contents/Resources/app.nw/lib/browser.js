@@ -77,7 +77,9 @@
     'zoom-delta-factor': 1.25,
     'zoom': 1,
     'tool-modes': [],
-    'tool-modes-default': 'default'
+    'tool-modes-default': 'default',
+    'view': 'pages',
+    'pages-last-scroll-xy': [0, 0]
   };
 
 
@@ -163,11 +165,11 @@
     });
     view_menu = new NW.Menu();
     view_menu.append(new NW.MenuItem({
-      label: 'Toggle Dev / Print View',
+      label: 'Toggle Galley',
       key: 't',
       modifiers: 'cmd',
       click: function() {
-        return MKTS.toggle_view(app);
+        return MKTS.VIEW.toggle_galley();
       }
     }));
     view_menu_entry = new NW.MenuItem({
@@ -274,8 +276,10 @@
 
     /* every<cork></cork>­&shy;thing */
     var md;
-    md = "And in she went. every&#x200b;&#x4e00;&shy;thing";
-    md = "\n# Behind the Looking-Glass\n\nJust as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\n<span>every</span>&shy;<span>thing's </span>curious today. I think I may as well go in at once.' And in\nshe went.\n\n# Behind the Looking-Glass\n\nJust as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\neverything's curious today. I think I may as well go in at once.' And in\nshe went.";
+    md = "Xxxxxxxxxxxxxxxx, she noticed xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    md = "\n# Behind the Looking-Glass\n\nJust as she said this, she noticedxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\n<span>every</span>&shy;<span>thing's </span>curious today. I think I may as well go in at once.' And in\nshe went.\n\n# Behind the Looking-Glass\n\nJust as she said this, she noticed that one of the trees had a door\nleading right into it. 'That's very curious!' she thought. 'But\neverything's <xbig>curious</xbig> today. I think I may as well go in at once.' And in\nshe went.\n\n上古時期的越南語很可能具有南亞語系其他語言現在具有的一些共同特徵，例如在屈折方面較發達，具有豐富的複輔音等。這些特徵已不再存於現代的越南語中，據認為是由於越南語地處東南亞的“語言聯盟”中，受到周邊有聲調的孤立語的影響，也變成了一種有聲調的孤立語。形態上的孤立和聲調的存在可能並非來源自原始南亞語，周邊的無親屬關係的語言，例如壯侗語系的泰語和南島語系的回輝話，也都具有聲調。\n";
+    md = require('./demo-text');
+    MKTS.VIEW.show_galley();
     LINESETTER.demo(me, md, (function(_this) {
       return function(error) {
         return help("MKTS.demo ok");
@@ -315,38 +319,6 @@
     artboard.append(contents);
     body.append(artboard);
     return null;
-  };
-
-  MKTS.switch_to_print_view = function(me) {
-    help("MKTS.switch_to_print_view");
-    if (me['view-mode'] === 'print') {
-      return;
-    }
-    this._detach_artboard(me);
-    me['view-mode'] = 'print';
-    return null;
-  };
-
-  MKTS.switch_to_dev_view = function(me) {
-    help("MKTS.switch_to_dev_view");
-    if (me['view-mode'] === 'dev') {
-      return;
-    }
-    this._reattach_artboard(me);
-    me['view-mode'] = 'dev';
-    return null;
-  };
-
-  MKTS.toggle_view = function(me) {
-    var view_mode;
-    switch (view_mode = me['view-mode']) {
-      case 'print':
-        return this.switch_to_dev_view(me);
-      case 'dev':
-        return this.switch_to_print_view(me);
-      default:
-        throw new Error("unknown view mode " + (rpr(view_mode)));
-    }
   };
 
   MKTS.open_print_dialog = function(me) {
@@ -529,7 +501,6 @@
     app['zoomer'] = $('zoomer');
     MKTS.enable_console();
     step(function*(resume) {
-      win.showDevTools();
       MKTS.maximize(app);
       MKTS.ZOOM.to(app['zoom']);
       (yield step.wrap(($(document)).ready, resume));

@@ -40,18 +40,20 @@ APPLESCRIPT               = require 'applescript'
 
 #-----------------------------------------------------------------------------------------------------------
 app =
-  '%memo':            {}
-  'mm-per-px':          100 / 377.94791
-  'jQuery':             $
-  'NW':                 NW
-  'MKTS':               null
-  'artboard':           null
-  'window':             window
-  'view-mode':          'dev'
-  'zoom-delta-factor':  1.25
-  'zoom':               1
-  'tool-modes':         []
-  'tool-modes-default': 'default'
+  '%memo':                {}
+  'mm-per-px':            100 / 377.94791
+  'jQuery':               $
+  'NW':                   NW
+  'MKTS':                 null
+  'artboard':             null
+  'window':               window
+  'view-mode':            'dev'
+  'zoom-delta-factor':    1.25
+  'zoom':                 1
+  'tool-modes':           []
+  'tool-modes-default':   'default'
+  'view':                 'pages'
+  'pages-last-scroll-xy': [ 0, 0, ]
 
 #-----------------------------------------------------------------------------------------------------------
 ### Publish app so we have access to it in both the browser and the NodeJS contexts: ###
@@ -87,7 +89,9 @@ build_menu = ->
   file_menu_entry = new NW.MenuItem label: 'File', 'submenu': file_menu
   #.........................................................................................................
   view_menu = new NW.Menu()
-  view_menu.append new NW.MenuItem label: 'Toggle Dev / Print View', key: 't', modifiers: 'cmd',      click: -> MKTS.toggle_view app
+  # view_menu.append new NW.MenuItem label: 'Toggle Dev / Print View',  key: 't', modifiers: 'cmd',     click: -> MKTS.toggle_view app
+  view_menu.append new NW.MenuItem label: 'Toggle Galley',            key: 't', modifiers: 'cmd',     click: -> MKTS.VIEW.toggle_galley()
+  # view_menu.append new NW.MenuItem label: 'Toggle Galley',            key: 't', modifiers: 'cmd',     click: -> console.log 'XXXXXXXXXXXX'
   view_menu_entry = new NW.MenuItem label: 'View', 'submenu': view_menu
   #.........................................................................................................
   win_menu  = new NW.Menu type: 'menubar'
@@ -225,15 +229,14 @@ MKTS.demo_1 = ( me ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.demo = ( me ) ->
-  # md = require './demo-text'
   ### every&#8203;<cork></cork>­&shy;thing ###
   ### every<cork></cork>­&shy;thing ###
-  md = """And in she went. every&#x200b;&#x4e00;&shy;thing"""
+  md = """Xxxxxxxxxxxxxxxx, she noticed xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"""
   md = """
 
     # Behind the Looking-Glass
 
-    Just as she said this, she noticed that one of the trees had a door
+    Just as she said this, she noticedxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx that one of the trees had a door
     leading right into it. 'That's very curious!' she thought. 'But
     <span>every</span>&shy;<span>thing's </span>curious today. I think I may as well go in at once.' And in
     she went.
@@ -242,9 +245,15 @@ MKTS.demo = ( me ) ->
 
     Just as she said this, she noticed that one of the trees had a door
     leading right into it. 'That's very curious!' she thought. 'But
-    everything's curious today. I think I may as well go in at once.' And in
-    she went."""
+    everything's <xbig>curious</xbig> today. I think I may as well go in at once.' And in
+    she went.
+
+    上古時期的越南語很可能具有南亞語系其他語言現在具有的一些共同特徵，例如在屈折方面較發達，具有豐富的複輔音等。這些特徵已不再存於現代的越南語中，據認為是由於越南語地處東南亞的“語言聯盟”中，受到周邊有聲調的孤立語的影響，也變成了一種有聲調的孤立語。形態上的孤立和聲調的存在可能並非來源自原始南亞語，周邊的無親屬關係的語言，例如壯侗語系的泰語和南島語系的回輝話，也都具有聲調。
+
+    """
+  md = require './demo-text'
   # MKTS.zoom me, 2
+  MKTS.VIEW.show_galley()
   LINESETTER.demo me, md, ( error ) =>
     # MKTS.revert_zoom me
     help "MKTS.demo ok"
@@ -271,29 +280,6 @@ MKTS._reattach_artboard = ( me ) ->
   artboard.append contents
   body.append artboard
   return null
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.switch_to_print_view = ( me ) ->
-  help "MKTS.switch_to_print_view"
-  return if me[ 'view-mode' ] is 'print'
-  @_detach_artboard me
-  me[ 'view-mode' ] = 'print'
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.switch_to_dev_view = ( me ) ->
-  help "MKTS.switch_to_dev_view"
-  return if me[ 'view-mode' ] is 'dev'
-  @_reattach_artboard me
-  me[ 'view-mode' ] = 'dev'
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.toggle_view = ( me ) ->
-  switch view_mode = me[ 'view-mode' ]
-    when 'print'  then @switch_to_dev_view    me
-    when 'dev'    then @switch_to_print_view  me
-    else throw new Error "unknown view mode #{rpr view_mode}"
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_print_dialog = ( me ) ->
@@ -358,6 +344,7 @@ bindings =
   # 'meta+minus':           -> MKTS.ZOOM.to_delta -0.1
   'meta+0':               -> MKTS.ZOOM.to 1
   'h':                    -> MKTS.toggle_tool_mode 'hand'
+  # 'g':                    -> MKTS.VIEW.toggle_galley()
   # 'meta+shift+asterisk':  -> MKTS.zoom app, +0.1
   # 'meta+shift+minus':     -> MKTS.zoom app, -0.1
   'meta+left':            -> MKTS.scroll_to_top()
@@ -441,7 +428,7 @@ win.on 'document-end', ->
   app[ 'zoomer'   ] = $ 'zoomer'
   MKTS.enable_console()
   step ( resume ) ->
-    win.showDevTools()
+    # win.showDevTools()
     MKTS.maximize app
     # MKTS.ZOOM.to app, 1.85
     MKTS.ZOOM.to app[ 'zoom' ]

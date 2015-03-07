@@ -1634,13 +1634,13 @@
  * 2. Prevent iOS text size adjust after orientation change, without disabling
  *    user zoom.
  */
-html {
-  font-family: sans-serif;
+/*html {*/
+  /*font-family: sans-serif;*/
   /* 1 */
-  -ms-text-size-adjust: 100%;
+  /*-ms-text-size-adjust: 100%;*/
   /* 2 */
-  -webkit-text-size-adjust: 100%;
-  /* 2 */ }
+  /*-webkit-text-size-adjust: 100%;*/
+   /*2  }*/
 
 /**
  * Remove default margin.
@@ -1722,10 +1722,10 @@ dfn {
  * Address variable `h1` font-size and margin within `section` and `article`
  * contexts in Firefox 4+, Safari, and Chrome.
  */
-h1 {
+/*h1 {
   font-size: 2em;
   margin: 0.67em 0; }
-
+*/
 /**
  * Address styling not present in IE 8/9.
  */
@@ -5205,7 +5205,7 @@ nav {
 a {
   text-decoration: none; }
 
-html {
+/*html {
   line-height: 1.5;
   font-family: "Roboto", sans-serif;
   font-weight: normal;
@@ -5219,14 +5219,14 @@ html {
   @media only screen and (min-width: 1200px) {
     html {
       font-size: 15px; } }
-
-h1, h2, h3, h4, h5, h6 {
+*/
+/*h1, h2, h3, h4, h5, h6 {
   font-weight: 400; }
-
+*/
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   font-weight: inherit; }
 
-h1 {
+/*h1 {
   font-size: 4.2rem;
   line-height: 4.62rem;
   margin: 2.1rem 0 1.68rem 0; }
@@ -5255,7 +5255,7 @@ h6 {
   font-size: 1rem;
   line-height: 1.1rem;
   margin: 0.5rem 0 0.4rem 0; }
-
+*/
 em {
   font-style: italic; }
 

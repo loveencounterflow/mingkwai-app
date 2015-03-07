@@ -12,8 +12,8 @@ $paper-height               = 297mm - 0.15mm
 // 'gutters' in typographic terms (non-printable areas) become 'paddings' in CSS:
 $gutter-left                = 4.5mm
 $gutter-right               = $gutter-left
-$gutter-top                 = 3mm
-$gutter-bottom              = 18mm
+$gutter-top                 = 8mm
+$gutter-bottom              = 10mm
 /* ...................................................................................................... */
 // 'margins' in typographic terms (areas outside the main content) become 'paddings' in CSS:
 $margin-left                = 15mm
@@ -24,6 +24,8 @@ $margin-bottom              = 5mm
 // the chase represents the printable area; inside, flanked by the margins, is the main content area:
 $chase-width                = $paper-width  - $gutter-left  - $gutter-right
 $chase-height               = $paper-height - $gutter-top   - $gutter-bottom
+/* ...................................................................................................... */
+$galley-width               = $paper-width
 
 // /* ...................................................................................................... */
 // // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -39,23 +41,173 @@ paper
 page
   width:                  $paper-width
   height:                 $paper-height
+  display:                flex
+
+/* ------------------------------------------------------------------------------------------------------ */
+galley
+  display:                none
+  min-height:             10mm
+  width:                  $paper-width
+  float:                  left
+  height:                 auto
 
 /* ------------------------------------------------------------------------------------------------------ */
 chase
-  position:               absolute
+  position:               relative
   left:                   $gutter-left
   top:                    $gutter-top
+  width:                  $chase-width
+  height:                 $chase-height
+  display:                flex
+  flex-direction:         column
+  float:                  left
+  overflow:               auto
 
+/* ------------------------------------------------------------------------------------------------------ */
+galley chase
+  height:                 auto
+  top:                    0
+
+/* ------------------------------------------------------------------------------------------------------ */
+box
+hbox
+  flex-shrink:            1
+  flex-grow:              1
+  display:                flex
+  flex-direction:         row
+
+/* ------------------------------------------------------------------------------------------------------ */
+vbox
+  flex-shrink:            1
+  flex-grow:              1
+  display:                flex
+  flex-direction:         column
+
+/* ====================================================================================================== */
+/* COLUMNS & GAPS */
+/* ------------------------------------------------------------------------------------------------------ */
+column
+  // height:                 100%
+  /* Nominal width so all columns in a flex box have the same width regardless of content: */
+  width:                  1mm
+  flex-shrink:            1
+  flex-grow:              1
+  /* `position: relative` needed for corks */
+  position:               relative
+
+/* ------------------------------------------------------------------------------------------------------ */
+hgap
+  width:                  100%
+  flex-shrink:            1
+  flex-grow:              1
+
+/* ------------------------------------------------------------------------------------------------------ */
+xhgap
+  width:                  100%
+  flex-shrink:            1000000
+  flex-grow:              1000000
+
+/* ------------------------------------------------------------------------------------------------------ */
+vgap
+  width:                  5mm
+  // height:                 100%
+  min-width:              5mm
+  max-width:              5mm
+  flex-shrink:            0
+  flex-grow:              0
+
+/* ====================================================================================================== */
+/* MARGINS */
+/* ------------------------------------------------------------------------------------------------------ */
+leftmargin
+rightmargin
+  flex-shrink:            0
+  flex-grow:              0
+
+leftmargin
+  min-width:              $margin-left
+  max-width:              $margin-left
+
+rightmargin
+  min-width:              $margin-right
+  max-width:              $margin-right
+
+topmargin
+bottommargin
+  width:                  100%
+  flex-shrink:            0
+  flex-grow:              0
+
+topmargin
+  min-height:             $margin-top
+  max-height:             $margin-top
+
+bottommargin
+  min-height:             $margin-bottom
+  max-height:             $margin-bottom
+
+cork
+  display:                none
+
+/* ------------------------------------------------------------------------------------------------------ */
 @media screen
   paper
   page
+  galley
     background-color:       $paper-white
     box-shadow              10px 10px 35px 0px rgba(0,0,0,0.5)
     float:                  left
     margin:                 10mm
+    position:               relative
 
+  galley
+    display:                flex
 
+  leftmargin
+  rightmargin
+  topmargin
+  bottommargin
+    background-color:       $gray
 
+  gap
+  vgap
+  hgap
+  xhgap
+    background-color:       $gray
+
+  overlay
+    display:                block
+    position:               absolute
+    top:                    10mm
+    left:                   10mm
+    color:                  $gray
+    pointer-events:         none
+    font-family:            "Century Schoolbook"
+    font-style:             italic
+    font-weight:            bold
+    font-size:              30mm
+
+  cork
+    position:               absolute
+    display:                inline-block
+    width:                  0
+    height:                 4mm
+    outline:                1px solid red
+
+  cork.first
+    outline:                1px solid green
+
+  cork.hyphen
+    outline:                1px solid blue
+
+  shred
+    background-color:       $light-yellow
+    outline:                1px solid $light-red
+
+  shred.ws
+    background-color:       $gray
+
+/* ------------------------------------------------------------------------------------------------------ */
 line
   position:               absolute
   line-height:            5mm
@@ -65,6 +217,9 @@ line
 
 p
   line-height:            5mm
+  text-align:             justify
+  letter-spacing:         -0.05ex
+  word-spacing:           -0.5ex
 
 p:before
   /* ### NB fixed-width space used here; see e.g. https://www.cs.tut.fi/~jkorpela/chars/spaces.html. ### */
@@ -75,3 +230,5 @@ p:before
   //   content:                '❡ '
   //   color:                  red
 
+xbig
+  font-size:              200%

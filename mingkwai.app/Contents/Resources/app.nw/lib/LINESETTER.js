@@ -334,14 +334,14 @@
   };
 
   this.demo = function(app, md, handler) {
-    var BD, MKTS, columns, container, input, jQuery, live, mm_from_px, page, t0, t1_a, window, ƒ;
+    var BD, MKTS, columns, container, disperse, hyphenation, input, jQuery, live, mm_from_px, page, t0, t1_a, whitespace, window, ƒ;
     jQuery = app['jQuery'];
     MKTS = app['MKTS'];
     window = app['window'];
     BD = window['BD'];
     page = (jQuery('page')).eq(0);
     container = (jQuery('wrap')).eq(0);
-    columns = jQuery('column');
+    columns = jQuery('galley column');
     mm_from_px = function(px) {
       return px * app['mm-per-px'];
     };
@@ -356,40 +356,96 @@
     live = false;
     t0 = +new Date();
     t1_a = null;
-    input.pipe(D.MD.$as_html()).pipe(D.HTML.$parse(true, true)).pipe(D.HTML.$slice_toplevel_tags()).pipe(D.$show()).pipe($((function(_this) {
-      return function(block_hotml, send) {
-        var idx, previous_element, previous_text, this_element, this_text, _i, _ref;
-        for (idx = _i = _ref = block_hotml.length - 1; _i >= 1; idx = _i += -1) {
-          this_element = block_hotml[idx];
-          previous_element = block_hotml[idx - 1];
-          if (CND.isa_text(this_text = this_element[1])) {
-            if (CND.isa_text(previous_text = previous_element[1])) {
-              if (previous_text[previous_text.length - 1] === '\u00ad') {
-                this_element[1] = '\u00ad' + this_text;
-                previous_element[1] = previous_text.slice(0, previous_text.length - 1);
-              }
-            }
-          }
-          block_hotml.splice(idx, 0, [[['cork', {}]], '', [['cork']]]);
-        }
-        return send(block_hotml);
-      };
-    })(this))).pipe((function(_this) {
+    disperse = true;
+    hyphenation = true;
+    whitespace = false;
+    input.pipe(D.MD.$as_html()).pipe(D.HTML.$parse(disperse, hyphenation, whitespace)).pipe(D.HTML.$slice_toplevel_tags()).pipe((function(_this) {
       return function() {
+
+        /* insert shreds */
+        var block_idx;
+        block_idx = -1;
         return $(function(block_hotml, send) {
-          var html;
-          return send(html = HOTMETAL.as_html(block_hotml, false));
+          var attributes, close_tags, content, open_tags, shred, shred_idx, _i, _len;
+          block_idx += +1;
+          for (shred_idx = _i = 0, _len = block_hotml.length; _i < _len; shred_idx = ++_i) {
+            shred = block_hotml[shred_idx];
+            open_tags = shred[0], content = shred[1], close_tags = shred[2];
+            if ((CND.isa_text(content)) && (/^\s*$/.test(content))) {
+              attributes = {
+                'class': 'ws',
+                'block-idx': block_idx,
+                'shred-idx': shred_idx
+              };
+            } else {
+              attributes = {
+                'block-idx': block_idx,
+                'shred-idx': shred_idx
+              };
+            }
+            open_tags.push(['shred', attributes]);
+            close_tags.unshift('shred');
+          }
+          return send(block_hotml);
         });
       };
-    })(this)()).pipe(D.$throttle_items(10 / 1)).pipe($((function(_this) {
-      return function(block_html, send, end) {
-        return step(function*(resume) {
-          var dt, dt_a, t1;
-          (yield MKTS.wait(resume));
-          if (block_html != null) {
+    })(this)()).pipe(D.$show()).pipe((function(_this) {
+      return function() {
+        return $(function(block_hotml, send) {
+          var block_html;
+          block_html = HOTMETAL.as_html(block_hotml, false);
+          return send([block_hotml, block_html]);
+        });
+      };
+    })(this)()).pipe((function(_this) {
+      return function() {
+        var block_idx, cork_infos;
+        cork_infos = [];
+        block_idx = -1;
+        return $(function(block, send, end) {
+          var block_hotml, block_html, cork, cork_entry, cork_idx, corks, dt, dt_a, element_idx, last_left, last_top, left, line_nr, opening_tags, t1, top, _i, _j, _len, _ref, _ref1, _ref2;
+          if (block != null) {
+            block_idx += +1;
+            block_hotml = block[0], block_html = block[1];
             (columns.eq(0)).append(jQuery(block_html));
+            for (element_idx = _i = 0, _len = block_hotml.length; _i < _len; element_idx = ++_i) {
+              _ref = block_hotml[element_idx], opening_tags = _ref[0];
+              if (opening_tags.length === 0) {
+                continue;
+              }
+              if ((CND.last_of(opening_tags))[0] !== 'cork') {
+                continue;
+              }
+              cork_infos.push({
+                block_idx: block_idx,
+                element_idx: element_idx
+              });
+            }
           }
           if (end != null) {
+            corks = (columns.eq(0)).find('cork');
+            last_left = -Infinity;
+            last_top = -Infinity;
+            line_nr = 0;
+            for (cork_idx = _j = 0, _ref1 = corks.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; cork_idx = 0 <= _ref1 ? ++_j : --_j) {
+              cork_entry = cork_infos[cork_idx];
+              cork = corks.eq(cork_idx);
+              _ref2 = cork.position(), left = _ref2.left, top = _ref2.top;
+
+              /* TAINT this could be a small fractional number; also negative with hanging punctuation */
+              if (left === 0) {
+                cork.addClass('first');
+              }
+              if (top > last_top) {
+                line_nr += +1;
+              }
+              cork_entry['left'] = left;
+              cork_entry['top'] = top;
+              cork_entry['line_nr'] = line_nr;
+              last_left = left;
+              last_top = top;
+            }
+            help("found " + line_nr + " lines");
             warn('ended');
             t1 = +new Date();
             dt = t1 - t0;
@@ -400,7 +456,7 @@
           }
         });
       };
-    })(this)));
+    })(this)());
     input.write(md);
     return input.end();
   };

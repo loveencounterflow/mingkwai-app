@@ -94,6 +94,51 @@
     };
   })(this);
 
+  this.VIEW = {};
+
+  this.VIEW.toggle_galley = (function(_this) {
+    return function() {
+      debug('©0fZv5', app['view']);
+      if (app['view'] === 'pages') {
+        _this.VIEW.show_galley();
+      } else {
+        _this.VIEW.show_pages();
+      }
+      return true;
+    };
+  })(this);
+
+  this.VIEW.show_galley = (function(_this) {
+    return function() {
+      var q, window;
+      window = app['window'];
+      q = app['jQuery'];
+      app['view'] = 'galley';
+      app['pages-last-scroll-xy'][0] = (q(window)).scrollLeft();
+      app['pages-last-scroll-xy'][1] = (q(window)).scrollTop();
+      return (q('artboard.pages')).animate({
+        opacity: 0
+      }, function() {
+        return (q('artboard.pages')).css('display', 'none');
+      });
+    };
+  })(this);
+
+  this.VIEW.show_pages = (function(_this) {
+    return function() {
+      var q, window;
+      window = app['window'];
+      q = app['jQuery'];
+      app['view'] = 'pages';
+      (q('artboard.pages')).css('display', 'block');
+      (q(window)).scrollLeft(app['pages-last-scroll-xy'][0]);
+      (q(window)).scrollTop(app['pages-last-scroll-xy'][1]);
+      return (q('artboard.pages')).animate({
+        opacity: 1
+      });
+    };
+  })(this);
+
   this.ACTIONS = {};
 
   this.ACTIONS['demo'];

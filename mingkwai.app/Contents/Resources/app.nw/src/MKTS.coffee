@@ -141,6 +141,63 @@ module.exports = ( _app ) ->
   help "zoomed to [ #{ƒ zoom_1}, ]"
 
 
+
+#===========================================================================================================
+# VIEW
+#-----------------------------------------------------------------------------------------------------------
+@VIEW = {}
+
+#-----------------------------------------------------------------------------------------------------------
+@VIEW.toggle_galley = =>
+  debug '©0fZv5', app[ 'view' ]
+  if app[ 'view' ] is 'pages' then @VIEW.show_galley() else @VIEW.show_pages()
+  return true
+
+#-----------------------------------------------------------------------------------------------------------
+@VIEW.show_galley = =>
+  window                              = app[ 'window' ]
+  q                                   = app[ 'jQuery' ]
+  app[ 'view' ]                       = 'galley'
+  app[ 'pages-last-scroll-xy' ][ 0 ]  = ( q window ).scrollLeft()
+  app[ 'pages-last-scroll-xy' ][ 1 ]  = ( q window ).scrollTop()
+  ( q 'artboard.pages' ).animate opacity: 0, =>
+    ( q 'artboard.pages' ).css 'display', 'none'
+
+#-----------------------------------------------------------------------------------------------------------
+@VIEW.show_pages = =>
+  window                  = app[ 'window' ]
+  q                       = app[ 'jQuery' ]
+  app[ 'view' ]           = 'pages'
+  ( q 'artboard.pages' ).css 'display', 'block'
+  ( q window ).scrollLeft app[ 'pages-last-scroll-xy' ][ 0 ]
+  ( q window ).scrollTop  app[ 'pages-last-scroll-xy' ][ 1 ]
+  ( q 'artboard.pages' ).animate opacity: 1
+
+
+# #-----------------------------------------------------------------------------------------------------------
+# MKTS.switch_to_print_view = ( me ) ->
+#   help "MKTS.switch_to_print_view"
+#   return if me[ 'view-mode' ] is 'print'
+#   @_detach_artboard me
+#   me[ 'view-mode' ] = 'print'
+#   return null
+
+# #-----------------------------------------------------------------------------------------------------------
+# MKTS.switch_to_dev_view = ( me ) ->
+#   help "MKTS.switch_to_dev_view"
+#   return if me[ 'view-mode' ] is 'dev'
+#   @_reattach_artboard me
+#   me[ 'view-mode' ] = 'dev'
+#   return null
+
+# #-----------------------------------------------------------------------------------------------------------
+# MKTS.toggle_view = ( me ) ->
+#   switch view_mode = me[ 'view-mode' ]
+#     when 'print'  then @switch_to_dev_view    me
+#     when 'dev'    then @switch_to_print_view  me
+#     else throw new Error "unknown view mode #{rpr view_mode}"
+
+
 #===========================================================================================================
 # ACTIONS
 #-----------------------------------------------------------------------------------------------------------

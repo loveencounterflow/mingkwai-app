@@ -363,7 +363,7 @@ XCSS                      = require './XCSS'
   page                = ( jQuery 'page' ).eq 0
   container           = ( jQuery 'wrap' ).eq 0
   # columns             = container.find 'column'
-  columns             = jQuery 'column'
+  columns             = jQuery 'galley column'
   # column_count        = columns.length
   # seen_lines          = null
   # # last_line_height    = null
@@ -381,20 +381,22 @@ XCSS                      = require './XCSS'
   # column_linecount          = 0
 
   #---------------------------------------------------------------------------------------------------------
-  input   = D.create_throughstream()
-  live    = yes
-  live    = no
-  t0      = +new Date()
-  t1_a    = null
+  input         = D.create_throughstream()
+  live          = yes
+  live          = no
+  t0            = +new Date()
+  t1_a          = null
+  disperse      = yes
+  hyphenation   = yes
+  whitespace    = no
   #.........................................................................................................
   input
     #.......................................................................................................
     # .pipe D.TYPO.$quotes()
     # .pipe D.TYPO.$dashes()
     .pipe D.MD.$as_html()
-    .pipe D.HTML.$parse yes, yes
+    .pipe D.HTML.$parse disperse, hyphenation, whitespace
     .pipe D.HTML.$slice_toplevel_tags()
-    .pipe D.$show()
     # #.......................................................................................................
     # .pipe $ ( block_hotml, send ) =>
     #   for element, idx in block_hotml
@@ -403,35 +405,110 @@ XCSS                      = require './XCSS'
     #     element[ 2 ].unshift  [ 'span', ]
     #   #.....................................................................................................
     #   send block_hotml
-    #.......................................................................................................
-    .pipe $ ( block_hotml, send ) =>
-      for idx in [ block_hotml.length - 1 .. 1 ] by -1
-        this_element      = block_hotml[ idx     ]
-        previous_element  = block_hotml[ idx - 1 ]
-        #...................................................................................................
-        if CND.isa_text this_text = this_element[ 1 ]
-          if CND.isa_text previous_text = previous_element[ 1 ]
-            if previous_text[ previous_text.length - 1 ] is '\u00ad'
-              this_element[     1 ] = '\u00ad' + this_text
-              previous_element[ 1 ] = previous_text[ ... previous_text.length - 1 ]
-        #...................................................................................................
-        block_hotml.splice idx, 0, [ [ [ 'cork', {}, ], ], '', [ [ 'cork', ], ], ]
-      #.....................................................................................................
-      send block_hotml
+    # #.......................................................................................................
+    # .pipe $ ( block_hotml, send ) =>
+    #   ### insert corks ###
+    #   for idx in [ block_hotml.length - 1 .. 1 ] by -1
+    #     this_element      = block_hotml[ idx     ]
+    #     previous_element  = block_hotml[ idx - 1 ]
+    #     #...................................................................................................
+    #     if CND.isa_text this_text = this_element[ 1 ]
+    #       if CND.isa_text previous_text = previous_element[ 1 ]
+    #         if previous_text[ previous_text.length - 1 ] is '\u00ad'
+    #           previous_element[ 1 ] = previous_text[ ... previous_text.length - 1 ]
+    #           # if /[\ud800-\udbff]/.test this_text[ 0 ]
+    #           if ( this_text.codePointAt 0 ) > 0xffff
+    #             min_length = 2
+    #           else
+    #             min_length = 1
+    #           ### TAINT tags around hyphenated text will not work correctly (?) ###
+    #           if this_text.length > min_length
+    #             text_0 = '\u00ad' + this_text[ ... min_length ]
+    #             text_1 = this_text[ min_length .. ]
+    #             block_hotml.splice idx + 1, 0, [ [], text_1, [], ]
+    #             block_hotml.splice idx + 1, 0, [ [ [ 'cork', { class: 'hyphen', }, ], ], '', [ 'cork', ], ]
+    #             # block_hotml.splice idx + 1, 0, [ [], text_0, [], ]
+    #             this_element[ 1 ] = text_0
+    #           else
+    #             this_element[ 1 ] = '\u00ad' + this_text
+    #     #...................................................................................................
+    #     block_hotml.splice idx, 0, [ [ [ 'cork', {}, ], ], '', [ 'cork', ], ]
+    #   #.....................................................................................................
+    #   if block_hotml.length > 0
+    #     block_hotml.splice 1, 0, [ [], block_hotml[ 0 ][ 1 ], block_hotml[ 0 ][ 2 ], ]
+    #     block_hotml[ 0 ][ 0 ].push [ 'cork', {}, ]
+    #     block_hotml[ 0 ][ 1 ] = ''
+    #     block_hotml[ 0 ][ 2 ] = [ 'cork', ]
+    #     idx = block_hotml.length - 1
+    #     block_hotml[ idx ][ 2 ].unshift 'cork'
+    #     block_hotml.push [ [ [ 'cork', {}, ], ], '', block_hotml[ idx ][ 2 ], ]
+    #     block_hotml[ idx ][ 2 ] = []
+    #   #.....................................................................................................
+    #   send block_hotml
     #.......................................................................................................
     .pipe do =>
+      ### insert shreds ###
+      block_idx = -1
       return $ ( block_hotml, send ) =>
-        send html = HOTMETAL.as_html block_hotml, no
+        block_idx += +1
+        #...................................................................................................
+        for shred, shred_idx in block_hotml
+          [ open_tags, content, close_tags, ] = shred
+          if ( CND.isa_text content ) and ( ( /^\s*$/ ).test content )
+            attributes  = { 'class': 'ws', 'block-idx': block_idx, 'shred-idx': shred_idx, }
+          else
+            attributes = { 'block-idx': block_idx, 'shred-idx': shred_idx, }
+          open_tags.push [ 'shred', attributes, ]
+          close_tags.unshift 'shred'
+        #.....................................................................................................
+        send block_hotml
+    #.......................................................................................................
+    .pipe D.$show()
+    .pipe do =>
+      return $ ( block_hotml, send ) =>
+        block_html = HOTMETAL.as_html block_hotml, no
+        send [ block_hotml, block_html,]
         # debug '©gFRZM', html
     #.......................................................................................................
-    .pipe D.$throttle_items 10 / 1
-    .pipe $ ( block_html, send, end ) =>
-      step ( resume ) =>
-        yield MKTS.wait resume
-        # yield sleep 0.5, resume
-        if block_html?
+    # .pipe D.$throttle_items 5 / 1
+    .pipe do =>
+      cork_infos  = []
+      block_idx   = -1
+      return $ ( block, send, end ) =>
+        # step ( resume ) =>
+        #   yield MKTS.wait resume
+          # yield sleep 0.5, resume
+        if block?
+          block_idx                    += +1
+          [ block_hotml, block_html, ]  = block
           ( columns.eq 0 ).append jQuery block_html
+          for [ opening_tags, ... ], element_idx in block_hotml
+            continue if opening_tags.length is 0
+            continue unless ( CND.last_of opening_tags )[ 0 ] is 'cork'
+            cork_infos.push { block_idx, element_idx, }
         if end?
+          # debug '©5eBb1', cork_infos
+          corks       = ( columns.eq 0 ).find 'cork'
+          last_left   = -Infinity
+          last_top    = -Infinity
+          line_nr     = 0
+          for cork_idx in [ 0 ... corks.length ]
+            cork_entry      = cork_infos[ cork_idx ]
+            cork            = corks.eq cork_idx
+            { left, top, }  = cork.position()
+            # debug '©P620n', ƒ left
+            ### TAINT this could be a small fractional number; also negative with hanging punctuation ###
+            if left is 0
+              cork.addClass 'first'
+            if top > last_top
+              line_nr += +1
+            cork_entry[ 'left' ]      = left
+            cork_entry[ 'top'  ]      = top
+            cork_entry[ 'line_nr'  ]  = line_nr
+            last_left                 = left
+            last_top                  = top
+          help "found #{line_nr} lines"
+          # debug '©HA6TN', cork_infos
           warn 'ended'
           t1    = +new Date()
           dt    = t1   - t0
