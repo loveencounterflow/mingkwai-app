@@ -431,6 +431,7 @@ win.on 'document-end', ->
     # win.showDevTools()
     MKTS.maximize app
     # MKTS.ZOOM.to app, 1.85
+    win.zoomLevel = 3
     MKTS.ZOOM.to app[ 'zoom' ]
     yield step.wrap ( $ document ).ready, resume
     help "document ready"

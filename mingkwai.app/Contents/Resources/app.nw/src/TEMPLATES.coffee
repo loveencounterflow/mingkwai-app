@@ -220,6 +220,25 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
       #=====================================================================================================
       COFFEESCRIPT =>
         ( $ document ).ready ->
+          #.................................................................................................
+          start_node  = ( $ 'page column p' ).contents().eq 0
+          start_dom   = start_node.get 0
+          # endNode = $('span.second').contents().get(0);
+          range = document.createRange()
+          idx   = 0
+          text  = start_node.text()
+          while idx < text.length
+            range.setStart start_dom, idx
+            idx += if ( text.codePointAt idx ) > 0xffff then +2 else +1
+            range.setEnd start_dom, idx
+            { bottom, height, left, right, top, width } = range.getBoundingClientRect()
+            t = range.toString()
+            console.log ( if t is '\u00ad' then '~' else t ), left, top
+          # range.setEnd   start_node, 0
+          # console.log range.toString()
+          # console.log range.getBoundingClientRect()
+          window.myrange = range
+          #.................................................................................................
           # getBoundingClientRect
           window.zoomer = $ 'zoomer'
           # zoomer.draggable()
@@ -313,7 +332,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
                   HBOX =>
                     LEFTMARGIN =>
                     COLUMN =>
-                      TEXT """(a column)"""
+                      P """𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. """
                     VGAP =>
                     COLUMN =>
                       TEXT """(a column)"""

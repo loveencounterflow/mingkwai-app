@@ -502,6 +502,7 @@
     MKTS.enable_console();
     step(function*(resume) {
       MKTS.maximize(app);
+      win.zoomLevel = 3;
       MKTS.ZOOM.to(app['zoom']);
       (yield step.wrap(($(document)).ready, resume));
       help("document ready");
