@@ -13,8 +13,9 @@ debug                     = CND.get_logger 'debug', badge
 TEMPLATES                 = require './TEMPLATES'
 ### TAINT consider to define filenames in TEMPLATES ###
 methods_and_locators      = [
-  [ 'layout',     njs_path.join __dirname, './index.html',  ]
-  [ 'test_page',  njs_path.join __dirname, './test.html',   ]
+  [ 'layout',         njs_path.join __dirname, './index.html',    ]
+  [ 'test_page',      njs_path.join __dirname, './test.html',     ]
+  [ 'splash_window',  njs_path.join __dirname, './splash.html',   ]
   ]
 # html_route                = locator.slice __dirname.length
 

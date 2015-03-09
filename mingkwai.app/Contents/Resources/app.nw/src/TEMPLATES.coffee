@@ -192,6 +192,33 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
               "helo"
 
 #-----------------------------------------------------------------------------------------------------------
+@splash_window = ->
+  #.........................................................................................................
+  return render =>
+    DOCTYPE 5
+    HTML =>
+      STYLE '', """
+        body, html {
+          width:                    100%;
+          height:                   100%;
+          overflow:                 hidden;
+        }
+        body {
+          width:                    100%;
+          height:                   100%;
+          background-color:         rgba( 255, 255, 255, 0.0 );
+          background-image:         url(./mingkwai-logo-circled.png);
+          background-size:          contain;
+          background-repeat:        no-repeat;
+          background-position:      50%;
+        }
+        """
+          # position:                 fixed;
+          # top:                      10mm;
+          # left:                     10mm;
+      BODY =>
+
+#-----------------------------------------------------------------------------------------------------------
 @layout = ->
   #.........................................................................................................
   return render =>

@@ -38,6 +38,22 @@ APPLESCRIPT               = require 'applescript'
 #...........................................................................................................
 ƒ                         = ( x, precision = 2 ) -> x.toFixed precision
 
+### see https://github.com/nwjs/nw.js/wiki/Window ###
+splash_win = NW.Window.open './splash.html',
+  "position":         "center",
+  "title":            "眀快排字机",
+  "width":            800,
+  "height":           500,
+  "frame":            false,
+  "toolbar":          false,
+  "transparent":      true,
+  "focus":            true,
+  "resizable":        false,
+  "show":             true,
+  "show_in_taskbar":  true,
+  "icon": "./favicon.ico"
+
+
 #-----------------------------------------------------------------------------------------------------------
 app =
   '%memo':                {}
@@ -114,8 +130,6 @@ build_menu = ->
   return null
 
 build_menu()
-win.show()
-win.focus()
 # win.zoomLevel = 0 # 100%
 # win.setResizable yes
 # win.resizeTo 1500, 1500
@@ -422,8 +436,17 @@ MKTS.enable_console = ( selector = '#console' ) ->
       _write P...
   return null
 
+
 #-----------------------------------------------------------------------------------------------------------
 win.on 'document-end', ->
+  after 2, ->
+    win.show()
+    splash_win.focus()
+  after 3, ->
+    win.focus()
+  after 4, ->
+    splash_win.hide()
+
   app[ 'artboard' ] = $ 'artboard'
   app[ 'zoomer'   ] = $ 'zoomer'
   MKTS.enable_console()
@@ -440,7 +463,50 @@ win.on 'document-end', ->
   #.........................................................................................................
   return null
 
+###
 
+{
+  "name": "mingkwai",
+  "main": "lib/index.html",
+  "version": "0.1.0",
+  "keywords": [
+    "node-webkit",
+    "typesetting",
+    "Chinese",
+    "Japanese",
+    "CJK",
+    "typography"
+  ],
+  "chromium-args": "--enable-region-based-columns --enable-webkit-text-subpixel-positioning --enable-devtools-experiments --enable-experimental-web-platform-features --enable-smooth-scrolling --disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony",
+  "single-instance": true,
+  "no-edit-menu": false,
+  "window": {
+    "x": 0,
+    "y": 20,
+    "width": 1200,
+    "height": 800,
+    "show": true,
+    "show_in_taskbar": true,
+    "toolbar": true,
+    "frame": true,
+    "icon": "./favicon.ico",
+    "position": "center",
+    "title": "眀快排字机",
+    "resizable": true
+  },
+  "js-flags": "--harmony",
+  "dependencies": {
+    "applescript": "^1.0.0",
+    "cnd": "^0.1.5",
+    "coffeenode-chr": "^0.1.4",
+    "coffeenode-suspend": "^0.1.4",
+    "coffeenode-teacup": "^0.1.2",
+    "pipedreams2": "^0.2.8",
+    "stylus": "^0.49.3"
+  }
+}
+
+###
 
 
 

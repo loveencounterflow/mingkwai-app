@@ -361,6 +361,18 @@
     })(this));
   };
 
+  this.splash_window = function() {
+    return render((function(_this) {
+      return function() {
+        DOCTYPE(5);
+        return HTML(function() {
+          STYLE('', "body, html {\n  width:                    100%;\n  height:                   100%;\n  overflow:                 hidden;\n}\nbody {\n  width:                    100%;\n  height:                   100%;\n  background-color:         rgba( 255, 255, 255, 0.0 );\n  background-image:         url(./mingkwai-logo-circled.png);\n  background-size:          contain;\n  background-repeat:        no-repeat;\n  background-position:      50%;\n}");
+          return BODY(function() {});
+        });
+      };
+    })(this));
+  };
+
   this.layout = function() {
     return render((function(_this) {
       return function() {
