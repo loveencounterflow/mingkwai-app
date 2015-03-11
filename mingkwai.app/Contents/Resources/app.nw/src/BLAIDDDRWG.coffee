@@ -79,10 +79,6 @@ BD.relative_bottom_of = ( element, selector, y = null ) ->
 
 
 
-
-
-
-# `
 # $.fn.text_nodes = function() {
 #   // http://refactormycode.com/codes/341-jquery-all-descendent-text-nodes-within-a-node
 #   var R = [];
@@ -93,6 +89,23 @@ BD.relative_bottom_of = ( element, selector, y = null ) ->
 #         R.push( this );
 #       else fn.apply( $(this) ); }); });
 #   return $(R); };
+
+#-----------------------------------------------------------------------------------------------------------
+$.fn.text_nodes = ->
+  # http://refactormycode.com/codes/341-jquery-all-descendent-text-nodes-within-a-node
+  R = []
+  @each ->
+    fn = arguments.callee
+    ( $ this ).contents().each ->
+      if @nodeType == 3
+        R.push this
+      else
+        fn.apply $ this
+  return $ R
+
+
+
+# `
 
 # /*!
 #  * jQuery replaceText - v1.1 - 11/21/2009

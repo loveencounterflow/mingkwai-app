@@ -224,34 +224,17 @@ MKTS._capture = ( win, handler ) ->
   win.capturePage ( ( img ) => handler null, img ), format: 'png', datatype: 'buffer'
 
 #-----------------------------------------------------------------------------------------------------------
-MKTS.demo_1 = ( me ) ->
-  # md = require './demo-text'
-  md = """
-
-    # Behind the Looking-Glass
-
-    Just as she said this, she noticed that one of the trees had a door
-    leading right into it. 'That's very curious!' she thought. 'But
-    everything's curious today. I think I may as well go in at once.' And in
-    she went.
-  """
-  MKTS.zoom me, 2
-  LINESETTER.demo_1 me, md, ( error ) =>
-    MKTS.revert_zoom me
-    help "MKTS.demo ok"
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
 MKTS.demo = ( me ) ->
-  ### every&#8203;<cork></cork>­&shy;thing ###
-  ### every<cork></cork>­&shy;thing ###
+  md = """<em>Ab<xsmall>c</xsmall>d<xbig>e</xbig>ffiVA</em>"""
   md = """Xxxxxxxxxxxxxxxx, she noticed xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"""
   md = """
 
-    # Behind the Looking-Glass
 
-    Just as she said this, she noticedxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx that one of the trees had a door
-    leading right into it. 'That's very curious!' she thought. 'But
+    Just as shé said this, she fluffi *noticed* that
+    one of the trees had a door
+    leading right into it. 'That's very curious!' she thought.
+    # Behind the Looking-Glass
+    'But
     <span>every</span>&shy;<span>thing's </span>curious today. I think I may as well go in at once.' And in
     she went.
 
@@ -263,14 +246,17 @@ MKTS.demo = ( me ) ->
     she went.
 
     上古時期的越南語很可能具有南亞語系其他語言現在具有的一些共同特徵，例如在屈折方面較發達，具有豐富的複輔音等。這些特徵已不再存於現代的越南語中，據認為是由於越南語地處東南亞的“語言聯盟”中，受到周邊有聲調的孤立語的影響，也變成了一種有聲調的孤立語。形態上的孤立和聲調的存在可能並非來源自原始南亞語，周邊的無親屬關係的語言，例如壯侗語系的泰語和南島語系的回輝話，也都具有聲調。
-
     """
   md = require './demo-text'
-  # MKTS.zoom me, 2
-  MKTS.VIEW.show_galley()
-  LINESETTER.demo me, md, ( error ) =>
-    # MKTS.revert_zoom me
-    help "MKTS.demo ok"
+  md = md[ .. 5000 ]
+  debug '©uvL5t', md.length
+  # md = "Just as shé said this, she fluffi *noticed* that abc def ghi jkl mno pqr stu vwx xy"
+  step ( resume ) =>
+    yield MKTS.wait resume
+    MKTS.VIEW.show_galley()
+    LINESETTER.demo me, md, ( error ) =>
+      # MKTS.revert_zoom me
+      help "MKTS.demo ok"
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -439,19 +425,25 @@ MKTS.enable_console = ( selector = '#console' ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 win.on 'document-end', ->
-  after 2, ->
-    win.show()
-    splash_win.focus()
-  after 3, ->
-    win.focus()
-  after 4, ->
-    splash_win.hide()
-
+  show_splash = no
+  if show_splash
+    after 2, ->
+      win.show()
+      splash_win.focus()
+    after 3, ->
+      win.focus()
+    after 4, ->
+      splash_win.hide()
+  else
+      splash_win.hide()
+      win.show()
+      win.focus()
+  #.........................................................................................................
   app[ 'artboard' ] = $ 'artboard'
   app[ 'zoomer'   ] = $ 'zoomer'
   MKTS.enable_console()
   step ( resume ) ->
-    # win.showDevTools()
+    win.showDevTools()
     MKTS.maximize app
     # MKTS.ZOOM.to app, 1.85
     win.zoomLevel = 3

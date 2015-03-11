@@ -116,20 +116,21 @@ module.exports = ( _app ) ->
   ( q '#tg' ).css 'top',  zmr[ 'y' ] - 5
   matrix  = app[ 'zoomer' ].css 'transform'
   # app[ 'zoomer' ].css 'transform',        "matrix(1, 0, 0, 1, 0, 0)"
-  app[ 'zoomer' ].css 'transform-origin', "#{zmr[ 'x' ]}px #{zmr[ 'y' ]}px"
+  # app[ 'zoomer' ].css 'transform-origin', "#{zmr[ 'x' ]}px #{zmr[ 'y' ]}px"
   # app[ 'zoomer' ].css 'transform', matrix
+  app[ 'zoomer' ].css 'transform-origin', "top left"
   app[ 'zoomer' ].transition scale: zoom_1, 100, 'linear'
   #.........................................................................................................
-  whisper 'factor:  ', ƒ factor
-  whisper 'zoom_0:  ', ƒ zoom_0
-  whisper 'zoom_1:  ', ƒ zoom_1
-  whisper 'width:   ', ƒ width
-  whisper 'height:  ', ƒ height
-  whisper 'left:    ', ƒ left
-  whisper 'top:     ', ƒ top
-  whisper 'page_x:  ', ƒ page_x
-  whisper 'page_y:  ', ƒ page_y
-  help "zoomed to [ #{ƒ zoom_1}, ]"
+  echo 'factor:  ', ƒ factor
+  echo 'zoom_0:  ', ƒ zoom_0
+  echo 'zoom_1:  ', ƒ zoom_1
+  echo 'width:   ', ƒ width
+  echo 'height:  ', ƒ height
+  echo 'left:    ', ƒ left
+  echo 'top:     ', ƒ top
+  echo 'page_x:  ', ƒ page_x
+  echo 'page_y:  ', ƒ page_y
+  echo "zoomed to [ #{ƒ zoom_1}, ]"
 
 #-----------------------------------------------------------------------------------------------------------
 @ZOOM.to = ( zoom_1 ) =>

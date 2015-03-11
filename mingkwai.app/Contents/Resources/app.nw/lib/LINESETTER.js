@@ -42,417 +42,134 @@
 
   XCSS = require('./XCSS');
 
-  this.experimental_line_metrics = function() {
-    var save_line;
-    return save_line = (function(_this) {
-      return function(hotml, is_first, is_last) {
-
-        /* Inserts text line into document */
-        var a, avg_lws_ratio_pc, chunk, chunk_idx, close_tags, color, idx, is_last_chunk, line, line_width_px, lws, lws_width_px, lws_width_px_avg, material, material_ratio_pc, material_width_px, open_tags, text, _i, _j, _len, _ref;
-        for (chunk_idx = _i = 0, _len = hotml.length; _i < _len; chunk_idx = ++_i) {
-          chunk = hotml[chunk_idx];
-          open_tags = chunk[0], text = chunk[1], close_tags = chunk[2];
-          if (text[0] === '<') {
-            continue;
-          }
-          is_last_chunk = chunk_idx >= hotml.length - 1;
-          if (chunk_idx !== 0) {
-            text = text.replace(/^(\s+)/, "<span class='mkts-lws'>$1</span>");
-          }
-          if (!is_last_chunk) {
-            text = text.replace(/(\s+)$/, "<span class='mkts-lws'>$1</span>");
-          }
-
-          /* TAINT not a good implementation */
-          if ((text.indexOf("<span class='mkts-lws'>")) === -1) {
-            text = "<span class='mkts-material'>" + text + "</span>";
-          }
-          chunk[1] = text;
-        }
-        line = get_line(hotml, is_first, is_last);
-        container.append(line);
-
-        /*
-        http://stackoverflow.com/a/16072668/256361:
-        ( ( lws.get idx ).getBoundingClientRect().width for idx in [ 0 .. lws.length - 1 ] )
-        http://stackoverflow.com/a/16072449/256361:
-        window.getComputedStyle(element).width
-         */
-        line_width_px = line.width();
-        lws = line.find('.mkts-lws');
-        debug();
-        debug('©RwY5D', line.text());
-        if (lws.length > 0) {
-          lws_width_px = 0;
-          for (idx = _j = 0, _ref = lws.length - 1; 0 <= _ref ? _j <= _ref : _j >= _ref; idx = 0 <= _ref ? ++_j : --_j) {
-            lws_width_px += (lws.eq(idx)).width();
-          }
-          lws_width_px_avg = lws_width_px / lws.length;
-          avg_lws_ratio_pc = a = lws_width_px_avg / line_width_px * 100;
-          color = a < 10 ? 'green' : (a < 20 ? 'orange' : 'red');
-          debug('Ratio of average inter word spaces to column width:', (avg_lws_ratio_pc.toFixed(1)) + '% ', CND[color]('█'));
-        } else {
-          material = line.find('.mkts-material');
-          if (material.length === 0) {
-            warn("no LWS, no material found for line " + (rpr(line.outerHTML())));
-          } else {
-            material_width_px = material.width();
-            material_ratio_pc = material_width_px / line_width_px * 100 - 100;
-            a = Math.abs(material_ratio_pc);
-            color = a < 10 ? 'green' : (a < 20 ? 'orange' : 'red');
-            debug('Ratio of material                  to column width:', (material_ratio_pc.toFixed(1)) + '% ', CND[color]('█'));
-          }
-        }
-        return null;
-      };
-    })(this);
-  };
-
-  this.demo_1 = function(app, md, handler) {
-    var BD, MKTS, available_height, available_width, available_width_mm, cache_hits, cache_misses, column_count, column_idx, column_linecount, columns, container, distribute_lines, get_class, get_line, has_hanging_margin, has_warned, input, jQuery, line_count, live, mm_from_px, new_line_entry, page, seen_lines, t0, t1_a, test_line, window, ƒ;
+  this.demo = function(app, md, settings, handler) {
+    var MKTS, arity, block_idx, document, gcolumn, gcolumn_left, gcolumn_offset, gcolumn_top, input, jQuery, line_idx, live, mark_chrs, mm_from_px, t0, t1_a, window, zoomer, ƒ;
+    switch (arity = arguments.length) {
+      case 3:
+        handler = settings;
+        settings = {};
+        break;
+      case 4:
+        null;
+        break;
+      default:
+        throw new Error(" expected 3 or 4 arguments, got " + arity);
+    }
     jQuery = app['jQuery'];
     MKTS = app['MKTS'];
     window = app['window'];
-    BD = window['BD'];
-    page = (jQuery('page')).eq(0);
-    container = (jQuery('wrap')).eq(0);
-    columns = jQuery('column');
-    column_count = columns.length;
-    seen_lines = null;
+    document = window['document'];
+    gcolumn = (jQuery('galley column')).eq(0);
+    gcolumn_offset = gcolumn.offset();
+    gcolumn_left = gcolumn_offset['left'];
+    gcolumn_top = gcolumn_offset['top'];
+    zoomer = jQuery('zoomer');
     mm_from_px = function(px) {
       return px * app['mm-per-px'];
     };
     ƒ = function(x, precision) {
       if (precision == null) {
-        precision = 2;
+        precision = 0;
       }
       return x.toFixed(precision);
-    };
-    line_count = 0;
-    available_height = BD.height_of(container);
-    available_width = BD.width_of((container.find('column')).eq(0));
-    available_width_mm = mm_from_px(available_width);
-    column_idx = 0;
-    has_warned = false;
-    column_linecount = 0;
-    new_line_entry = function(line, height) {
-      var R;
-      R = {
-        '%self': line,
-        'height': height
-      };
-      return R;
-    };
-    has_hanging_margin = function(hotml) {
-      var last_chr;
-      last_chr = CND.last_of((CND.last_of(hotml))[1].replace(/\s+$/, ''));
-      return last_chr === '\u00ad' || last_chr === '-' || last_chr === ',' || last_chr === '.' || last_chr === '!' || last_chr === '—' || last_chr === '–' || last_chr === ':' || last_chr === ';' || last_chr === '(' || last_chr === ')' || last_chr === '‘' || last_chr === '’' || last_chr === '“' || last_chr === '”';
-    };
-    get_class = function(is_first, is_last) {
-      if (is_first) {
-        if (is_last) {
-          return 'is-lone';
-        }
-        return 'is-first';
-      }
-      if (is_last) {
-        return 'is-last';
-      }
-      return 'is-middle';
-    };
-    cache_hits = 0;
-    cache_misses = 0;
-    get_line = function(hotml, is_first, is_last) {
-
-      /* TAINT corks not always needed */
-      var R, left_cork, line, right_cork, width_mm;
-      if ((seen_lines.get(hotml)) != null) {
-        cache_hits += 1;
-      } else {
-        cache_misses += 1;
-      }
-      if (typeof R !== "undefined" && R !== null) {
-        return (R = seen_lines.get(hotml));
-      }
-      line = jQuery(HOTMETAL.as_html(hotml));
-      line.addClass(get_class(is_first, is_last));
-      width_mm = available_width_mm;
-
-      /* TAINT shouldn't use absolute length here; depends on font size, hanging character */
-      if (has_hanging_margin(hotml)) {
-        width_mm += +1;
-      }
-      line.css('width', width_mm + "mm");
-      line.wrapInner(jQuery("<span class='text-wrapper'></span>"));
-      left_cork = jQuery("<span class='cork'></span>");
-      right_cork = jQuery("<span class='cork'></span>");
-      R = [left_cork, line, right_cork];
-      line.prepend(left_cork);
-      line.append(right_cork);
-      seen_lines.set(hotml, R);
-      return R;
-    };
-    test_line = function(action, hotml, is_first, is_last) {
-
-      /* Must return whether HTML fits into one line. */
-
-      /* TAINT consider using `scrollHeight`, but must keep state */
-      var R, bottom, left_cork, line, right_cork, top, top_css, _, _ref, _ref1;
-      switch (action) {
-        case 'set':
-          if (column_idx <= column_count - 1) {
-            _ref = get_line(hotml, is_first, is_last), _ = _ref[0], line = _ref[1], _ = _ref[2];
-            if (((line.attr('class')).indexOf('test')) > 0) {
-              line.removeClass('test');
-            }
-            top_css = (column_linecount * 5) + "mm";
-            line.css('top', top_css);
-            column_linecount += +1;
-            (columns.eq(column_idx)).append(line);
-            bottom = BD.relative_bottom_of(line.find('.text-wrapper'), 'wrap', 0);
-            if (available_height - bottom < 0) {
-              line.detach();
-              column_idx += +1;
-              if (column_idx > column_count - 1) {
-                if (!has_warned) {
-                  warn("next page");
-                }
-                has_warned = true;
-              } else {
-                column_linecount = 0;
-                top = (column_linecount * 5) + "mm";
-                line.css('top', top);
-                (columns.eq(column_idx)).append(line);
-                column_linecount += +1;
-              }
-            }
-          }
-          return line_count += +1;
-        case 'test':
-          process.stdout.write('.');
-          _ref1 = get_line(hotml, is_first, is_last), left_cork = _ref1[0], line = _ref1[1], right_cork = _ref1[2];
-          line.addClass('test');
-          (columns.eq(0)).append(line);
-          debug('©jqFbR', line.outerHTML(), XCSS.rules_from_node(app, line));
-          R = (BD.top_of(left_cork, 0)) === (BD.top_of(right_cork, 0));
-          line.detach();
-          return R;
-        default:
-          throw new Error("unknown action " + (rpr(action)));
-      }
-    };
-    distribute_lines = function() {
-      var R, column_line_height, column_linecounts, line, line_entry, line_height, line_idx, page_height, total_line_height, _i, _len;
-      page_height = BD.height_of(page);
-      column_line_height = 0;
-      total_line_height = 0;
-      column_idx = 0;
-      column_linecounts = [0, 0, 0];
-      R = {
-        '~isa': 'LINESETTER/line-distribution',
-        'column-linecounts': column_linecounts,
-        'page-count': 1,
-        'distributions': []
-      };
-      for (line_idx = _i = 0, _len = saved_lines.length; _i < _len; line_idx = ++_i) {
-        line_entry = saved_lines[line_idx];
-        line = line_entry['%self'];
-        line_height = line_entry['height'];
-        if (column_idx === 0) {
-          debug('©LDasJ', line_idx + 1, line_height, column_line_height + line_height, page_height - column_line_height - line_height, line.text());
-        }
-        if (column_line_height + line_height > page_height) {
-          column_line_height = 0;
-          if (column_idx < column_count - 1) {
-            column_idx += 1;
-            column_line_height = 0;
-          } else {
-            R['page-count'] += +1;
-          }
-        } else {
-          column_linecounts[column_idx] += +1;
-          total_line_height += line_height;
-          column_line_height += line_height;
-        }
-      }
-      return R;
     };
     input = D.create_throughstream();
     live = true;
     live = false;
     t0 = +new Date();
     t1_a = null;
-    input.pipe(D.MD.$as_html()).pipe(D.HTML.$parse(true, true)).pipe(D.HTML.$slice_toplevel_tags()).pipe($((function(_this) {
-      return function(data, send) {
-        if (t1_a == null) {
-          t1_a = +new Date();
-        }
-        if (data != null) {
-          return send(data);
-        }
-      };
-    })(this))).pipe((function(_this) {
+    block_idx = -1;
+    line_idx = -1;
+    mark_chrs = true;
+    mark_chrs = false;
+    t0 = +new Date();
+    input.pipe(D.MD.$as_html()).pipe(D.HTML.$parse({
+      disperse: true,
+      hyphenation: true,
+      whitespace: false,
+      chrs: false
+    })).pipe($(function(data, send) {
+      debug('©x-1');
+      return send(data);
+    })).pipe(D.HTML.$slice_toplevel_tags()).pipe($(function(data, send) {
+      debug('©x-2');
+      return send(data);
+    })).pipe((function(_this) {
       return function() {
-        return $(function(block_hotml, send) {
-          if (block_hotml != null) {
-            help(HOTMETAL.as_html(block_hotml));
-            return send(block_hotml);
-          }
-        });
-      };
-    })(this)()).pipe((function(_this) {
-      return function() {
-        line_count = 0;
         return $(function(block_hotml, send, end) {
-          var dt, dt_a, t1;
+          var block, block_chr_idx, block_html, bottom, chr_idx, entry, height, last_left, last_top, left, left_0, line_start_idx, line_stop_idx, lines, node, node_dom, node_idx, range, rectangles, right, t1, text, text_nodes, top, top_0, width, zleft, ztop, _i, _j, _len, _ref, _ref1;
+          t1 = +new Date();
+          debug('©x-3', ƒ(t1 - t0));
           if (block_hotml != null) {
-            seen_lines = new WeakMap();
-
-            /* TAINT `break_lines` is a misnomer; the method is a 'director' method to find good lines
-            in typesetting.
-             */
-            HOTMETAL.break_lines(block_hotml, test_line);
-            send(block_hotml);
-          }
-          if (end != null) {
-            warn('ended');
-            t1 = +new Date();
-            dt = t1 - t0;
-            dt_a = t1_a - t0;
-            help("demo took " + (ƒ(dt / 1000)) + "s");
-            help("(" + (ƒ(dt_a / 1000)) + "s before point 'a')");
-            debug('©hsgjo', "cache_hits", cache_hits);
-            debug('©hsgjo', "cache_misses", cache_misses);
-            handler(null);
-            return end();
-          }
-        });
-      };
-    })(this)());
-    input.write(md);
-    return input.end();
-  };
-
-  this.demo = function(app, md, handler) {
-    var BD, MKTS, columns, container, disperse, hyphenation, input, jQuery, live, mm_from_px, page, t0, t1_a, whitespace, window, ƒ;
-    jQuery = app['jQuery'];
-    MKTS = app['MKTS'];
-    window = app['window'];
-    BD = window['BD'];
-    page = (jQuery('page')).eq(0);
-    container = (jQuery('wrap')).eq(0);
-    columns = jQuery('galley column');
-    mm_from_px = function(px) {
-      return px * app['mm-per-px'];
-    };
-    ƒ = function(x, precision) {
-      if (precision == null) {
-        precision = 2;
-      }
-      return x.toFixed(precision);
-    };
-    input = D.create_throughstream();
-    live = true;
-    live = false;
-    t0 = +new Date();
-    t1_a = null;
-    disperse = true;
-    hyphenation = true;
-    whitespace = false;
-    input.pipe(D.MD.$as_html()).pipe(D.HTML.$parse(disperse, hyphenation, whitespace)).pipe(D.HTML.$slice_toplevel_tags()).pipe((function(_this) {
-      return function() {
-
-        /* insert shreds */
-        var block_idx;
-        block_idx = -1;
-        return $(function(block_hotml, send) {
-          var attributes, close_tags, content, open_tags, shred, shred_idx, _i, _len;
-          block_idx += +1;
-          for (shred_idx = _i = 0, _len = block_hotml.length; _i < _len; shred_idx = ++_i) {
-            shred = block_hotml[shred_idx];
-            open_tags = shred[0], content = shred[1], close_tags = shred[2];
-            if ((CND.isa_text(content)) && (/^\s*$/.test(content))) {
-              attributes = {
-                'class': 'ws',
-                'block-idx': block_idx,
-                'shred-idx': shred_idx
-              };
-            } else {
-              attributes = {
-                'block-idx': block_idx,
-                'shred-idx': shred_idx
-              };
-            }
-            open_tags.push(['shred', attributes]);
-            close_tags.unshift('shred');
-          }
-          return send(block_hotml);
-        });
-      };
-    })(this)()).pipe(D.$show()).pipe((function(_this) {
-      return function() {
-        return $(function(block_hotml, send) {
-          var block_html;
-          block_html = HOTMETAL.as_html(block_hotml, false);
-          return send([block_hotml, block_html]);
-        });
-      };
-    })(this)()).pipe((function(_this) {
-      return function() {
-        var block_idx, cork_infos;
-        cork_infos = [];
-        block_idx = -1;
-        return $(function(block, send, end) {
-          var block_hotml, block_html, cork, cork_entry, cork_idx, corks, dt, dt_a, element_idx, last_left, last_top, left, line_nr, opening_tags, t1, top, _i, _j, _len, _ref, _ref1, _ref2;
-          if (block != null) {
             block_idx += +1;
-            block_hotml = block[0], block_html = block[1];
-            (columns.eq(0)).append(jQuery(block_html));
-            for (element_idx = _i = 0, _len = block_hotml.length; _i < _len; element_idx = ++_i) {
-              _ref = block_hotml[element_idx], opening_tags = _ref[0];
-              if (opening_tags.length === 0) {
-                continue;
+            block_chr_idx = 0;
+            lines = [];
+            line_start_idx = 0;
+            block_html = HOTMETAL.as_html(block_hotml, false);
+            block = jQuery(block_html);
+            gcolumn.append(block);
+            text_nodes = block.text_nodes();
+            last_left = null;
+            last_top = null;
+            for (node_idx = _i = 0, _ref = text_nodes.length; 0 <= _ref ? _i < _ref : _i > _ref; node_idx = 0 <= _ref ? ++_i : --_i) {
+              node = text_nodes.eq(node_idx);
+              node_dom = node.get(0);
+              range = document.createRange();
+              chr_idx = 0;
+              text = node.text();
+              left_0 = null;
+              top_0 = null;
+              while (chr_idx < text.length) {
+                range.setStart(node_dom, chr_idx);
+                chr_idx += (text.codePointAt(chr_idx)) > 0xffff ? +2 : +1;
+                range.setEnd(node_dom, chr_idx);
+                block_chr_idx += +1;
+                _ref1 = range.getBoundingClientRect(), bottom = _ref1.bottom, height = _ref1.height, left = _ref1.left, right = _ref1.right, top = _ref1.top, width = _ref1.width;
+                rectangles = range.getClientRects();
+
+                /* Collapsing characters (combining diacritics, trailing whitespace) has a position and
+                a size of zero in both dimensions; we always treat such characters as belonging to the
+                current line:
+                 */
+                if (((left === top && top === width) && width === 0)) {
+                  continue;
+                }
+
+                /* If `left_0` isn't yet set, make the current dimension the reference point: */
+                if (left_0 == null) {
+                  line_idx += +1;
+                  left_0 = left;
+                  top_0 = top;
+                }
+
+                /* Naive guess: when `left` has decreased and `top` has increased, a new line has
+                started. NB this definitely won't work with right-to-left and bottom-to-top directions.
+                 */
+                if (last_left != null) {
+                  if (left < last_left && top > last_top) {
+                    lines.push([line_start_idx, block_chr_idx - 1]);
+                    line_start_idx = block_chr_idx - 1;
+                  }
+                }
+                last_left = left;
+                last_top = top;
+                if (mark_chrs) {
+                  zleft = left - gcolumn_left;
+                  ztop = top - gcolumn_top;
+                  gcolumn.append(jQuery("<div style='position:absolute;left:" + zleft + "px;top:" + ztop + "px;width:" + width + "px;height:" + height + "px;outline:1px solid rgba(255,0,0,0.25);'></div>"));
+                }
               }
-              if ((CND.last_of(opening_tags))[0] !== 'cork') {
-                continue;
-              }
-              cork_infos.push({
-                block_idx: block_idx,
-                element_idx: element_idx
-              });
+            }
+            if (block_chr_idx > line_start_idx) {
+              lines.push([line_start_idx, block_chr_idx]);
+            }
+            for (line_idx = _j = 0, _len = lines.length; _j < _len; line_idx = ++_j) {
+              entry = lines[line_idx];
+              line_start_idx = entry[0], line_stop_idx = entry[1];
             }
           }
           if (end != null) {
-            corks = (columns.eq(0)).find('cork');
-            last_left = -Infinity;
-            last_top = -Infinity;
-            line_nr = 0;
-            for (cork_idx = _j = 0, _ref1 = corks.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; cork_idx = 0 <= _ref1 ? ++_j : --_j) {
-              cork_entry = cork_infos[cork_idx];
-              cork = corks.eq(cork_idx);
-              _ref2 = cork.position(), left = _ref2.left, top = _ref2.top;
-
-              /* TAINT this could be a small fractional number; also negative with hanging punctuation */
-              if (left === 0) {
-                cork.addClass('first');
-              }
-              if (top > last_top) {
-                line_nr += +1;
-              }
-              cork_entry['left'] = left;
-              cork_entry['top'] = top;
-              cork_entry['line_nr'] = line_nr;
-              last_left = left;
-              last_top = top;
-            }
-            help("found " + line_nr + " lines");
-            warn('ended');
-            t1 = +new Date();
-            dt = t1 - t0;
-            dt_a = t1_a - t0;
-            help("demo took " + (ƒ(dt / 1000)) + "s");
-            handler(null);
-            return end();
+            return window.lines = lines;
           }
         });
       };

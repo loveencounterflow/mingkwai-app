@@ -400,25 +400,12 @@
             JS('./process-xcss-rules.js');
             CSS('./materialize/css/materialize.css');
             JS('./materialize/js/materialize.min.js');
-            return CSS('./mkts-main.css');
+            CSS('./mkts-main.css');
+            return CSS('./fonts/garamond/stylesheet.css');
           });
           COFFEESCRIPT(function() {
             return ($(document)).ready(function() {
-              var bottom, dragging, height, idx, left, page_x, page_y, range, right, scroll_x, scroll_y, shifted, start_dom, start_node, t, text, top, width, _ref;
-              start_node = ($('page column p')).contents().eq(0);
-              start_dom = start_node.get(0);
-              range = document.createRange();
-              idx = 0;
-              text = start_node.text();
-              while (idx < text.length) {
-                range.setStart(start_dom, idx);
-                idx += (text.codePointAt(idx)) > 0xffff ? +2 : +1;
-                range.setEnd(start_dom, idx);
-                _ref = range.getBoundingClientRect(), bottom = _ref.bottom, height = _ref.height, left = _ref.left, right = _ref.right, top = _ref.top, width = _ref.width;
-                t = range.toString();
-                console.log((t === '\u00ad' ? '~' : t), left, top);
-              }
-              window.myrange = range;
+              var dragging, page_x, page_y, scroll_x, scroll_y, shifted;
               window.zoomer = $('zoomer');
               scroll_x = null;
               scroll_y = null;
@@ -496,7 +483,7 @@
                       HBOX(function() {
                         LEFTMARGIN(function() {});
                         COLUMN(function() {
-                          return P("𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. ");
+                          return P("𪜃 ǻ slig͟htly lon⃟ger text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. ");
                         });
                         VGAP(function() {});
                         COLUMN(function() {

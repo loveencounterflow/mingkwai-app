@@ -66,4 +66,21 @@
     return (this.relative_top_of(element, selector, y)) + this.height_of(element);
   };
 
+  $.fn.text_nodes = function() {
+    var R;
+    R = [];
+    this.each(function() {
+      var fn;
+      fn = arguments.callee;
+      return ($(this)).contents().each(function() {
+        if (this.nodeType === 3) {
+          return R.push(this);
+        } else {
+          return fn.apply($(this));
+        }
+      });
+    });
+    return $(R);
+  };
+
 }).call(this);
