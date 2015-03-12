@@ -149,13 +149,12 @@ module.exports = ( _app ) ->
 @VIEW = {}
 
 #-----------------------------------------------------------------------------------------------------------
-@VIEW.toggle_galley = =>
+@VIEW.toggle_galley = ( handler = null ) =>
   debug '©0fZv5', app[ 'view' ]
-  if app[ 'view' ] is 'pages' then @VIEW.show_galley() else @VIEW.show_pages()
-  return true
+  if app[ 'view' ] is 'pages' then @VIEW.show_galley handler else @VIEW.show_pages handler
 
 #-----------------------------------------------------------------------------------------------------------
-@VIEW.show_galley = =>
+@VIEW.show_galley = ( handler = null ) =>
   window                              = app[ 'window' ]
   q                                   = app[ 'jQuery' ]
   app[ 'view' ]                       = 'galley'
@@ -163,16 +162,18 @@ module.exports = ( _app ) ->
   app[ 'pages-last-scroll-xy' ][ 1 ]  = ( q window ).scrollTop()
   ( q 'artboard.pages' ).animate opacity: 0, =>
     ( q 'artboard.pages' ).css 'display', 'none'
+    handler null if handler?
 
 #-----------------------------------------------------------------------------------------------------------
-@VIEW.show_pages = =>
+@VIEW.show_pages = ( handler = null ) =>
   window                  = app[ 'window' ]
   q                       = app[ 'jQuery' ]
   app[ 'view' ]           = 'pages'
   ( q 'artboard.pages' ).css 'display', 'block'
   ( q window ).scrollLeft app[ 'pages-last-scroll-xy' ][ 0 ]
   ( q window ).scrollTop  app[ 'pages-last-scroll-xy' ][ 1 ]
-  ( q 'artboard.pages' ).animate opacity: 1
+  ( q 'artboard.pages' ).animate opacity: 1, =>
+    handler null if handler?
 
 
 # #-----------------------------------------------------------------------------------------------------------

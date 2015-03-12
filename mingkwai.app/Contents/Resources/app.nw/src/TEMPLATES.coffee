@@ -231,6 +231,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         # TITLE '眀快排字机'
         LINK rel: 'shortcut icon', href: './favicon.icon'
         CSS './html5doctor-css-reset.css'
+        CSS './fonts/webfontkit-20150311-073132/stylesheet.css'
         JS  './jquery-2.1.3.js'
         CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
@@ -244,7 +245,6 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         CSS './materialize/css/materialize.css'
         JS  './materialize/js/materialize.min.js'
         CSS './mkts-main.css'
-        CSS './fonts/garamond/stylesheet.css'
       #=====================================================================================================
       COFFEESCRIPT =>
         ( $ document ).ready ->
@@ -340,13 +340,10 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
                 HBOX =>
                   LEFTMARGIN =>
                   COLUMN =>
-                    TEXT """(a column)"""
                   VGAP =>
                   COLUMN =>
-                    TEXT """(a column)"""
                   VGAP =>
                   COLUMN =>
-                    TEXT """(a column)"""
                   RIGHTMARGIN =>
                 BOTTOMMARGIN =>
         ARTBOARD '.pages', =>
@@ -363,10 +360,8 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
                       P """𪜃 ǻ slig͟htly lon⃟ger text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. """
                     VGAP =>
                     COLUMN =>
-                      TEXT """(a column)"""
                     VGAP =>
                     COLUMN =>
-                      TEXT """(a column)"""
                     RIGHTMARGIN =>
                   BOTTOMMARGIN =>
 

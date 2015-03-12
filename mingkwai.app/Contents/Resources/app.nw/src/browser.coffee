@@ -57,7 +57,10 @@ splash_win = NW.Window.open './splash.html',
 #-----------------------------------------------------------------------------------------------------------
 app =
   '%memo':                {}
-  'mm-per-px':            100 / 377.94791
+  # 'mm-per-px':            100 / 377.94791
+  # 'mm-per-px':            55 / 203.704
+  # 'mm-per-px':            160 / 593
+  'mm-per-px':            160 / 592.5925903320312
   'jQuery':               $
   'NW':                   NW
   'MKTS':                 null
@@ -223,63 +226,93 @@ MKTS.scroll_to_bottom = -> @scroll_to '#mkts-bottom'
 MKTS._capture = ( win, handler ) ->
   win.capturePage ( ( img ) => handler null, img ), format: 'png', datatype: 'buffer'
 
+demo_count = 0
 #-----------------------------------------------------------------------------------------------------------
 MKTS.demo = ( me ) ->
-  md = """<em>Ab<xsmall>c</xsmall>d<xbig>e</xbig>ffiVA</em>"""
-  md = """Xxxxxxxxxxxxxxxx, she noticed xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"""
+  # md = """<em>Ab<xsmall>c</xsmall>d<xbig>e</xbig>ffiVA</em>"""
+  # md = """Xxxxxxxxxxxxxxxx, she noticed xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"""
+  # md = """
+
+
+  #   # Behind the Looking-Glass
+  #   'But everything's curious today. I think I may as well go in at once.' And in
+  #   she went.
+
+  #   # Behind the Looking-Glass
+
+  #   Just as she said this, she noticed that one of the trees had a door
+  #   leading right into it. 'That's very curious!' she thought. 'But
+  #   everything's <xbig>curious</xbig> today. I think I may as well go in at once.' And in
+  #   she went.
+
+  #   上古時期的越南語很可能具有南亞語系其他語言現在具有的一些共同特徵，例如在屈折方面較發達，具有豐富的複輔音等。這些特徵已不再存於現代的越南語中，據認為是由於越南語地處東南亞的“語言聯盟”中，受到周邊有聲調的孤立語的影響，也變成了一種有聲調的孤立語。形態上的孤立和聲調的存在可能並非來源自原始南亞語，周邊的無親屬關係的語言，例如壯侗語系的泰語和南島語系的回輝話，也都具有聲調。
+
+  #   Just as shé said this, she fluffi *noticed* that
+  #   one of the trees had a door
+  #   leading right into it. 'That's very curious!' she thought.
+
+  #   Just as shé said this, she fluffi *noticed* that
+  #   one of the trees had a door
+  #   leading right into it. 'That's very curious!' she thought.
+
+  #   Just as shé said this, she fluffi *noticed* that
+  #   one of the trees had a door
+  #   leading right into it. 'That's very curious!' she thought.
+
+  #   Just as shé said this, she fluffi *noticed* that
+  #   one of the trees had a door
+  #   leading right into it. 'That's very curious!' she thought.
+  #   """
+  # md = require './demo-text'
+  # md = "one <xbig>line</xbig>\n\n" +  md[ .. 500 ] + ( 'ddd' for i in [ 0 .. 150 ] ).join ' '
+  # demo_count += +1
+  # if demo_count is 1
+  #   md = """
+  #     # Test
+
+  #     just a **test**. *ffi*. abcdefghijklm Q Qu Queen the most unbelievable story."""
+  # debug '©uvL5t', md.length
+  # md = "Just as shé said this, she fluffi *noticed* that abc def ghi jkl mno pqr stu vwx xy"
   md = """
 
-
-    Just as shé said this, she fluffi *noticed* that
-    one of the trees had a door
-    leading right into it. 'That's very curious!' she thought.
-    # Behind the Looking-Glass
-    'But
-    <span>every</span>&shy;<span>thing's </span>curious today. I think I may as well go in at once.' And in
-    she went.
-
     # Behind the Looking-Glass
 
-    Just as she said this, she noticed that one of the trees had a door
-    leading right into it. 'That's very curious!' she thought. 'But
-    everything's <xbig>curious</xbig> today. I think I may as well go in at once.' And in
+    'But everything's curious today. I think I may as well go in at once.' And in
     she went.
 
-    上古時期的越南語很可能具有南亞語系其他語言現在具有的一些共同特徵，例如在屈折方面較發達，具有豐富的複輔音等。這些特徵已不再存於現代的越南語中，據認為是由於越南語地處東南亞的“語言聯盟”中，受到周邊有聲調的孤立語的影響，也變成了一種有聲調的孤立語。形態上的孤立和聲調的存在可能並非來源自原始南亞語，周邊的無親屬關係的語言，例如壯侗語系的泰語和南島語系的回輝話，也都具有聲調。
+    The *King **and** Queen* of Hearts were <xbig>seated</xbig> on their throne when they
+    arrived, with a great crowd assembled about them--all sorts of little
+    birds and beasts.
+
     """
-  md = require './demo-text'
-  md = md[ .. 5000 ]
-  debug '©uvL5t', md.length
-  # md = "Just as shé said this, she fluffi *noticed* that abc def ghi jkl mno pqr stu vwx xy"
   step ( resume ) =>
-    yield MKTS.wait resume
-    MKTS.VIEW.show_galley()
+    yield MKTS.VIEW.show_galley resume
     LINESETTER.demo me, md, ( error ) =>
       # MKTS.revert_zoom me
       help "MKTS.demo ok"
   return null
 
-#-----------------------------------------------------------------------------------------------------------
-MKTS._detach_artboard = ( me ) ->
-  ### TAINT `#mkts-top`, `#mkts-bottom` not honored; are they needed? ###
-  return if me[ 'view-mode' ] is 'print'
-  body      = $ 'body'
-  artboard  = $ 'artboard'
-  contents  = artboard.contents()
-  artboard.detach()
-  body.append contents
-  me[ '%memo' ][ 'view-mode' ] = { contents, artboard, body, }
-  return null
+# #-----------------------------------------------------------------------------------------------------------
+# MKTS._detach_artboard = ( me ) ->
+#   ### TAINT `#mkts-top`, `#mkts-bottom` not honored; are they needed? ###
+#   return if me[ 'view-mode' ] is 'print'
+#   body      = $ 'body'
+#   artboard  = $ 'artboard'
+#   contents  = artboard.contents()
+#   artboard.detach()
+#   body.append contents
+#   me[ '%memo' ][ 'view-mode' ] = { contents, artboard, body, }
+#   return null
 
-#-----------------------------------------------------------------------------------------------------------
-MKTS._reattach_artboard = ( me ) ->
-  return if me[ 'view-mode' ] is 'dev'
-  { contents, artboard, body, } = me[ '%memo' ][ 'view-mode' ]
-  delete me[ '%memo' ][ 'view-mode' ]
-  contents.detach()
-  artboard.append contents
-  body.append artboard
-  return null
+# #-----------------------------------------------------------------------------------------------------------
+# MKTS._reattach_artboard = ( me ) ->
+#   return if me[ 'view-mode' ] is 'dev'
+#   { contents, artboard, body, } = me[ '%memo' ][ 'view-mode' ]
+#   delete me[ '%memo' ][ 'view-mode' ]
+#   contents.detach()
+#   artboard.append contents
+#   body.append artboard
+#   return null
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_print_dialog = ( me ) ->
@@ -439,11 +472,15 @@ win.on 'document-end', ->
       win.show()
       win.focus()
   #.........................................................................................................
+  dev_win = win.showDevTools()
+  dev_win.moveTo 1200, 848
+  dev_win.maximize()
+  dev_win.blur()
+  #.........................................................................................................
   app[ 'artboard' ] = $ 'artboard'
   app[ 'zoomer'   ] = $ 'zoomer'
   MKTS.enable_console()
   step ( resume ) ->
-    win.showDevTools()
     MKTS.maximize app
     # MKTS.ZOOM.to app, 1.85
     win.zoomLevel = 3

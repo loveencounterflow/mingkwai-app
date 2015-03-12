@@ -388,6 +388,7 @@
               href: './favicon.icon'
             });
             CSS('./html5doctor-css-reset.css');
+            CSS('./fonts/webfontkit-20150311-073132/stylesheet.css');
             JS('./jquery-2.1.3.js');
             CSS('./jquery-ui-1.11.3.custom/jquery-ui.css');
             JS('./jquery-ui-1.11.3.custom/jquery-ui.js');
@@ -400,8 +401,7 @@
             JS('./process-xcss-rules.js');
             CSS('./materialize/css/materialize.css');
             JS('./materialize/js/materialize.min.js');
-            CSS('./mkts-main.css');
-            return CSS('./fonts/garamond/stylesheet.css');
+            return CSS('./mkts-main.css');
           });
           COFFEESCRIPT(function() {
             return ($(document)).ready(function() {
@@ -450,17 +450,11 @@
                     TOPMARGIN(function() {});
                     HBOX(function() {
                       LEFTMARGIN(function() {});
-                      COLUMN(function() {
-                        return TEXT("(a column)");
-                      });
+                      COLUMN(function() {});
                       VGAP(function() {});
-                      COLUMN(function() {
-                        return TEXT("(a column)");
-                      });
+                      COLUMN(function() {});
                       VGAP(function() {});
-                      COLUMN(function() {
-                        return TEXT("(a column)");
-                      });
+                      COLUMN(function() {});
                       return RIGHTMARGIN(function() {});
                     });
                     return BOTTOMMARGIN(function() {});
@@ -486,13 +480,9 @@
                           return P("𪜃 ǻ slig͟htly lon⃟ger text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. ");
                         });
                         VGAP(function() {});
-                        COLUMN(function() {
-                          return TEXT("(a column)");
-                        });
+                        COLUMN(function() {});
                         VGAP(function() {});
-                        COLUMN(function() {
-                          return TEXT("(a column)");
-                        });
+                        COLUMN(function() {});
                         return RIGHTMARGIN(function() {});
                       });
                       return BOTTOMMARGIN(function() {});

@@ -97,20 +97,25 @@
   this.VIEW = {};
 
   this.VIEW.toggle_galley = (function(_this) {
-    return function() {
+    return function(handler) {
+      if (handler == null) {
+        handler = null;
+      }
       debug('©0fZv5', app['view']);
       if (app['view'] === 'pages') {
-        _this.VIEW.show_galley();
+        return _this.VIEW.show_galley(handler);
       } else {
-        _this.VIEW.show_pages();
+        return _this.VIEW.show_pages(handler);
       }
-      return true;
     };
   })(this);
 
   this.VIEW.show_galley = (function(_this) {
-    return function() {
+    return function(handler) {
       var q, window;
+      if (handler == null) {
+        handler = null;
+      }
       window = app['window'];
       q = app['jQuery'];
       app['view'] = 'galley';
@@ -119,14 +124,20 @@
       return (q('artboard.pages')).animate({
         opacity: 0
       }, function() {
-        return (q('artboard.pages')).css('display', 'none');
+        (q('artboard.pages')).css('display', 'none');
+        if (handler != null) {
+          return handler(null);
+        }
       });
     };
   })(this);
 
   this.VIEW.show_pages = (function(_this) {
-    return function() {
+    return function(handler) {
       var q, window;
+      if (handler == null) {
+        handler = null;
+      }
       window = app['window'];
       q = app['jQuery'];
       app['view'] = 'pages';
@@ -135,6 +146,10 @@
       (q(window)).scrollTop(app['pages-last-scroll-xy'][1]);
       return (q('artboard.pages')).animate({
         opacity: 1
+      }, function() {
+        if (handler != null) {
+          return handler(null);
+        }
       });
     };
   })(this);

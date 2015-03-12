@@ -336,7 +336,7 @@ module.exports = """
 
 
 
-    CHAPTER XI. Who Stole the Tarts?
+    ## CHAPTER XI. Who Stole the Tarts?
 
     The King and Queen of Hearts were seated on their throne when they
     arrived, with a great crowd assembled about them--all sorts of little
@@ -595,7 +595,7 @@ module.exports = """
 
 
 
-    CHAPTER XII. Alice's Evidence
+    ## CHAPTER XII. Alice's Evidence
 
 
     'Here!' cried Alice, quite forgetting in the flurry of the moment how

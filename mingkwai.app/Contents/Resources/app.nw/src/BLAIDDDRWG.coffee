@@ -4,66 +4,74 @@
 
 
 
-#-----------------------------------------------------------------------------------------------------------
-window[ 'BD' ] = {}
+# #-----------------------------------------------------------------------------------------------------------
+# BD.style_of = ( element ) -> window.getComputedStyle element.get 0
+# BD.box_of   = ( element ) -> ( element.get 0 ).getBoundingClientRect()
+
+# #-----------------------------------------------------------------------------------------------------------
+# BD.height_of = ( element ) ->
+#   ### jQuery rounds to integer pixels; this is more precise. ###
+#   ### TAINT algorithm not really tested; discrepencies to jQuery (apart from floating point issue) are known ###
+#   style   = @style_of element
+#   height  = parseFloat style[ 'height' ]
+#   unless isFinite height
+#     height = ( @box_of element )[ 'height' ]
+#   return height \
+#     - ( parseFloat style[ 'border-top-width'    ] ) \
+#     - ( parseFloat style[ 'border-bottom-width' ] ) \
+#     - ( parseFloat style[ 'margin-top'          ] ) \
+#     - ( parseFloat style[ 'margin-bottom'       ] ) \
+#     - ( parseFloat style[ 'padding-top'         ] ) \
+#     - ( parseFloat style[ 'padding-bottom'      ] )
+
+# #-----------------------------------------------------------------------------------------------------------
+# BD.width_of = ( element ) ->
+#   ### jQuery rounds to integer pixels; this is more precise. ###
+#   ### TAINT algorithm not really tested; discrepencies to jQuery (apart from floating point issue) are known ###
+#   style   = @style_of element
+#   height  = parseFloat style[ 'width' ]
+#   unless isFinite width
+#     width = ( @box_of element )[ 'width' ]
+#   return width \
+#     - ( parseFloat style[ 'border-left-width'   ] ) \
+#     - ( parseFloat style[ 'border-right-width'  ] ) \
+#     - ( parseFloat style[ 'margin-left'         ] ) \
+#     - ( parseFloat style[ 'margin-right'        ] ) \
+#     - ( parseFloat style[ 'padding-left'        ] ) \
+#     - ( parseFloat style[ 'padding-right'       ] )
+
+# #-----------------------------------------------------------------------------------------------------------
+# BD.top_of = ( element, y = null ) ->
+#   return ( y ? window.scrollY ) + ( @box_of element )[ 'top' ]
+
+# #-----------------------------------------------------------------------------------------------------------
+# BD.bottom_of = ( element, y = null ) ->
+#   return ( @top_of element, y ) + @height_of element
+
+# #-----------------------------------------------------------------------------------------------------------
+# BD.relative_top_of = ( element, selector, y = null ) ->
+#   return ( @top_of element, y ) - ( @top_of element.parents selector, y )
+
+# #-----------------------------------------------------------------------------------------------------------
+# BD.relative_bottom_of = ( element, selector, y = null ) ->
+#   return ( @relative_top_of element, selector, y ) + @height_of element
+
+
+# # BD.x_height_of = ( element ) -> @height_of element
 
 #-----------------------------------------------------------------------------------------------------------
-BD.style_of = ( element ) -> window.getComputedStyle element.get 0
-BD.box_of   = ( element ) -> ( element.get 0 ).getBoundingClientRect()
+window[ 'BD' ] = BD = {}
 
 #-----------------------------------------------------------------------------------------------------------
-BD.height_of = ( element ) ->
-  ### jQuery rounds to integer pixels; this is more precise. ###
-  ### TAINT algorithm not really tested; discrepencies to jQuery (apart from floating point issue) are known ###
-  style   = @style_of element
-  height  = parseFloat style[ 'height' ]
-  unless isFinite height
-    height = ( @box_of element )[ 'height' ]
-  return height \
-    - ( parseFloat style[ 'border-top-width'    ] ) \
-    - ( parseFloat style[ 'border-bottom-width' ] ) \
-    - ( parseFloat style[ 'margin-top'          ] ) \
-    - ( parseFloat style[ 'margin-bottom'       ] ) \
-    - ( parseFloat style[ 'padding-top'         ] ) \
-    - ( parseFloat style[ 'padding-bottom'      ] )
+BD._dom_from_hint   = ( hint ) -> hint.get 0
+### `CS`: Computed Style ###
+BD._number_from_cs  = ( dom, cs_name ) -> parseFloat getComputedStyle( dom )[ cs_name ]
 
 #-----------------------------------------------------------------------------------------------------------
-BD.width_of = ( element ) ->
-  ### jQuery rounds to integer pixels; this is more precise. ###
-  ### TAINT algorithm not really tested; discrepencies to jQuery (apart from floating point issue) are known ###
-  style   = @style_of element
-  height  = parseFloat style[ 'width' ]
-  unless isFinite width
-    width = ( @box_of element )[ 'width' ]
-  return width \
-    - ( parseFloat style[ 'border-left-width'   ] ) \
-    - ( parseFloat style[ 'border-right-width'  ] ) \
-    - ( parseFloat style[ 'margin-left'         ] ) \
-    - ( parseFloat style[ 'margin-right'        ] ) \
-    - ( parseFloat style[ 'padding-left'        ] ) \
-    - ( parseFloat style[ 'padding-right'       ] )
+BD.CSS = {}
 
 #-----------------------------------------------------------------------------------------------------------
-BD.top_of = ( element, y = null ) ->
-  return ( y ? window.scrollY ) + ( @box_of element )[ 'top' ]
-
-#-----------------------------------------------------------------------------------------------------------
-BD.bottom_of = ( element, y = null ) ->
-  return ( @top_of element, y ) + @height_of element
-
-#-----------------------------------------------------------------------------------------------------------
-BD.relative_top_of = ( element, selector, y = null ) ->
-  return ( @top_of element, y ) - ( @top_of element.parents selector, y )
-
-#-----------------------------------------------------------------------------------------------------------
-BD.relative_bottom_of = ( element, selector, y = null ) ->
-  return ( @relative_top_of element, selector, y ) + @height_of element
-
-
-# BD.x_height_of = ( element ) -> @height_of element
-
-
-
+BD.css = ( hint, cs_name ) => BD._number_from_cs ( BD._dom_from_hint hint ), cs_name
 
 
 
