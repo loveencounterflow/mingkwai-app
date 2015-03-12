@@ -45,7 +45,7 @@
   XCSS = require('./XCSS');
 
   this.demo = function(app, md, settings, handler) {
-    var BD, MKTS, arity, block_idx, document, gcolumn, gcolumn_left, gcolumn_offset, gcolumn_top, input, jQuery, line_idx, live, mark_chrs, mm_from_px, t0, t1_a, window, zoomer, ƒ;
+    var BD, MKTS, arity, document, gcolumn, gcolumn_left, gcolumn_offset, gcolumn_top, input, jQuery, live, mark_chrs, mark_lines, matter, mm_from_px, t0, window, zoomer, ƒ;
     switch (arity = arguments.length) {
       case 3:
         handler = settings;
@@ -57,6 +57,7 @@
       default:
         throw new Error(" expected 3 or 4 arguments, got " + arity);
     }
+    matter = app['matter'];
     jQuery = app['jQuery'];
     MKTS = app['MKTS'];
     window = app['window'];
@@ -67,53 +68,132 @@
     gcolumn_left = gcolumn_offset['left'];
     gcolumn_top = gcolumn_offset['top'];
     zoomer = jQuery('zoomer');
+    window.gcolumn = gcolumn;
+    input = D.create_throughstream();
     mm_from_px = function(px) {
       return px * app['mm-per-px'];
     };
     ƒ = function(x, precision) {
       if (precision == null) {
-        precision = 0;
+        precision = 2;
       }
       return x.toFixed(precision);
     };
-    input = D.create_throughstream();
     live = true;
     live = false;
-    t0 = +new Date();
-    t1_a = null;
-    block_idx = -1;
-    line_idx = -1;
     mark_chrs = false;
     mark_chrs = true;
+    mark_lines = true;
     t0 = +new Date();
     input.pipe(D.MD.$as_html()).pipe((function(_this) {
       return function() {
         return $(function(html, send) {
-          var blks, block, blocks, client_rectangle, client_rectangles, counter_idx, height, left, line_count, line_counter, line_counters, top, width, zleft, ztop, _i, _j, _k, _len, _ref, _ref1, _results;
-          window.gcolumn = gcolumn;
-          blocks = (jQuery("<div>" + html + "</div>")).children();
+
+          /* Build galley HTML structure */
+
+          /* We're receiving the HTML of a text batch that is divided into block elements;
+          typically those are headers, paragraphs, code blocks and so on. We wrap all of those into a
+          common `<div>` with a unique ID so jQuery can build an HTML fragment with a single root element
+          and we can easily refer back to this particular batch. Furthermore, we wrap all the contents of
+          top level blocks into `<span>`s with class `.line-counter` that we can then use to find the
+          enclosing rectangles of each line in each block.
+           */
+          var batch, batch_id, batch_info, blocks;
+          matter['batch-idx'] += +1;
+          batch_id = "mkts-galley-batch-" + matter['batch-idx'];
+          batch = jQuery(("<div id='" + batch_id + "' class='mkts-galley-batch'>") + html + "</div>");
+          blocks = batch.children();
+          blocks.wrapInner("<span class='line-counter'></span>");
+          batch_info = {
+            '~isa': 'MKTS/LINESETTER/batch-info',
+            '%batch': batch,
+            '%blocks': blocks,
+            'batch-id': batch_id
+          };
+          return send(batch_info);
+        });
+      };
+    })(this)()).pipe((function(_this) {
+      return function() {
+        return $(function(batch_info, send) {
+          var batch, batch_id, block, block_idx, block_info, block_infos, blocks, client_rectangle, client_rectangles, height, height_px, left, line_count, line_counter, line_counters, top, width, zleft, ztop, _i, _j, _len, _ref;
+          batch = batch_info['%batch'];
+          blocks = batch_info['%blocks'];
+          batch_id = batch_info['batch-id'];
+          block_infos = [];
+          line_counters = blocks.find('.line-counter');
+          gcolumn.append(batch);
           for (block_idx = _i = 0, _ref = blocks.length; 0 <= _ref ? _i < _ref : _i > _ref; block_idx = 0 <= _ref ? ++_i : --_i) {
-            block = (blocks.eq(block_idx)).wrap("<slide></slide>");
-            debug('©8NUEL', block.outerHTML());
-            gcolumn.append(block);
-          }
-          blks = gcolumn.children();
-          blks.wrapInner('<span class="line-counter"></span>');
-          line_counters = blks.children();
-          _results = [];
-          for (counter_idx = _j = 0, _ref1 = line_counters.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; counter_idx = 0 <= _ref1 ? ++_j : --_j) {
-            line_counter = line_counters.eq(counter_idx);
+            block = blocks.eq(block_idx);
+            line_counter = line_counters.eq(block_idx);
             client_rectangles = (line_counter.get(0)).getClientRects();
             line_count = client_rectangles.length;
-            for (_k = 0, _len = client_rectangles.length; _k < _len; _k++) {
-              client_rectangle = client_rectangles[_k];
-              left = client_rectangle.left, top = client_rectangle.top, width = client_rectangle.width, height = client_rectangle.height;
-              zleft = left - gcolumn_left;
-              ztop = top - gcolumn_top;
-              gcolumn.append(jQuery("<div style='position:absolute;left:" + zleft + "px;top:" + ztop + "px;width:" + width + "px;height:" + height + "px;outline:1px solid rgba(255,0,0,0.25);'></div>"));
+
+            /* TAINT use BLAIDDDRWG */
+            height_px = (block.get(0)).getBoundingClientRect()['height'];
+            block_info = {
+              '~isa': 'MKTS/LINESETTER/block-info',
+              '%block': block,
+              'line-count': line_count,
+              'height.px': height_px
+            };
+            block_infos.push(block_info);
+            if (mark_lines) {
+              for (_j = 0, _len = client_rectangles.length; _j < _len; _j++) {
+                client_rectangle = client_rectangles[_j];
+                left = client_rectangle.left, top = client_rectangle.top, width = client_rectangle.width, height = client_rectangle.height;
+                zleft = left - gcolumn_left;
+                ztop = top - gcolumn_top;
+                batch.append(jQuery("<div style='position:absolute;left:" + zleft + "px;top:" + ztop + "px;width:" + width + "px;height:" + height + "px;outline:1px solid rgba(255,0,0,0.25);'></div>"));
+              }
             }
-            whisper(line_counter.outerHTML());
-            _results.push(help(line_count + " lines"));
+          }
+          return send(block_infos);
+        });
+      };
+    })(this)()).pipe((function(_this) {
+      return function() {
+        return $(function(block_infos, send) {
+          var block, block_height_px, block_info, column, column_count, columns, here, page, pages, target_height_px, _i, _len, _results;
+          MKTS.VIEW.show_pages();
+          here = matter.here;
+          pages = jQuery('artboard.pages page');
+          page = pages.eq(here['page-nr'] - 1);
+          columns = page.find('column');
+          column_count = columns.length;
+          column = columns.eq(here['column-nr'] - 1);
+
+          /* TAINT use BLAIDDDRWG */
+          target_height_px = (column.get(0)).getBoundingClientRect()['height'];
+
+          /* Move to target */
+          _results = [];
+          for (_i = 0, _len = block_infos.length; _i < _len; _i++) {
+            block_info = block_infos[_i];
+            block = block_info['%block'];
+            block_height_px = block_info['height.px'];
+            column.append(block);
+            here['y.px'] += block_height_px;
+            debug('©08Nsv', MKTS.HERE.url_from_here(here));
+            if (here['y.px'] < target_height_px) {
+              continue;
+            }
+            here['column-nr'] += +1;
+            if (here['column-nr'] > column_count) {
+              debug('©l4U89', MKTS.HERE.url_from_here(here));
+              here['column-nr'] = 1;
+              here['page-nr'] += +1;
+              here['y.px'] = 0;
+
+              /* TAINT code duplication */
+              page = pages.eq(here['page-nr'] - 1);
+              columns = page.find('column');
+              column_count = columns.length;
+            }
+            column = columns.eq(here['column-nr'] - 1);
+
+            /* TAINT use BLAIDDDRWG */
+            _results.push(target_height_px = (column.get(0)).getBoundingClientRect()['height']);
           }
           return _results;
         });

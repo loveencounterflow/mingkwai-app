@@ -39,7 +39,7 @@ APPLESCRIPT               = require 'applescript'
 ƒ                         = ( x, precision = 2 ) -> x.toFixed precision
 
 ### see https://github.com/nwjs/nw.js/wiki/Window ###
-splash_win = NW.Window.open './splash.html',
+splash_info = [ './splash.html',
   "position":         "center",
   "title":            "眀快排字机",
   "width":            800,
@@ -47,15 +47,39 @@ splash_win = NW.Window.open './splash.html',
   "frame":            false,
   "toolbar":          false,
   "transparent":      true,
-  "focus":            true,
+  "focus":            false,
   "resizable":        false,
   "show":             true,
   "show_in_taskbar":  true,
-  "icon": "./favicon.ico"
-
+  ]
 
 #-----------------------------------------------------------------------------------------------------------
+splash_win = NW.Window.open splash_info...
+
+#-----------------------------------------------------------------------------------------------------------
+### Description of what is being typeset; the document. ###
+### At some point in the future, maybe we'll be able to refer to the matter (document) and to locations
+inside the matter by using a URL like:
+
+    mkts://#{file_locator}#page:#{page_nr}/column:#{column_nr}/y:#{insertion_y_px}px
+
+e.g.
+
+    mkts://(file:///Users/dave/Documents/cv.mkts)/page:3/column:4/y:120.45px
+###
+matter =
+  '~isa':                 'MKTS/matter'
+  'batch-idx':            -1
+  'pages':                []
+  'here':
+    'page-nr':            1
+    'column-nr':          1
+    'y.px':               0
+
+#-----------------------------------------------------------------------------------------------------------
+### Description of the app, its settings and its current user interface state. ###
 app =
+  '~isa':                 'MKTS/app'
   '%memo':                {}
   # 'mm-per-px':            100 / 377.94791
   # 'mm-per-px':            55 / 203.704
@@ -73,6 +97,7 @@ app =
   'tool-modes-default':   'default'
   'view':                 'pages'
   'pages-last-scroll-xy': [ 0, 0, ]
+  'matter':               matter
 
 #-----------------------------------------------------------------------------------------------------------
 ### Publish app so we have access to it in both the browser and the NodeJS contexts: ###
@@ -455,9 +480,13 @@ MKTS.enable_console = ( selector = '#console' ) ->
       _write P...
   return null
 
-
 #-----------------------------------------------------------------------------------------------------------
 win.on 'document-end', ->
+  dev_win = win.showDevTools()
+  dev_win.moveTo 1200, 848
+  dev_win.maximize()
+  dev_win.blur()
+  #.........................................................................................................
   show_splash = no
   if show_splash
     after 2, ->
@@ -471,11 +500,6 @@ win.on 'document-end', ->
       splash_win.hide()
       win.show()
       win.focus()
-  #.........................................................................................................
-  dev_win = win.showDevTools()
-  dev_win.moveTo 1200, 848
-  dev_win.maximize()
-  dev_win.blur()
   #.........................................................................................................
   app[ 'artboard' ] = $ 'artboard'
   app[ 'zoomer'   ] = $ 'zoomer'

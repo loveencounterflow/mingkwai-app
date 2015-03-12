@@ -144,6 +144,20 @@ module.exports = ( _app ) ->
 
 
 #===========================================================================================================
+# HERE
+#-----------------------------------------------------------------------------------------------------------
+@HERE = {}
+
+### TAINT use noun instead of `here` ###
+@HERE.url_from_here = ( here ) =>
+  file_locator    = 'matter'
+  page_nr         = here[ 'page-nr'   ]
+  column_nr       = here[ 'column-nr' ]
+  insertion_y_px  = here[ 'y.px'      ]
+  return "mkts://#{file_locator}#page:#{page_nr}/column:#{column_nr}/y:#{insertion_y_px}px"
+
+
+#===========================================================================================================
 # VIEW
 #-----------------------------------------------------------------------------------------------------------
 @VIEW = {}
@@ -161,7 +175,7 @@ module.exports = ( _app ) ->
   app[ 'pages-last-scroll-xy' ][ 0 ]  = ( q window ).scrollLeft()
   app[ 'pages-last-scroll-xy' ][ 1 ]  = ( q window ).scrollTop()
   ( q 'artboard.pages' ).animate opacity: 0, =>
-    ( q 'artboard.pages' ).css 'display', 'none'
+    # ( q 'artboard.pages' ).css 'display', 'none'
     handler null if handler?
 
 #-----------------------------------------------------------------------------------------------------------
@@ -169,7 +183,7 @@ module.exports = ( _app ) ->
   window                  = app[ 'window' ]
   q                       = app[ 'jQuery' ]
   app[ 'view' ]           = 'pages'
-  ( q 'artboard.pages' ).css 'display', 'block'
+  # ( q 'artboard.pages' ).css 'display', 'block'
   ( q window ).scrollLeft app[ 'pages-last-scroll-xy' ][ 0 ]
   ( q window ).scrollTop  app[ 'pages-last-scroll-xy' ][ 1 ]
   ( q 'artboard.pages' ).animate opacity: 1, =>

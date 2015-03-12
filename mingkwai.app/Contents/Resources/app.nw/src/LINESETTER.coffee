@@ -45,7 +45,6 @@ XCSS                      = require './XCSS'
 
 
 
-
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
@@ -60,6 +59,7 @@ XCSS                      = require './XCSS'
       throw new Error " expected 3 or 4 arguments, got #{arity}"
 
   #---------------------------------------------------------------------------------------------------------
+  matter              = app[ 'matter' ]
   jQuery              = app[ 'jQuery' ]
   MKTS                = app[ 'MKTS'   ]
   window              = app[ 'window' ]
@@ -73,21 +73,19 @@ XCSS                      = require './XCSS'
   # zoomer_offset       = zoomer.offset()
   # zoomer_left         = zoomer_offset[ 'left' ]
   # zoomer_top          = zoomer_offset[ 'top'  ]
+  window.gcolumn      = gcolumn # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  input               = D.create_throughstream()
 
   #---------------------------------------------------------------------------------------------------------
   mm_from_px          = ( px ) -> px * app[ 'mm-per-px' ]
-  ƒ                   = ( x, precision = 0 ) -> x.toFixed precision
+  ƒ                   = ( x, precision = 2 ) -> x.toFixed precision
 
   #---------------------------------------------------------------------------------------------------------
-  input               = D.create_throughstream()
   live                = yes
   live                = no
-  t0                  = +new Date()
-  t1_a                = null
-  block_idx           = -1
-  line_idx            = -1
   mark_chrs           = no
   mark_chrs           = yes
+  mark_lines          = yes
   t0                  = +new Date()
   #.........................................................................................................
   input
@@ -96,47 +94,103 @@ XCSS                      = require './XCSS'
     # .pipe D.TYPO.$dashes()
     .pipe D.MD.$as_html()
     # .pipe D.HTML.$parse disperse: no, hyphenation: yes, whitespace: no, chrs: no
-    # .pipe D.HTML.$slice_toplevel_tags()
-    # .pipe D.$show()
-    # #.......................................................................................................
-    # .pipe $ ( html, send ) =>
-    #   # blocks = ( jQuery hotml ).siblings()
-    #   blocks = jQuery html
-    #   for block_idx in [ 0 ... blocks.length ]
-    #     send blocks.eq block_idx
     #.......................................................................................................
     .pipe do =>
       return $ ( html, send ) =>
-        # t1                  = +new Date()
-        # debug '©x-3', ƒ ( t1 - t0 ) / 1000, 3
+        ### Build galley HTML structure ###
+        ### We're receiving the HTML of a text batch that is divided into block elements;
+        typically those are headers, paragraphs, code blocks and so on. We wrap all of those into a
+        common `<div>` with a unique ID so jQuery can build an HTML fragment with a single root element
+        and we can easily refer back to this particular batch. Furthermore, we wrap all the contents of
+        top level blocks into `<span>`s with class `.line-counter` that we can then use to find the
+        enclosing rectangles of each line in each block. ###
+        matter[ 'batch-idx' ]  += +1
+        batch_id                = "mkts-galley-batch-#{matter[ 'batch-idx' ]}"
+        batch                   = jQuery "<div id='#{batch_id}' class='mkts-galley-batch'>" + html + "</div>"
+        blocks                  = batch.children()
+        blocks.wrapInner "<span class='line-counter'></span>"
+        batch_info              =
+          '~isa':           'MKTS/LINESETTER/batch-info'
+          '%batch':         batch
+          '%blocks':        blocks
+          'batch-id':       batch_id
+        send batch_info
+    #.......................................................................................................
+    .pipe do =>
+      return $ ( batch_info, send ) =>
+        batch           = batch_info[ '%batch'    ]
+        blocks          = batch_info[ '%blocks'   ]
+        batch_id        = batch_info[ 'batch-id'  ]
+        block_infos     = []
+        line_counters   = blocks.find '.line-counter'
+        gcolumn.append batch
         #...................................................................................................
-        # block_idx          += +1
-        # block_chr_idx       = 0
-        # lines               = []
-        # line_start_idx      = 0
-        # line_stop_idx       = 0
-        # block_html          = "<slide>" + ( HOTMETAL.as_html block_hotml, no ) + "</slide>"
-        # block               = jQuery block_html
-        window.gcolumn  = gcolumn
-        blocks          = ( jQuery "<div>" + html + "</div>" ).children()
         for block_idx in [ 0 ... blocks.length ]
-          block = ( blocks.eq block_idx ).wrap "<slide></slide>"
-          debug '©8NUEL', block.outerHTML()
-          gcolumn.append block
-        blks          = gcolumn.children()
-        blks.wrapInner '<span class="line-counter"></span>'
-        line_counters = blks.children()
-        for counter_idx in [ 0 ... line_counters.length ]
-          line_counter      = line_counters.eq counter_idx
+          block             =        blocks.eq block_idx
+          line_counter      = line_counters.eq block_idx
           client_rectangles = ( line_counter.get 0 ).getClientRects()
           line_count        = client_rectangles.length
-          for client_rectangle in client_rectangles
-            { left, top, width, height, } = client_rectangle
-            zleft                         = left - gcolumn_left
-            ztop                          = top  - gcolumn_top
-            gcolumn.append jQuery """<div style='position:absolute;left:#{zleft}px;top:#{ztop}px;width:#{width}px;height:#{height}px;outline:1px solid rgba(255,0,0,0.25);'></div>"""
-          whisper line_counter.outerHTML()
-          help "#{line_count} lines"
+          ### TAINT use BLAIDDDRWG ###
+          height_px         = ( block.get 0 ).getBoundingClientRect()[ 'height' ]
+          block_info        =
+            '~isa':           'MKTS/LINESETTER/block-info'
+            '%block':         block
+            'line-count':     line_count
+            'height.px':      height_px
+          block_infos.push block_info
+          #.................................................................................................
+          # whisper line_counter.outerHTML()
+          # help "#{line_count} lines"
+          if mark_lines
+            for client_rectangle in client_rectangles
+              { left, top, width, height, } = client_rectangle
+              zleft                         = left - gcolumn_left
+              ztop                          = top  - gcolumn_top
+              batch.append jQuery """<div style='position:absolute;left:#{zleft}px;top:#{ztop}px;width:#{width}px;height:#{height}px;outline:1px solid rgba(255,0,0,0.25);'></div>"""
+        #...................................................................................................
+        # debug '©e6CfD', block_infos.length
+        send block_infos
+    #.......................................................................................................
+    .pipe do =>
+      return $ ( block_infos, send ) =>
+        #...................................................................................................
+        MKTS.VIEW.show_pages()
+        { here }          = matter
+        pages             = jQuery 'artboard.pages page'
+        page              = pages.eq here[ 'page-nr' ] - 1
+        columns           = page.find 'column'
+        column_count      = columns.length
+        column            = columns.eq here[ 'column-nr' ] - 1
+        ### TAINT use BLAIDDDRWG ###
+        target_height_px  = ( column.get 0 ).getBoundingClientRect()[ 'height' ]
+        #...................................................................................................
+        ### Move to target ###
+        # yield MKTS.VIEW.show_galley resume
+        for block_info in block_infos
+          block           = block_info[ '%block' ]
+          block_height_px = block_info[ 'height.px' ]
+          column.append block
+          here[ 'y.px' ] += block_height_px
+          debug '©08Nsv', MKTS.HERE.url_from_here here
+          #.................................................................................................
+          continue if here[ 'y.px' ] < target_height_px
+          here[ 'column-nr' ] += +1
+          #.................................................................................................
+          if here[ 'column-nr' ] > column_count
+            debug '©l4U89', MKTS.HERE.url_from_here here
+            here[ 'column-nr' ]   = 1
+            here[ 'page-nr'   ]  += +1
+            here[ 'y.px'      ]   = 0
+            ### TAINT code duplication ###
+            page                  = pages.eq here[ 'page-nr' ] - 1
+            columns               = page.find 'column'
+            column_count          = columns.length
+          #.................................................................................................
+          column            = columns.eq here[ 'column-nr' ] - 1
+          ### TAINT use BLAIDDDRWG ###
+          target_height_px  = ( column.get 0 ).getBoundingClientRect()[ 'height' ]
+
+
         # gcolumn.append blocks
         # send block_html
         # #.................................................................................................

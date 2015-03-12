@@ -94,6 +94,22 @@
     };
   })(this);
 
+  this.HERE = {};
+
+
+  /* TAINT use noun instead of `here` */
+
+  this.HERE.url_from_here = (function(_this) {
+    return function(here) {
+      var column_nr, file_locator, insertion_y_px, page_nr;
+      file_locator = 'matter';
+      page_nr = here['page-nr'];
+      column_nr = here['column-nr'];
+      insertion_y_px = here['y.px'];
+      return "mkts://" + file_locator + "#page:" + page_nr + "/column:" + column_nr + "/y:" + insertion_y_px + "px";
+    };
+  })(this);
+
   this.VIEW = {};
 
   this.VIEW.toggle_galley = (function(_this) {
@@ -124,7 +140,6 @@
       return (q('artboard.pages')).animate({
         opacity: 0
       }, function() {
-        (q('artboard.pages')).css('display', 'none');
         if (handler != null) {
           return handler(null);
         }
@@ -141,7 +156,6 @@
       window = app['window'];
       q = app['jQuery'];
       app['view'] = 'pages';
-      (q('artboard.pages')).css('display', 'block');
       (q(window)).scrollLeft(app['pages-last-scroll-xy'][0]);
       (q(window)).scrollTop(app['pages-last-scroll-xy'][1]);
       return (q('artboard.pages')).animate({
