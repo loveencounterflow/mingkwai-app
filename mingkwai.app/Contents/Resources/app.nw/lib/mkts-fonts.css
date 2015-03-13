@@ -40,3 +40,12 @@
   font-family: 'jzr-babel';
   src: local('BabelStone Han');
 }
+@font-face {
+  font-family: 'imfellgreatprimer';
+  src: url("./fonts/IMFeGPrm29C.otf") format('opentype');
+}
+@font-face {
+  font-family: 'imfellgreatprimer-italic';
+  src: url("./fonts/IMFeGPit29C.otf") format('opentype');
+  font-style: italic;
+}

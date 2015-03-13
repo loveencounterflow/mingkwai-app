@@ -104,7 +104,7 @@
     '~isa': 'MKTS/matter',
     'batch-idx': -1,
     'pages': [],
-    'here': {
+    'caret': {
       'page-nr': 1,
       'column-nr': 1,
       'y.px': 0
@@ -117,6 +117,13 @@
   app = {
     '~isa': 'MKTS/app',
     '%memo': {},
+
+    /* TAINT populate with `MKTS.new_windows()` */
+    '%windows': {
+      'main': win,
+      'devtools': null,
+      'splash': splash_win
+    },
     'mm-per-px': 160 / 592.5925903320312,
     'jQuery': $,
     'NW': NW,
@@ -309,6 +316,7 @@
   MKTS.demo = function(me) {
     var md;
     md = "\n# Behind the Looking-Glass\n\n'But everything's curious today. I think I may as well go in at once.' And in\nshe went.\n\nThe *King **and** Queen* of Hearts were <xbig>seated</xbig> on their throne when they\narrived, with a great crowd assembled about them--all sorts of little\nbirds and beasts.\n";
+    md = require('./demo-text');
     step((function(_this) {
       return function*(resume) {
         (yield MKTS.VIEW.show_galley(resume));
@@ -318,37 +326,6 @@
       };
     })(this));
     return null;
-  };
-
-  MKTS.open_print_dialog = function(me) {
-    this.switch_to_print_view(me);
-    window.print();
-    return this.switch_to_dev_view(me);
-  };
-
-  MKTS.open_save_dialog = function(me) {
-    throw new Error("not implemented");
-  };
-
-  MKTS.save = function(me) {
-    throw new Error("not implemented");
-  };
-
-  MKTS.open_print_preview = function(me) {
-    var script;
-    this.switch_to_print_view(me);
-
-    /* thx to http://apple.stackexchange.com/a/36947/59895, http://www.jaimerios.com/?p=171 */
-    script = "tell application \"System Events\"\n  tell process \"mingkwai\"\n    keystroke \"p\" using {shift down, command down}\n    repeat until exists window \"Print\"\n    end repeat\n    click menu button \"PDF\" of window \"Print\"\n    repeat until exists menu item \"Open PDF in Preview\" of menu 1 of menu button \"PDF\" of window \"Print\"\n    end repeat\n    click menu item \"Open PDF in Preview\" of menu 1 of menu button \"PDF\" of window \"Print\"\n  end tell\nend tell";
-    return APPLESCRIPT.execString(script, (function(_this) {
-      return function(error) {
-        if (error != null) {
-          throw error;
-        }
-        _this.switch_to_dev_view(me);
-        return help("MKTS.open_print_preview: ok");
-      };
-    })(this));
   };
 
 
@@ -523,7 +500,7 @@
     MKTS.enable_console();
     step(function*(resume) {
       MKTS.maximize(app);
-      win.zoomLevel = 3;
+      win.zoomLevel = 1;
       MKTS.ZOOM.to(app['zoom']);
       (yield step.wrap(($(document)).ready, resume));
       help("document ready");

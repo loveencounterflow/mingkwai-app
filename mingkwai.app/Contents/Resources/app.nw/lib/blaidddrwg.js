@@ -23,6 +23,21 @@
     };
   })(this);
 
+  BD.get_rectangle = (function(_this) {
+    return function(hint, key) {
+      var R;
+      if (key == null) {
+        key = null;
+      }
+      R = (BD._dom_from_hint(hint)).getBoundingClientRect();
+      if (key != null) {
+        return R[key];
+      } else {
+        return R;
+      }
+    };
+  })(this);
+
   $.fn.text_nodes = function() {
     var R;
     R = [];

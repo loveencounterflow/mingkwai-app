@@ -1,0 +1,11 @@
+leftmargin,
+rightmargin,
+topmargin,
+bottommargin,
+gap,
+vgap,
+hgap,
+xhgap {
+  outline: 1px dotted #f00;
+  outline-offset: -1px;
+}

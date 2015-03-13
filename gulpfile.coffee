@@ -93,8 +93,8 @@ gulp.task 'build-stylus', ->
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ( handler ) ->
   RWP                   = require join __dirname, module_root, './lib/rework-plugins'
-  input_route           = join module_root, 'lib/mingkwai-main.css'
-  output_route          = join module_root, 'lib/mingkwai-reworked-main.css'
+  input_route           = join module_root, 'lib/mkts-main.css'
+  output_route          = join module_root, 'lib/mkts-reworked-main.css'
   extras_route          = join module_root, 'lib/xcss-rules.json'
   xcss_rules_json       = null
   #.........................................................................................................

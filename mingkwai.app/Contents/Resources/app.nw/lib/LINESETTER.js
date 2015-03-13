@@ -154,46 +154,63 @@
     })(this)()).pipe((function(_this) {
       return function() {
         return $(function(block_infos, send) {
-          var block, block_height_px, block_info, column, column_count, columns, here, page, pages, target_height_px, _i, _len, _results;
+          var block, block_height_px, block_info, caret, column, column_count, columns, page, pages, target_height_px, _i, _len, _results;
           MKTS.VIEW.show_pages();
-          here = matter.here;
+          caret = matter.caret;
           pages = jQuery('artboard.pages page');
-          page = pages.eq(here['page-nr'] - 1);
-          columns = page.find('column');
-          column_count = columns.length;
-          column = columns.eq(here['column-nr'] - 1);
-
-          /* TAINT use BLAIDDDRWG */
-          target_height_px = (column.get(0)).getBoundingClientRect()['height'];
+          page = null;
+          columns = null;
+          column_count = null;
+          column = null;
+          target_height_px = null;
+          debug('©lZha4', MKTS.GAUGE.get_px_per_mm(app, matter));
+          debug('©hraj6', MKTS.GAUGE.get_rho(app, matter));
 
           /* Move to target */
           _results = [];
           for (_i = 0, _len = block_infos.length; _i < _len; _i++) {
             block_info = block_infos[_i];
+            if (page == null) {
+              page = pages.eq(caret['page-nr'] - 1);
+            }
+            if (columns == null) {
+              columns = page.find('column');
+            }
+            if (column_count == null) {
+              column_count = columns.length;
+            }
+            if (column == null) {
+              column = columns.eq(caret['column-nr'] - 1);
+            }
+
+            /* TAINT use BLAIDDDRWG */
+            if (target_height_px == null) {
+              target_height_px = BD.get_rectangle(column, 'height');
+            }
+            debug('©u0xZx', target_height_px, caret['y.px']);
             block = block_info['%block'];
             block_height_px = block_info['height.px'];
             column.append(block);
-            here['y.px'] += block_height_px;
-            debug('©08Nsv', MKTS.HERE.url_from_here(here));
-            if (here['y.px'] < target_height_px) {
+            caret['y.px'] += block_height_px;
+            if (caret['y.px'] < target_height_px) {
               continue;
             }
-            here['column-nr'] += +1;
-            if (here['column-nr'] > column_count) {
-              debug('©l4U89', MKTS.HERE.url_from_here(here));
-              here['column-nr'] = 1;
-              here['page-nr'] += +1;
-              here['y.px'] = 0;
-
-              /* TAINT code duplication */
-              page = pages.eq(here['page-nr'] - 1);
-              columns = page.find('column');
-              column_count = columns.length;
+            caret['column-nr'] += +1;
+            caret['y.px'] = 0;
+            column = null;
+            urge('©08Nsv', MKTS.CARET.as_url(app, matter));
+            if (caret['column-nr'] > column_count) {
+              page = null;
+              columns = null;
+              column_count = null;
+              target_height_px = null;
+              caret['column-nr'] = 1;
+              caret['page-nr'] += +1;
+              caret['y.px'] = 0;
+              _results.push(help('©l4U89', MKTS.CARET.as_url(app, matter)));
+            } else {
+              _results.push(void 0);
             }
-            column = columns.eq(here['column-nr'] - 1);
-
-            /* TAINT use BLAIDDDRWG */
-            _results.push(target_height_px = (column.get(0)).getBoundingClientRect()['height']);
           }
           return _results;
         });

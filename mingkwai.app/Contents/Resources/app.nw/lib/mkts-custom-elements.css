@@ -1,16 +1,27 @@
 /* ------------------------------------------------------------------------------------------------------ */
-artboard,
-page,
-paper,
-galley,
-box,
-column,
-wrap,
-gap,
+/* GUI */
+splash,
 ribbon,
 tool,
-boxer,
 panel,
-grip {
+grip,
+overlay,
+button,
+tabletop,
+artboard,
+galley,
+paper,
+page,
+chase,
+box,
+column,
+gap,
+line,
+cork,
+zoomer,
+leftmargin,
+rightmargin,
+topmargin,
+bottommargin {
   display: block;
 }

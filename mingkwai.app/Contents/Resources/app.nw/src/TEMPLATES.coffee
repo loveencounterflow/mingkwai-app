@@ -99,97 +99,61 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
     HTML =>
       HEAD =>
         META charset: 'utf-8'
-        # META name: 'viewport', content: 'width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;'
-        TITLE 'mingkwai'
-        # TITLE '眀快排字机'
-        LINK rel: 'shortcut icon', href: './favicon.icon'
-        CSS './html5doctor-css-reset.css'
-        CSS './mingkwai-main.css'
         JS  './jquery-2.1.3.js'
-        CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
-        JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
-        JS  './jquery.mobile-1.4.5.js'
         JS  './outerHTML-2.1.0.js'
-        JS  './process-xcss-rules.js'
-        JS  './blaidddrwg.js'
-        JS  './browser.js'
-      STYLE '', """
-          body {
-            height:             auto;
-          }
-          .panel {
-            margin:             100mm;
-            width:              100mm;
-            height:             100mm;
-            overflow:           auto;
-            outline:            1px solid red;
-          }
-          .tabletop {
-            background-image:   url( ./background_linen.png );
-            width:              200mm;
-            height:             200mm;
-            outline:            1px solid green;
-          }
-          .artboard {
-            background-image:   url( ./background_linen_lime.png );
-            position:           relative;
-            top:                60mm;
-            left:               60mm;
-            width:              80mm;
-            height:             80mm;
-            outline:            1px solid orange;
-          }
-        """
-      #=====================================================================================================
-      COFFEESCRIPT ->
-        ( $ 'document' ).ready ->
-          log = console.log.bind console
-          panel     = $ '.panel'
-          tabletop  = $ '.tabletop'
-          artboard  = $ '.artboard'
-          state     = 'inactive'
+        STYLE '', """
+            html, body {
+              margin:                 0;
+              padding:                0;
+              font-size:              25px;
+              line-height:            25px;
+            }
+            div.panel {
+              width:                  200px;
+              outline:                1px solid red;
+            }
+            span.cork {
+              display:                inline-block;
+              color:                  red;
+            }
+          """
+        #===================================================================================================
+        COFFEESCRIPT ->
+          ( $ 'document' ).ready ->
+            log                   = console.log.bind console
+            nominal_line_height   = 25
+            line_count            = 36
+            panel                 = $ '.panel'
+            cork                  = $ '.cork'
+            panel_rectangle       = panel[ 0 ].getBoundingClientRect()
+            cork_rectangle        = cork[  0 ].getBoundingClientRect()
+            real_panel_height     = panel_rectangle[ 'height' ]
+            real_cork_bottom      = cork_rectangle[  'bottom' ]
+            expected_panel_height = nominal_line_height * line_count
+            nompx_per_realpx      = expected_panel_height / real_panel_height
+            real_line_height      = real_panel_height / line_count
+            real_line_count       = real_cork_bottom / real_line_height
+            log panel_rectangle
+            log cork_rectangle
+            log "expected_panel_height:     ", expected_panel_height
+            log "real_panel_height:         ", real_panel_height
+            log "nompx_per_realpx:          ", nompx_per_realpx
+            log "real_line_height:          ", real_line_height
+            log "real_line_count:           ", real_line_count
 
-          ( $ 'document' ).on 'touchstart',  -> log 'touchstart'; return true
-          ( $ 'document' ).on 'touchmove',   -> log 'touchmove'; return true
-          ( $ 'document' ).on 'touchend',    -> log 'touchend'; return true
-          ( $ 'document' ).on 'touchcancel', -> log 'touchcancel'; return true
-          ( $ 'document' ).on 'scrollstart', -> log 'scrollstart'; return true
-          ( $ 'document' ).on 'scrollstop',  -> log 'scrollstop'; return true
-          ( $ 'document' ).on 'swipe',       -> log 'swipe'; return true
-          ( $ 'document' ).on 'swipeleft',   -> log 'swipeleft'; return true
-          ( $ 'document' ).on 'swiperight',  -> log 'swiperight'; return true
-          ( $ 'document' ).on 'tap',         -> log 'tap'; return true
-          ( $ 'document' ).on 'taphold',     -> log 'taphold'; return true
-          ( $ 'document' ).on 'mousedown',     -> log 'mousedown'; return true
-
-          # offset_0  = panel.offset()
-          # top_0     = offset_0[ 'top'  ]
-          # left_0    = offset_0[ 'left' ]
-          #.................................................................................................
-          scroll_to_top = ->
-            state = 'top'
-            # panel.stop().animate { scrollTop: 150 }, 1500, ->
-            # panel.animate { scrollTop: 150 }, 1500, ->
-            #   log "top ok"
-            #   state = 'inactive'
-            panel.scrollTop 150
-            state = 'inactive'
-          #.................................................................................................
-          panel.on 'scroll', ( event ) ->
-            if state is 'top'
-              log "already top"
-              return false
-            top = panel.scrollTop()
-            scroll_to_top() if top < 150
-            return false
-          #.................................................................................................
-          scroll_to_top()
       #=====================================================================================================
       BODY =>
         DIV '.panel', =>
-          DIV '.tabletop', =>
-            DIV '.artboard', =>
-              "helo"
+          RAW """Just at this moment Alice felt a very curious sensation, which puzzled
+            her a good deal until she made out what it was: she was beginning to
+            grow larger again, and she thought at first she would get up and leave
+            the court; but on second thoughts she decided to remain where she was as
+            long as there was room for her.
+            Just at this moment Alice felt a very curious sensation, which puzzled
+            her a good deal until she made out what it was: she was beginning to
+            grow larger again, and she thought at first she would get up and leave
+            the court; but on second thoughts she decided to remain where she was as
+            long as there was room for her.<span class='cork'>x</span>"""
 
 #-----------------------------------------------------------------------------------------------------------
 @splash_window = ->
@@ -330,7 +294,8 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
       #=====================================================================================================
       BODY =>
         #...............................................................................................
-        # TABLETOP =>
+        DIV '#meter-gauge', style: "position:absolute;width:1000mm;"
+        #...............................................................................................
         ARTBOARD '.galley', =>
           ZOOMER =>
             GALLEY =>

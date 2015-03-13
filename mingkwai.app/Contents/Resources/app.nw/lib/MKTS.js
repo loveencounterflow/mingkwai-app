@@ -94,19 +94,42 @@
     };
   })(this);
 
-  this.HERE = {};
+  this.GAUGE = {};
 
+  this.GAUGE.get_px_per_mm = (function(_this) {
+    return function(app, matter) {
+      var gauge, jQuery, window;
+      jQuery = app.jQuery, window = app.window;
+      gauge = jQuery('#meter-gauge');
 
-  /* TAINT use noun instead of `here` */
+      /* Since the gauge is 1m = 1000mm wide, a thousandth of its width in pixels equals pixels per
+      millimeter:
+       */
+      return (window.BD.get_rectangle(gauge, 'width')) / 1000;
+    };
+  })(this);
 
-  this.HERE.url_from_here = (function(_this) {
-    return function(here) {
-      var column_nr, file_locator, insertion_y_px, page_nr;
+  this.GAUGE.get_rho = (function(_this) {
+    return function(app, matter) {
+      var gauge, jQuery, nominal_width, window;
+      jQuery = app.jQuery, window = app.window;
+      gauge = jQuery('#meter-gauge');
+      nominal_width = parseInt(gauge.css('width'), 10);
+      return nominal_width / window.BD.get_rectangle(gauge, 'width');
+    };
+  })(this);
+
+  this.CARET = {};
+
+  this.CARET.as_url = (function(_this) {
+    return function(app, matter) {
+      var caret, column_nr, file_locator, page_nr, y_px;
       file_locator = 'matter';
-      page_nr = here['page-nr'];
-      column_nr = here['column-nr'];
-      insertion_y_px = here['y.px'];
-      return "mkts://" + file_locator + "#page:" + page_nr + "/column:" + column_nr + "/y:" + insertion_y_px + "px";
+      caret = matter.caret;
+      page_nr = caret['page-nr'];
+      column_nr = caret['column-nr'];
+      y_px = caret['y.px'];
+      return "mkts://" + file_locator + "#page:" + page_nr + "/column:" + column_nr + "/y:" + y_px + "px";
     };
   })(this);
 
@@ -167,6 +190,37 @@
       });
     };
   })(this);
+
+  MKTS.open_print_dialog = function(me) {
+    this.switch_to_print_view(me);
+    window.print();
+    return this.switch_to_dev_view(me);
+  };
+
+  MKTS.open_save_dialog = function(me) {
+    throw new Error("not implemented");
+  };
+
+  MKTS.save = function(me) {
+    throw new Error("not implemented");
+  };
+
+  MKTS.open_print_preview = function(me) {
+    var script;
+    this.switch_to_print_view(me);
+
+    /* thx to http://apple.stackexchange.com/a/36947/59895, http://www.jaimerios.com/?p=171 */
+    script = "tell application \"System Events\"\n  tell process \"mingkwai\"\n    keystroke \"p\" using {shift down, command down}\n    repeat until exists window \"Print\"\n    end repeat\n    click menu button \"PDF\" of window \"Print\"\n    repeat until exists menu item \"Open PDF in Preview\" of menu 1 of menu button \"PDF\" of window \"Print\"\n    end repeat\n    click menu item \"Open PDF in Preview\" of menu 1 of menu button \"PDF\" of window \"Print\"\n  end tell\nend tell";
+    return APPLESCRIPT.execString(script, (function(_this) {
+      return function(error) {
+        if (error != null) {
+          throw error;
+        }
+        _this.switch_to_dev_view(me);
+        return help("MKTS.open_print_preview: ok");
+      };
+    })(this));
+  };
 
   this.ACTIONS = {};
 

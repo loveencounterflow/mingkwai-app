@@ -71,7 +71,7 @@ matter =
   '~isa':                 'MKTS/matter'
   'batch-idx':            -1
   'pages':                []
-  'here':
+  'caret':
     'page-nr':            1
     'column-nr':          1
     'y.px':               0
@@ -81,6 +81,11 @@ matter =
 app =
   '~isa':                 'MKTS/app'
   '%memo':                {}
+  ### TAINT populate with `MKTS.new_windows()` ###
+  '%windows':
+    'main':                 win
+    'devtools':             null
+    'splash':               splash_win
   # 'mm-per-px':            100 / 377.94791
   # 'mm-per-px':            55 / 203.704
   # 'mm-per-px':            160 / 593
@@ -288,7 +293,6 @@ MKTS.demo = ( me ) ->
   #   one of the trees had a door
   #   leading right into it. 'That's very curious!' she thought.
   #   """
-  # md = require './demo-text'
   # md = "one <xbig>line</xbig>\n\n" +  md[ .. 500 ] + ( 'ddd' for i in [ 0 .. 150 ] ).join ' '
   # demo_count += +1
   # if demo_count is 1
@@ -310,72 +314,13 @@ MKTS.demo = ( me ) ->
     birds and beasts.
 
     """
+  md = require './demo-text'
   step ( resume ) =>
     yield MKTS.VIEW.show_galley resume
     LINESETTER.demo me, md, ( error ) =>
       # MKTS.revert_zoom me
       help "MKTS.demo ok"
   return null
-
-# #-----------------------------------------------------------------------------------------------------------
-# MKTS._detach_artboard = ( me ) ->
-#   ### TAINT `#mkts-top`, `#mkts-bottom` not honored; are they needed? ###
-#   return if me[ 'view-mode' ] is 'print'
-#   body      = $ 'body'
-#   artboard  = $ 'artboard'
-#   contents  = artboard.contents()
-#   artboard.detach()
-#   body.append contents
-#   me[ '%memo' ][ 'view-mode' ] = { contents, artboard, body, }
-#   return null
-
-# #-----------------------------------------------------------------------------------------------------------
-# MKTS._reattach_artboard = ( me ) ->
-#   return if me[ 'view-mode' ] is 'dev'
-#   { contents, artboard, body, } = me[ '%memo' ][ 'view-mode' ]
-#   delete me[ '%memo' ][ 'view-mode' ]
-#   contents.detach()
-#   artboard.append contents
-#   body.append artboard
-#   return null
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.open_print_dialog = ( me ) ->
-  @switch_to_print_view me
-  window.print()
-  @switch_to_dev_view me
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.open_save_dialog = ( me ) -> throw new Error "not implemented"
-MKTS.save = ( me ) -> throw new Error "not implemented"
-  # route   = '/tmp/mkts/index.html'
-  # njs_fs.writeFileSync route, ( $ 'html' ).outerHTML()
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.open_print_preview = ( me ) ->
-  @switch_to_print_view me
-  # MKTS.open_print_dialog()
-  #.........................................................................................................
-  ### thx to http://apple.stackexchange.com/a/36947/59895, http://www.jaimerios.com/?p=171 ###
-  script = """
-    tell application "System Events"
-      tell process "mingkwai"
-        keystroke "p" using {shift down, command down}
-        repeat until exists window "Print"
-        end repeat
-        click menu button "PDF" of window "Print"
-        repeat until exists menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
-        end repeat
-        click menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
-      end tell
-    end tell
-    """
-  #.........................................................................................................
-  APPLESCRIPT.execString script, ( error ) =>
-    throw error if error?
-    @switch_to_dev_view me
-    help "MKTS.open_print_preview: ok"
-
 
 
 
@@ -507,7 +452,7 @@ win.on 'document-end', ->
   step ( resume ) ->
     MKTS.maximize app
     # MKTS.ZOOM.to app, 1.85
-    win.zoomLevel = 3
+    win.zoomLevel = 1
     MKTS.ZOOM.to app[ 'zoom' ]
     yield step.wrap ( $ document ).ready, resume
     help "document ready"

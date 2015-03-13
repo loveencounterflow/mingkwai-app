@@ -73,6 +73,11 @@ BD.CSS = {}
 #-----------------------------------------------------------------------------------------------------------
 BD.css = ( hint, cs_name ) => BD._number_from_cs ( BD._dom_from_hint hint ), cs_name
 
+#-----------------------------------------------------------------------------------------------------------
+BD.get_rectangle = ( hint, key = null ) =>
+  R     = ( BD._dom_from_hint hint ).getBoundingClientRect()
+  return if key? then R[ key ] else R
+
 
 
 

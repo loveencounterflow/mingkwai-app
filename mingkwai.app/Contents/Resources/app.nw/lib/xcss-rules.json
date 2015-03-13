@@ -1,25 +1,14 @@
 {
   "%selectors": {
-    "page h1": [
+    "hribbon": [
       0
-    ],
-    "ribbon.draggable": [
-      1
     ]
   },
   "rules": [
     {
       "media": "*",
       "selectors": [
-        "page h1"
-      ],
-      "property": "-mkts-columns",
-      "value": "all"
-    },
-    {
-      "media": "screen",
-      "selectors": [
-        "ribbon.draggable"
+        "hribbon"
       ],
       "property": "-mkts-draggable",
       "value": "xy"

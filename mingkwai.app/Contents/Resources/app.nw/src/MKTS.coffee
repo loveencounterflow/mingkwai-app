@@ -141,20 +141,40 @@ module.exports = ( _app ) ->
   whisper 'zoom_1:  ', ƒ zoom_1
   help "zoomed to [ #{ƒ zoom_1}, ]"
 
+#===========================================================================================================
+# GAUGE
+#-----------------------------------------------------------------------------------------------------------
+@GAUGE = {}
+
+#-----------------------------------------------------------------------------------------------------------
+@GAUGE.get_px_per_mm = ( app, matter ) =>
+  { jQuery, window, } = app
+  gauge               = jQuery '#meter-gauge'
+  ### Since the gauge is 1m = 1000mm wide, a thousandth of its width in pixels equals pixels per
+  millimeter: ###
+  return ( window.BD.get_rectangle gauge, 'width' ) / 1000
+
+#-----------------------------------------------------------------------------------------------------------
+@GAUGE.get_rho = ( app, matter ) =>
+  { jQuery, window, } = app
+  gauge               = jQuery '#meter-gauge'
+  nominal_width       = parseInt ( gauge.css 'width' ), 10
+  return nominal_width / window.BD.get_rectangle gauge, 'width'
 
 
 #===========================================================================================================
-# HERE
+# CARET
 #-----------------------------------------------------------------------------------------------------------
-@HERE = {}
+@CARET = {}
 
-### TAINT use noun instead of `here` ###
-@HERE.url_from_here = ( here ) =>
+#-----------------------------------------------------------------------------------------------------------
+@CARET.as_url = ( app, matter ) =>
   file_locator    = 'matter'
-  page_nr         = here[ 'page-nr'   ]
-  column_nr       = here[ 'column-nr' ]
-  insertion_y_px  = here[ 'y.px'      ]
-  return "mkts://#{file_locator}#page:#{page_nr}/column:#{column_nr}/y:#{insertion_y_px}px"
+  { caret }       = matter
+  page_nr         = caret[ 'page-nr'   ]
+  column_nr       = caret[ 'column-nr' ]
+  y_px            = caret[ 'y.px'      ]
+  return "mkts://#{file_locator}#page:#{page_nr}/column:#{column_nr}/y:#{y_px}px"
 
 
 #===========================================================================================================
@@ -191,6 +211,28 @@ module.exports = ( _app ) ->
 
 
 # #-----------------------------------------------------------------------------------------------------------
+# MKTS._detach_artboard = ( me ) ->
+#   ### TAINT `#mkts-top`, `#mkts-bottom` not honored; are they needed? ###
+#   return if me[ 'view-mode' ] is 'print'
+#   body      = $ 'body'
+#   artboard  = $ 'artboard'
+#   contents  = artboard.contents()
+#   artboard.detach()
+#   body.append contents
+#   me[ '%memo' ][ 'view-mode' ] = { contents, artboard, body, }
+#   return null
+
+# #-----------------------------------------------------------------------------------------------------------
+# MKTS._reattach_artboard = ( me ) ->
+#   return if me[ 'view-mode' ] is 'dev'
+#   { contents, artboard, body, } = me[ '%memo' ][ 'view-mode' ]
+#   delete me[ '%memo' ][ 'view-mode' ]
+#   contents.detach()
+#   artboard.append contents
+#   body.append artboard
+#   return null
+
+# #-----------------------------------------------------------------------------------------------------------
 # MKTS.switch_to_print_view = ( me ) ->
 #   help "MKTS.switch_to_print_view"
 #   return if me[ 'view-mode' ] is 'print'
@@ -212,6 +254,43 @@ module.exports = ( _app ) ->
 #     when 'print'  then @switch_to_dev_view    me
 #     when 'dev'    then @switch_to_print_view  me
 #     else throw new Error "unknown view mode #{rpr view_mode}"
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.open_print_dialog = ( me ) ->
+  @switch_to_print_view me
+  window.print()
+  @switch_to_dev_view me
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.open_save_dialog = ( me ) -> throw new Error "not implemented"
+MKTS.save = ( me ) -> throw new Error "not implemented"
+  # route   = '/tmp/mkts/index.html'
+  # njs_fs.writeFileSync route, ( $ 'html' ).outerHTML()
+
+#-----------------------------------------------------------------------------------------------------------
+MKTS.open_print_preview = ( me ) ->
+  @switch_to_print_view me
+  # MKTS.open_print_dialog()
+  #.........................................................................................................
+  ### thx to http://apple.stackexchange.com/a/36947/59895, http://www.jaimerios.com/?p=171 ###
+  script = """
+    tell application "System Events"
+      tell process "mingkwai"
+        keystroke "p" using {shift down, command down}
+        repeat until exists window "Print"
+        end repeat
+        click menu button "PDF" of window "Print"
+        repeat until exists menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+        end repeat
+        click menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+      end tell
+    end tell
+    """
+  #.........................................................................................................
+  APPLESCRIPT.execString script, ( error ) =>
+    throw error if error?
+    @switch_to_dev_view me
+    help "MKTS.open_print_preview: ok"
 
 
 #===========================================================================================================

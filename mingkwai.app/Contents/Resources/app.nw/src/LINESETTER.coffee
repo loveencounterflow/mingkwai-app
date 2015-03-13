@@ -155,40 +155,88 @@ XCSS                      = require './XCSS'
       return $ ( block_infos, send ) =>
         #...................................................................................................
         MKTS.VIEW.show_pages()
-        { here }          = matter
+        { caret }         = matter
         pages             = jQuery 'artboard.pages page'
-        page              = pages.eq here[ 'page-nr' ] - 1
-        columns           = page.find 'column'
-        column_count      = columns.length
-        column            = columns.eq here[ 'column-nr' ] - 1
-        ### TAINT use BLAIDDDRWG ###
-        target_height_px  = ( column.get 0 ).getBoundingClientRect()[ 'height' ]
+        page              = null
+        columns           = null
+        column_count      = null
+        column            = null
+        target_height_px  = null
+        debug '©lZha4', MKTS.GAUGE.get_px_per_mm app, matter
+        debug '©hraj6', MKTS.GAUGE.get_rho       app, matter
         #...................................................................................................
         ### Move to target ###
         # yield MKTS.VIEW.show_galley resume
         for block_info in block_infos
-          block           = block_info[ '%block' ]
-          block_height_px = block_info[ 'height.px' ]
-          column.append block
-          here[ 'y.px' ] += block_height_px
-          debug '©08Nsv', MKTS.HERE.url_from_here here
-          #.................................................................................................
-          continue if here[ 'y.px' ] < target_height_px
-          here[ 'column-nr' ] += +1
-          #.................................................................................................
-          if here[ 'column-nr' ] > column_count
-            debug '©l4U89', MKTS.HERE.url_from_here here
-            here[ 'column-nr' ]   = 1
-            here[ 'page-nr'   ]  += +1
-            here[ 'y.px'      ]   = 0
-            ### TAINT code duplication ###
-            page                  = pages.eq here[ 'page-nr' ] - 1
-            columns               = page.find 'column'
-            column_count          = columns.length
-          #.................................................................................................
-          column            = columns.eq here[ 'column-nr' ] - 1
+          page             ?= pages.eq caret[ 'page-nr' ] - 1
+          columns          ?= page.find 'column'
+          column_count     ?= columns.length
+          column           ?= columns.eq caret[ 'column-nr' ] - 1
           ### TAINT use BLAIDDDRWG ###
-          target_height_px  = ( column.get 0 ).getBoundingClientRect()[ 'height' ]
+          target_height_px ?= BD.get_rectangle column, 'height'
+          debug '©u0xZx', target_height_px, caret[ 'y.px' ]
+          #.................................................................................................
+          block             = block_info[ '%block' ]
+          block_height_px   = block_info[ 'height.px' ]
+          column.append block
+          caret[ 'y.px' ]  += block_height_px
+          #.................................................................................................
+          continue if caret[ 'y.px' ] < target_height_px
+          caret[ 'column-nr' ] += +1
+          caret[ 'y.px'      ]  = 0
+          column                = null
+          urge '©08Nsv', MKTS.CARET.as_url app, matter
+          #.................................................................................................
+          if caret[ 'column-nr' ] > column_count
+            page                  = null
+            columns               = null
+            column_count          = null
+            target_height_px      = null
+            caret[ 'column-nr' ]  = 1
+            caret[ 'page-nr'   ] += +1
+            caret[ 'y.px'      ]  = 0
+            help '©l4U89', MKTS.CARET.as_url app, matter
+
+    # #.......................................................................................................
+    # .pipe do =>
+    #   return $ ( block_infos, send ) =>
+    #     #...................................................................................................
+    #     MKTS.VIEW.show_pages()
+    #     { caret }          = matter
+    #     pages             = jQuery 'artboard.pages page'
+    #     page              = pages.eq caret[ 'page-nr' ] - 1
+    #     columns           = page.find 'column'
+    #     column_count      = columns.length
+    #     column            = columns.eq caret[ 'column-nr' ] - 1
+    #     ### TAINT use BLAIDDDRWG ###
+    #     target_height_px  = ( column.get 0 ).getBoundingClientRect()[ 'height' ]
+    #     #...................................................................................................
+    #     ### Move to target ###
+    #     # yield MKTS.VIEW.show_galley resume
+    #     for block_info in block_infos
+    #       block           = block_info[ '%block' ]
+    #       block_height_px = block_info[ 'height.px' ]
+    #       column.append block
+    #       caret[ 'y.px' ] += block_height_px
+    #       debug '©08Nsv', MKTS.CARET.as_url app, matter
+    #       #.................................................................................................
+    #       continue if caret[ 'y.px' ] < target_height_px
+    #       caret[ 'column-nr' ] += +1
+    #       #.................................................................................................
+    #       if caret[ 'column-nr' ] > column_count
+    #         debug '©l4U89', MKTS.CARET.as_url app, matter
+    #         caret[ 'column-nr' ]   = 1
+    #         caret[ 'page-nr'   ]  += +1
+    #         caret[ 'y.px'      ]   = 0
+    #         ### TAINT code duplication ###
+    #         page                  = pages.eq caret[ 'page-nr' ] - 1
+    #         columns               = page.find 'column'
+    #         column_count          = columns.length
+    #       #.................................................................................................
+    #       column            = columns.eq caret[ 'column-nr' ] - 1
+    #       ### TAINT use BLAIDDDRWG ###
+    #       target_height_px  = ( column.get 0 ).getBoundingClientRect()[ 'height' ]
+
 
 
         # gcolumn.append blocks
