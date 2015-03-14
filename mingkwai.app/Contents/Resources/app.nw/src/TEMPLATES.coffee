@@ -101,59 +101,76 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         META charset: 'utf-8'
         JS  './jquery-2.1.3.js'
         JS  './outerHTML-2.1.0.js'
+        # JS  './blaidddrwg.js'
+        JS  './browser.js'
         STYLE '', """
             html, body {
               margin:                 0;
               padding:                0;
-              font-size:              25px;
-              line-height:            25px;
             }
-            div.panel {
-              width:                  200px;
+            .gauge {
+              position:               absolute;
               outline:                1px solid red;
-            }
-            span.cork {
-              display:                inline-block;
-              color:                  red;
             }
           """
         #===================================================================================================
         COFFEESCRIPT ->
           ( $ 'document' ).ready ->
             log                   = console.log.bind console
-            nominal_line_height   = 25
-            line_count            = 36
-            panel                 = $ '.panel'
-            cork                  = $ '.cork'
-            panel_rectangle       = panel[ 0 ].getBoundingClientRect()
-            cork_rectangle        = cork[  0 ].getBoundingClientRect()
-            real_panel_height     = panel_rectangle[ 'height' ]
-            real_cork_bottom      = cork_rectangle[  'bottom' ]
-            expected_panel_height = nominal_line_height * line_count
-            nompx_per_realpx      = expected_panel_height / real_panel_height
-            real_line_height      = real_panel_height / line_count
-            real_line_count       = real_cork_bottom / real_line_height
-            log panel_rectangle
-            log cork_rectangle
-            log "expected_panel_height:     ", expected_panel_height
-            log "real_panel_height:         ", real_panel_height
-            log "nompx_per_realpx:          ", nompx_per_realpx
-            log "real_line_height:          ", real_line_height
-            log "real_line_count:           ", real_line_count
+            # #...............................................................................................
+            # gauges                = $ '.gauge'
+            # for gauge_idx in [ 0 ... gauges.length ]
+            #   gauge               = gauges.eq gauge_idx
+            #   height_npx          = parseInt ( gauge.css 'height' ), 10
+            #   height_rpx_a        = gauge.height()
+            #   height_rpx_b        = gauge[ 0 ].getBoundingClientRect()[ 'height' ]
+            #   log gauge_idx + 1, height_npx, height_rpx_a, height_rpx_b
+            #...............................................................................................
+            gauge         = $ "<div id='meter-gauge' style='position:absolute;'></div>"
+            ( $ 'body' ).append gauge
+            for d_npx in [ 1 .. 1000 ]
+              gauge.css 'height', "#{d_npx}px"
+              d_rpx = gauge[ 0 ].getBoundingClientRect()[ 'height' ]
+              log d_npx, d_rpx
 
       #=====================================================================================================
       BODY =>
-        DIV '.panel', =>
-          RAW """Just at this moment Alice felt a very curious sensation, which puzzled
-            her a good deal until she made out what it was: she was beginning to
-            grow larger again, and she thought at first she would get up and leave
-            the court; but on second thoughts she decided to remain where she was as
-            long as there was room for her.
-            Just at this moment Alice felt a very curious sensation, which puzzled
-            her a good deal until she made out what it was: she was beginning to
-            grow larger again, and she thought at first she would get up and leave
-            the court; but on second thoughts she decided to remain where she was as
-            long as there was room for her.<span class='cork'>x</span>"""
+        # #...............................................................................................
+        # ARTBOARD '.galley', =>
+        #   ZOOMER =>
+        #     GALLEY =>
+        #       OVERLAY "Galley"
+        #       CHASE =>
+        #         TOPMARGIN =>
+        #         HBOX =>
+        #           LEFTMARGIN =>
+        #           COLUMN =>
+        #           VGAP =>
+        #           COLUMN =>
+        #           VGAP =>
+        #           COLUMN =>
+        #           RIGHTMARGIN =>
+        #         BOTTOMMARGIN =>
+        # ARTBOARD '.pages', =>
+        #   ZOOMER =>
+        #     # DIV '#tg', style: 'position:absolute;top:0;left:0;width:10px; height:10px;outline:2px solid red;'
+        #     for page_nr in [ 1 .. 5 ]
+        #       PAGE =>
+        #         OVERLAY page_nr
+        #         CHASE =>
+        #           TOPMARGIN =>
+        #           HBOX =>
+        #             LEFTMARGIN =>
+        #             COLUMN =>
+        #               # P """𪜃 ǻ slig͟htly lon⃟ger text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. """
+        #             VGAP =>
+        #             COLUMN =>
+        #             VGAP =>
+        #             COLUMN =>
+        #             RIGHTMARGIN =>
+        #           BOTTOMMARGIN =>
+        # for d_npx in [ 1 .. 100 ] by +1
+        #   DIV '.gauge', style: "width:#{d_npx}px;height:#{d_npx}px;"
 
 #-----------------------------------------------------------------------------------------------------------
 @splash_window = ->
@@ -195,19 +212,19 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         # TITLE '眀快排字机'
         LINK rel: 'shortcut icon', href: './favicon.icon'
         CSS './html5doctor-css-reset.css'
-        CSS './fonts/webfontkit-20150311-073132/stylesheet.css'
+        # CSS './fonts/webfontkit-20150311-073132/stylesheet.css'
         JS  './jquery-2.1.3.js'
         CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
         JS  './jquery.event.drag-2.2/jquery.event.drag-2.2.js'
         JS  './outerHTML-2.1.0.js'
         JS  './blaidddrwg.js'
-        JS  './convertPointFromPageToNode.js'
-        JS  './jquery-transit.js'
+        # JS  './convertPointFromPageToNode.js'
+        # JS  './jquery-transit.js'
         JS  './browser.js'
         JS  './process-xcss-rules.js'
-        CSS './materialize/css/materialize.css'
-        JS  './materialize/js/materialize.min.js'
+        # CSS './materialize/css/materialize.css'
+        # JS  './materialize/js/materialize.min.js'
         CSS './mkts-main.css'
       #=====================================================================================================
       COFFEESCRIPT =>
@@ -294,8 +311,6 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
       #=====================================================================================================
       BODY =>
         #...............................................................................................
-        DIV '#meter-gauge', style: "position:absolute;width:1000mm;"
-        #...............................................................................................
         ARTBOARD '.galley', =>
           ZOOMER =>
             GALLEY =>
@@ -313,8 +328,8 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
                 BOTTOMMARGIN =>
         ARTBOARD '.pages', =>
           ZOOMER =>
-            DIV '#tg', style: 'position:absolute;top:0;left:0;width:10px; height:10px;outline:2px solid red;'
-            for page_nr in [ 1 .. 50 ]
+            # DIV '#tg', style: 'position:absolute;top:0;left:0;width:10px; height:10px;outline:2px solid red;'
+            for page_nr in [ 1 .. 5 ]
               PAGE =>
                 OVERLAY page_nr
                 CHASE =>
@@ -322,7 +337,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
                   HBOX =>
                     LEFTMARGIN =>
                     COLUMN =>
-                      P """𪜃 ǻ slig͟htly lon⃟ger text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. """
+                      # P """𪜃 ǻ slig͟htly lon⃟ger text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. """
                     VGAP =>
                     COLUMN =>
                     VGAP =>

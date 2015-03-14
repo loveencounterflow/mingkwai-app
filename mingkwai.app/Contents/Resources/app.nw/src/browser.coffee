@@ -89,7 +89,7 @@ app =
   # 'mm-per-px':            100 / 377.94791
   # 'mm-per-px':            55 / 203.704
   # 'mm-per-px':            160 / 593
-  'mm-per-px':            160 / 592.5925903320312
+  'gauge':                null
   'jQuery':               $
   'NW':                   NW
   'MKTS':                 null
@@ -104,14 +104,16 @@ app =
   'pages-last-scroll-xy': [ 0, 0, ]
   'matter':               matter
 
+
 #-----------------------------------------------------------------------------------------------------------
 ### Publish app so we have access to it in both the browser and the NodeJS contexts: ###
 window[ 'app' ] = app
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS = ( require './MKTS' ) app
-### TAINT this line only for transition time: ###
-app[ 'MKTS' ] = MKTS
+### TAINT temporary fix: ###
+app[ 'MKTS' ]   = MKTS
+app[ 'gauge' ]  = MKTS.GAUGE.new app
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -140,6 +142,7 @@ build_menu = ->
   view_menu = new NW.Menu()
   # view_menu.append new NW.MenuItem label: 'Toggle Dev / Print View',  key: 't', modifiers: 'cmd',     click: -> MKTS.toggle_view app
   view_menu.append new NW.MenuItem label: 'Toggle Galley',            key: 't', modifiers: 'cmd',     click: -> MKTS.VIEW.toggle_galley()
+  view_menu.append new NW.MenuItem label: 'View Test Page',                                           click: -> MKTS.VIEW.test_page()
   # view_menu.append new NW.MenuItem label: 'Toggle Galley',            key: 't', modifiers: 'cmd',     click: -> console.log 'XXXXXXXXXXXX'
   view_menu_entry = new NW.MenuItem label: 'View', 'submenu': view_menu
   #.........................................................................................................
@@ -259,6 +262,7 @@ MKTS._capture = ( win, handler ) ->
 demo_count = 0
 #-----------------------------------------------------------------------------------------------------------
 MKTS.demo = ( me ) ->
+  debug '©iNl2F', 'demo'
   # md = """<em>Ab<xsmall>c</xsmall>d<xbig>e</xbig>ffiVA</em>"""
   # md = """Xxxxxxxxxxxxxxxx, she noticed xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"""
   # md = """
@@ -313,8 +317,39 @@ MKTS.demo = ( me ) ->
     arrived, with a great crowd assembled about them--all sorts of little
     birds and beasts.
 
+    1 <br>
+    2 <br>
+    3 <br>
+    4 <br>
+    5 <br>
+    6 <br>
+    7 <br>
+    8 <br>
+    9 <br>
+    10 <br>
+    11 <br>
+    12 <br>
+    13 <br>
+    14 <br>
+    15 <br>
+    16 <br>
+    17 <br>
+    18 <br>
+    19 <br>
+    20 <br>
+    21 <br>
+    22 <br>
+    23 <br>
+    24 <br>
+    25 <br>
+    26 <br>
+    27 <br>
+    28 <br>
+    29 <br>
+    30 <br>
+
     """
-  md = require './demo-text'
+  # md = require './demo-text'
   step ( resume ) =>
     yield MKTS.VIEW.show_galley resume
     LINESETTER.demo me, md, ( error ) =>
@@ -426,11 +461,15 @@ MKTS.enable_console = ( selector = '#console' ) ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+win.on 'zoom', ->
+  MKTS.GAUGE.set_ratios app
+
+#-----------------------------------------------------------------------------------------------------------
 win.on 'document-end', ->
-  dev_win = win.showDevTools()
-  dev_win.moveTo 1200, 848
-  dev_win.maximize()
-  dev_win.blur()
+  # dev_win = win.showDevTools()
+  # dev_win.moveTo 1200, 848
+  # dev_win.maximize()
+  # dev_win.blur()
   #.........................................................................................................
   show_splash = no
   if show_splash
@@ -453,7 +492,7 @@ win.on 'document-end', ->
     MKTS.maximize app
     # MKTS.ZOOM.to app, 1.85
     win.zoomLevel = 1
-    MKTS.ZOOM.to app[ 'zoom' ]
+    # MKTS.ZOOM.to app[ 'zoom' ]
     yield step.wrap ( $ document ).ready, resume
     help "document ready"
     #.......................................................................................................
@@ -475,7 +514,7 @@ win.on 'document-end', ->
     "CJK",
     "typography"
   ],
-  "chromium-args": "--enable-region-based-columns --enable-webkit-text-subpixel-positioning --enable-devtools-experiments --enable-experimental-web-platform-features --enable-smooth-scrolling --disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony",
+  "chromium-args": "--enable-remote-fonts --enable-region-based-columns --enable-webkit-text-subpixel-positioning --enable-devtools-experiments --enable-experimental-web-platform-features --enable-smooth-scrolling --disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony",
   "single-instance": true,
   "no-edit-menu": false,
   "window": {
@@ -483,8 +522,9 @@ win.on 'document-end', ->
     "y": 20,
     "width": 1200,
     "height": 800,
-    "show": true,
+    "show": false,
     "show_in_taskbar": true,
+    "focus": false,
     "toolbar": true,
     "frame": true,
     "icon": "./favicon.ico",
@@ -499,6 +539,7 @@ win.on 'document-end', ->
     "coffeenode-chr": "^0.1.4",
     "coffeenode-suspend": "^0.1.4",
     "coffeenode-teacup": "^0.1.2",
+    "linear-interpolator": "^1.0.2",
     "pipedreams2": "^0.2.8",
     "stylus": "^0.49.3"
   }

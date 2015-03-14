@@ -124,7 +124,7 @@
       'devtools': null,
       'splash': splash_win
     },
-    'mm-per-px': 160 / 592.5925903320312,
+    'gauge': null,
     'jQuery': $,
     'NW': NW,
     'MKTS': null,
@@ -148,9 +148,11 @@
   MKTS = (require('./MKTS'))(app);
 
 
-  /* TAINT this line only for transition time: */
+  /* TAINT temporary fix: */
 
   app['MKTS'] = MKTS;
+
+  app['gauge'] = MKTS.GAUGE["new"](app);
 
   on_file_menu_what_you_should_know_C = function() {
     return ($('#content')).text("Some kind of interesting stuff.");
@@ -228,6 +230,12 @@
       modifiers: 'cmd',
       click: function() {
         return MKTS.VIEW.toggle_galley();
+      }
+    }));
+    view_menu.append(new NW.MenuItem({
+      label: 'View Test Page',
+      click: function() {
+        return MKTS.VIEW.test_page();
       }
     }));
     view_menu_entry = new NW.MenuItem({
@@ -315,8 +323,8 @@
 
   MKTS.demo = function(me) {
     var md;
-    md = "\n# Behind the Looking-Glass\n\n'But everything's curious today. I think I may as well go in at once.' And in\nshe went.\n\nThe *King **and** Queen* of Hearts were <xbig>seated</xbig> on their throne when they\narrived, with a great crowd assembled about them--all sorts of little\nbirds and beasts.\n";
-    md = require('./demo-text');
+    debug('©iNl2F', 'demo');
+    md = "\n# Behind the Looking-Glass\n\n'But everything's curious today. I think I may as well go in at once.' And in\nshe went.\n\nThe *King **and** Queen* of Hearts were <xbig>seated</xbig> on their throne when they\narrived, with a great crowd assembled about them--all sorts of little\nbirds and beasts.\n\n1 <br>\n2 <br>\n3 <br>\n4 <br>\n5 <br>\n6 <br>\n7 <br>\n8 <br>\n9 <br>\n10 <br>\n11 <br>\n12 <br>\n13 <br>\n14 <br>\n15 <br>\n16 <br>\n17 <br>\n18 <br>\n19 <br>\n20 <br>\n21 <br>\n22 <br>\n23 <br>\n24 <br>\n25 <br>\n26 <br>\n27 <br>\n28 <br>\n29 <br>\n30 <br>\n";
     step((function(_this) {
       return function*(resume) {
         (yield MKTS.VIEW.show_galley(resume));
@@ -472,12 +480,12 @@
     return null;
   };
 
+  win.on('zoom', function() {
+    return MKTS.GAUGE.set_ratios(app);
+  });
+
   win.on('document-end', function() {
-    var dev_win, show_splash;
-    dev_win = win.showDevTools();
-    dev_win.moveTo(1200, 848);
-    dev_win.maximize();
-    dev_win.blur();
+    var show_splash;
     show_splash = false;
     if (show_splash) {
       after(2, function() {
@@ -501,7 +509,6 @@
     step(function*(resume) {
       MKTS.maximize(app);
       win.zoomLevel = 1;
-      MKTS.ZOOM.to(app['zoom']);
       (yield step.wrap(($(document)).ready, resume));
       help("document ready");
       return ($(document)).keydown(MKTS.on_keydown.bind(MKTS));
@@ -524,7 +531,7 @@
       "CJK",
       "typography"
     ],
-    "chromium-args": "--enable-region-based-columns --enable-webkit-text-subpixel-positioning --enable-devtools-experiments --enable-experimental-web-platform-features --enable-smooth-scrolling --disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony",
+    "chromium-args": "--enable-remote-fonts --enable-region-based-columns --enable-webkit-text-subpixel-positioning --enable-devtools-experiments --enable-experimental-web-platform-features --enable-smooth-scrolling --disable-accelerated-video --enable-webgl --enable-webaudio --ignore-gpu-blacklist --force-compositing-mode --remote-debugging-port=10138 --harmony",
     "single-instance": true,
     "no-edit-menu": false,
     "window": {
@@ -532,8 +539,9 @@
       "y": 20,
       "width": 1200,
       "height": 800,
-      "show": true,
+      "show": false,
       "show_in_taskbar": true,
+      "focus": false,
       "toolbar": true,
       "frame": true,
       "icon": "./favicon.ico",
@@ -548,6 +556,7 @@
       "coffeenode-chr": "^0.1.4",
       "coffeenode-suspend": "^0.1.4",
       "coffeenode-teacup": "^0.1.2",
+      "linear-interpolator": "^1.0.2",
       "pipedreams2": "^0.2.8",
       "stylus": "^0.49.3"
     }

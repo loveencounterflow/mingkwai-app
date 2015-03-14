@@ -256,38 +256,25 @@
             });
             JS('./jquery-2.1.3.js');
             JS('./outerHTML-2.1.0.js');
-            STYLE('', "html, body {\n  margin:                 0;\n  padding:                0;\n  font-size:              25px;\n  line-height:            25px;\n}\ndiv.panel {\n  width:                  200px;\n  outline:                1px solid red;\n}\nspan.cork {\n  display:                inline-block;\n  color:                  red;\n}");
+            JS('./browser.js');
+            STYLE('', "html, body {\n  margin:                 0;\n  padding:                0;\n}\n.gauge {\n  position:               absolute;\n  outline:                1px solid red;\n}");
             return COFFEESCRIPT(function() {
               return ($('document')).ready(function() {
-                var cork, cork_rectangle, expected_panel_height, line_count, nominal_line_height, nompx_per_realpx, panel, panel_rectangle, real_cork_bottom, real_line_count, real_line_height, real_panel_height;
+                var d_npx, d_rpx, gauge, _i, _results;
                 log = console.log.bind(console);
-                nominal_line_height = 25;
-                line_count = 36;
-                panel = $('.panel');
-                cork = $('.cork');
-                panel_rectangle = panel[0].getBoundingClientRect();
-                cork_rectangle = cork[0].getBoundingClientRect();
-                real_panel_height = panel_rectangle['height'];
-                real_cork_bottom = cork_rectangle['bottom'];
-                expected_panel_height = nominal_line_height * line_count;
-                nompx_per_realpx = expected_panel_height / real_panel_height;
-                real_line_height = real_panel_height / line_count;
-                real_line_count = real_cork_bottom / real_line_height;
-                log(panel_rectangle);
-                log(cork_rectangle);
-                log("expected_panel_height:     ", expected_panel_height);
-                log("real_panel_height:         ", real_panel_height);
-                log("nompx_per_realpx:          ", nompx_per_realpx);
-                log("real_line_height:          ", real_line_height);
-                return log("real_line_count:           ", real_line_count);
+                gauge = $("<div id='meter-gauge' style='position:absolute;'></div>");
+                ($('body')).append(gauge);
+                _results = [];
+                for (d_npx = _i = 1; _i <= 1000; d_npx = ++_i) {
+                  gauge.css('height', d_npx + "px");
+                  d_rpx = gauge[0].getBoundingClientRect()['height'];
+                  _results.push(log(d_npx, d_rpx));
+                }
+                return _results;
               });
             });
           });
-          return BODY(function() {
-            return DIV('.panel', function() {
-              return RAW("Just at this moment Alice felt a very curious sensation, which puzzled\nher a good deal until she made out what it was: she was beginning to\ngrow larger again, and she thought at first she would get up and leave\nthe court; but on second thoughts she decided to remain where she was as\nlong as there was room for her.\nJust at this moment Alice felt a very curious sensation, which puzzled\nher a good deal until she made out what it was: she was beginning to\ngrow larger again, and she thought at first she would get up and leave\nthe court; but on second thoughts she decided to remain where she was as\nlong as there was room for her.<span class='cork'>x</span>");
-            });
-          });
+          return BODY(function() {});
         });
       };
     })(this));
@@ -320,19 +307,14 @@
               href: './favicon.icon'
             });
             CSS('./html5doctor-css-reset.css');
-            CSS('./fonts/webfontkit-20150311-073132/stylesheet.css');
             JS('./jquery-2.1.3.js');
             CSS('./jquery-ui-1.11.3.custom/jquery-ui.css');
             JS('./jquery-ui-1.11.3.custom/jquery-ui.js');
             JS('./jquery.event.drag-2.2/jquery.event.drag-2.2.js');
             JS('./outerHTML-2.1.0.js');
             JS('./blaidddrwg.js');
-            JS('./convertPointFromPageToNode.js');
-            JS('./jquery-transit.js');
             JS('./browser.js');
             JS('./process-xcss-rules.js');
-            CSS('./materialize/css/materialize.css');
-            JS('./materialize/js/materialize.min.js');
             return CSS('./mkts-main.css');
           });
           COFFEESCRIPT(function() {
@@ -374,9 +356,6 @@
             });
           });
           return BODY(function() {
-            DIV('#meter-gauge', {
-              style: "position:absolute;width:1000mm;"
-            });
             ARTBOARD('.galley', function() {
               return ZOOMER(function() {
                 return GALLEY(function() {
@@ -400,20 +379,15 @@
             ARTBOARD('.pages', function() {
               return ZOOMER(function() {
                 var page_nr, _i, _results;
-                DIV('#tg', {
-                  style: 'position:absolute;top:0;left:0;width:10px; height:10px;outline:2px solid red;'
-                });
                 _results = [];
-                for (page_nr = _i = 1; _i <= 50; page_nr = ++_i) {
+                for (page_nr = _i = 1; _i <= 5; page_nr = ++_i) {
                   _results.push(PAGE(function() {
                     OVERLAY(page_nr);
                     return CHASE(function() {
                       TOPMARGIN(function() {});
                       HBOX(function() {
                         LEFTMARGIN(function() {});
-                        COLUMN(function() {
-                          return P("𪜃 ǻ slig͟htly lon⃟ger text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. 𪜃 a slightly longer text to de­monstrate linebreaks. ");
-                        });
+                        COLUMN(function() {});
                         VGAP(function() {});
                         COLUMN(function() {});
                         VGAP(function() {});

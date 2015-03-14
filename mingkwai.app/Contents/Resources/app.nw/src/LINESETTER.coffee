@@ -49,6 +49,7 @@ XCSS                      = require './XCSS'
 #
 #-----------------------------------------------------------------------------------------------------------
 @demo = ( app, md, settings, handler ) ->
+  debug '©E054j', 'demo'
   switch arity = arguments.length
     when 3
       handler   = settings
@@ -76,9 +77,41 @@ XCSS                      = require './XCSS'
   window.gcolumn      = gcolumn # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   input               = D.create_throughstream()
 
+  # #---------------------------------------------------------------------------------------------------------
+  # interpolator  = require 'linear-interpolator'
+  # mm_by_rpx     = []
+  # gauge         = jQuery "<div id='meter-gauge' style='position:absolute;'></div>"
+  # ( jQuery 'body' ).append gauge
+  # for d_mm in [ 1 .. 1000 ]
+  #   gauge.css 'height', "#{d_mm}mm"
+  #   d_rpx = gauge[ 0 ].getBoundingClientRect()[ 'height' ]
+  #   # d_rpx = BD.get_rectangle gauge, 'height'
+  #   # d_rpx = gauge.height()
+  #   mm_by_rpx.push [ d_rpx, d_mm, ]
+  # debug '©bQ2EU', "collected #{mm_by_rpx.length} points for length interpolation"
+  # interpolate = interpolator mm_by_rpx
+  # mm_from_rpx = ( d ) -> ( Math.round 10 * interpolate d ) / 10
+  # for d_npx in [ 1 .. 100 ]
+  #   gauge.css 'height', "#{d_npx}px"
+  #   d_rpx = gauge[ 0 ].getBoundingClientRect()[ 'height' ]
+  #   # d_rpx = BD.get_rectangle gauge, 'height'
+  #   urge d_npx, d_rpx
+  # # gauge.detach()
+  # return # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+  # rpx_from_mm
+  # urge "how many nominal pixels per real pixels (rho) at different box sizes"
+  # for d_npx in [ 1 .. 20 ] by 1
+  #   gauge.css 'height', "#{d_npx}px"
+  #   d_rpx = BD.get_rectangle gauge, 'height'
+  #   urge "#{d_npx}\t#{d_npx / d_rpx}"
+
   #---------------------------------------------------------------------------------------------------------
-  mm_from_px          = ( px ) -> px * app[ 'mm-per-px' ]
-  ƒ                   = ( x, precision = 2 ) -> x.toFixed precision
+  mm_from_rpx = ( d ) -> MKTS.GAUGE.mm_from_rpx app, d
+  mm_from_npx = ( d ) -> MKTS.GAUGE.mm_from_npx app, d
+  rpx_from_mm = ( d ) -> MKTS.GAUGE.rpx_from_mm app, d
+  npx_from_mm = ( d ) -> MKTS.GAUGE.npx_from_mm app, d
+  ƒ           = ( x, precision = 2 ) -> x.toFixed precision
 
   #---------------------------------------------------------------------------------------------------------
   live                = yes
@@ -130,8 +163,8 @@ XCSS                      = require './XCSS'
           line_counter      = line_counters.eq block_idx
           client_rectangles = ( line_counter.get 0 ).getClientRects()
           line_count        = client_rectangles.length
-          ### TAINT use BLAIDDDRWG ###
-          height_px         = ( block.get 0 ).getBoundingClientRect()[ 'height' ]
+          height_px         = BD.get_rectangle block, 'height'
+          # height_px         = block.height()
           block_info        =
             '~isa':           'MKTS/LINESETTER/block-info'
             '%block':         block
@@ -155,36 +188,44 @@ XCSS                      = require './XCSS'
       return $ ( block_infos, send ) =>
         #...................................................................................................
         MKTS.VIEW.show_pages()
-        { caret }         = matter
-        pages             = jQuery 'artboard.pages page'
-        page              = null
-        columns           = null
-        column_count      = null
-        column            = null
-        target_height_px  = null
-        debug '©lZha4', MKTS.GAUGE.get_px_per_mm app, matter
-        debug '©hraj6', MKTS.GAUGE.get_rho       app, matter
+        { caret }           = matter
+        pages               = jQuery 'artboard.pages page'
+        page                = null
+        columns             = null
+        column_count        = null
+        column              = null
+        target_height_px    = null
+        current_line_count  = null
         #...................................................................................................
         ### Move to target ###
         # yield MKTS.VIEW.show_galley resume
-        for block_info in block_infos
-          page             ?= pages.eq caret[ 'page-nr' ] - 1
-          columns          ?= page.find 'column'
-          column_count     ?= columns.length
-          column           ?= columns.eq caret[ 'column-nr' ] - 1
+        for block_info, block_idx in block_infos
+          page               ?= pages.eq caret[ 'page-nr' ] - 1
+          columns            ?= page.find 'column'
+          column_count       ?= columns.length
+          if column_count < 1
+            warn "skipped #{block_infos.length - block_idx} blocks because of missing columns"
+            break
+          column             ?= columns.eq caret[ 'column-nr' ] - 1
+          current_line_count ?= 0
           ### TAINT use BLAIDDDRWG ###
           target_height_px ?= BD.get_rectangle column, 'height'
-          debug '©u0xZx', target_height_px, caret[ 'y.px' ]
+          height_nmm = current_line_count * 5
+          height_rmm = mm_from_rpx caret[ 'y.px' ]
+          debug '©u0xZx', height_nmm, height_rmm, height_nmm - height_rmm
           #.................................................................................................
-          block             = block_info[ '%block' ]
-          block_height_px   = block_info[ 'height.px' ]
+          current_line_count += block_info[ 'line-count' ]
+          block               = block_info[ '%block' ]
+          block_height_px     = block_info[ 'height.px' ]
           column.append block
-          caret[ 'y.px' ]  += block_height_px
+          caret[ 'y.px' ]    += block_height_px
           #.................................................................................................
           continue if caret[ 'y.px' ] < target_height_px
+          #.................................................................................................
           caret[ 'column-nr' ] += +1
           caret[ 'y.px'      ]  = 0
           column                = null
+          current_line_count    = null
           urge '©08Nsv', MKTS.CARET.as_url app, matter
           #.................................................................................................
           if caret[ 'column-nr' ] > column_count
@@ -196,7 +237,6 @@ XCSS                      = require './XCSS'
             caret[ 'page-nr'   ] += +1
             caret[ 'y.px'      ]  = 0
             help '©l4U89', MKTS.CARET.as_url app, matter
-
     # #.......................................................................................................
     # .pipe do =>
     #   return $ ( block_infos, send ) =>

@@ -47,6 +47,7 @@
   this.ZOOM.by = (function(_this) {
     return function(factor) {
       var document, height, left, matrix, page_x, page_y, q, top, width, window, zmr, zoom_0, zoom_1;
+      throw new Error("##########################################################");
       window = app['window'];
       q = app['jQuery'];
       document = window.document;
@@ -60,8 +61,6 @@
       zoom_0 = app['zoom'];
       zoom_1 = zoom_0 * factor;
       app['zoom'] = zoom_1;
-      (q('#tg')).css('left', zmr['x'] - 5);
-      (q('#tg')).css('top', zmr['y'] - 5);
       matrix = app['zoomer'].css('transform');
       app['zoomer'].css('transform-origin', "top left");
       app['zoomer'].transition({
@@ -83,6 +82,7 @@
   this.ZOOM.to = (function(_this) {
     return function(zoom_1) {
       var zoom_0;
+      throw new Error("##########################################################");
       zoom_0 = app['zoom'];
       app['zoom'] = zoom_1;
       app['zoomer'].transition({
@@ -96,26 +96,74 @@
 
   this.GAUGE = {};
 
-  this.GAUGE.get_px_per_mm = (function(_this) {
-    return function(app, matter) {
-      var gauge, jQuery, window;
-      jQuery = app.jQuery, window = app.window;
-      gauge = jQuery('#meter-gauge');
+  this.GAUGE["new"] = (function(_this) {
+    return function(app) {
+      var R;
+      R = {
+        'd.mm': 1000,
+        'd.npx': null,
+        'd.rpx': null,
+        'rho': null,
+        'rpx-per-mm': null,
+        'npx-per-mm': null
+      };
+      return R;
+    };
+  })(this);
+
+  this.GAUGE.set_ratios = (function(_this) {
+    return function(app) {
 
       /* Since the gauge is 1m = 1000mm wide, a thousandth of its width in pixels equals pixels per
       millimeter:
        */
-      return (window.BD.get_rectangle(gauge, 'width')) / 1000;
+      var d_mm, d_npx, d_rpx, gauge, gauge_jq, jQuery, window;
+      jQuery = app.jQuery, window = app.window;
+      gauge_jq = jQuery("<div id='meter-gauge' style='position:absolute;width:1000mm;'></div>");
+      (jQuery('body')).append(gauge_jq);
+      gauge = app['gauge'];
+      d_mm = gauge['d.mm'];
+      gauge['d.npx'] = d_npx = parseInt(gauge_jq.css('width'), 10);
+      gauge['d.rpx'] = d_rpx = window.BD.get_rectangle(gauge_jq, 'width');
+      gauge['rho'] = d_npx / d_rpx;
+      gauge['rpx-per-mm'] = d_rpx / d_mm;
+      gauge['npx-per-mm'] = d_npx / d_mm;
+      gauge_jq.detach();
+      return null;
     };
   })(this);
 
-  this.GAUGE.get_rho = (function(_this) {
-    return function(app, matter) {
-      var gauge, jQuery, nominal_width, window;
-      jQuery = app.jQuery, window = app.window;
-      gauge = jQuery('#meter-gauge');
-      nominal_width = parseInt(gauge.css('width'), 10);
-      return nominal_width / window.BD.get_rectangle(gauge, 'width');
+  this.GAUGE._get = (function(_this) {
+    return function(app) {
+      var R;
+      if ((R = app['gauge'])['px-per-mm'] == null) {
+        _this.GAUGE.set_ratios(app);
+      }
+      return R;
+    };
+  })(this);
+
+  this.GAUGE.mm_from_rpx = (function(_this) {
+    return function(app, d_rpx) {
+      return d_rpx / (_this.GAUGE._get(app))['rpx-per-mm'];
+    };
+  })(this);
+
+  this.GAUGE.mm_from_npx = (function(_this) {
+    return function(app, d_npx) {
+      return d_npx / (_this.GAUGE._get(app))['npx-per-mm'];
+    };
+  })(this);
+
+  this.GAUGE.rpx_from_mm = (function(_this) {
+    return function(app, d_mm) {
+      return d_mm * (_this.GAUGE._get(app))['rpx-per-mm'];
+    };
+  })(this);
+
+  this.GAUGE.npx_from_mm = (function(_this) {
+    return function(app, d_mm) {
+      return d_mm * (_this.GAUGE._get(app))['npx-per-mm'];
     };
   })(this);
 
@@ -188,6 +236,13 @@
           return handler(null);
         }
       });
+    };
+  })(this);
+
+  this.VIEW.test_page = (function(_this) {
+    return function() {
+      app['window'].location.href = app['window'].location.href.replace(/index\.html$/, 'test.html');
+      return null;
     };
   })(this);
 

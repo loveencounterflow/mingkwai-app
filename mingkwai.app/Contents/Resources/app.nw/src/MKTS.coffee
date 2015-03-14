@@ -98,6 +98,7 @@ module.exports = ( _app ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @ZOOM.by = ( factor ) =>
+  throw new Error "##########################################################"
   window                  = app[ 'window' ]
   q                       = app[ 'jQuery' ]
   document                = window.document
@@ -112,8 +113,8 @@ module.exports = ( _app ) ->
   zoom_1                  = zoom_0 * factor
   app[ 'zoom' ]           = zoom_1
   #.........................................................................................................
-  ( q '#tg' ).css 'left', zmr[ 'x' ] - 5
-  ( q '#tg' ).css 'top',  zmr[ 'y' ] - 5
+  # ( q '#tg' ).css 'left', zmr[ 'x' ] - 5
+  # ( q '#tg' ).css 'top',  zmr[ 'y' ] - 5
   matrix  = app[ 'zoomer' ].css 'transform'
   # app[ 'zoomer' ].css 'transform',        "matrix(1, 0, 0, 1, 0, 0)"
   # app[ 'zoomer' ].css 'transform-origin', "#{zmr[ 'x' ]}px #{zmr[ 'y' ]}px"
@@ -134,6 +135,7 @@ module.exports = ( _app ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @ZOOM.to = ( zoom_1 ) =>
+  throw new Error "##########################################################"
   zoom_0                  = app[ 'zoom' ]
   app[ 'zoom' ]           = zoom_1
   app[ 'zoomer' ].transition scale: zoom_1, 100, 'linear'
@@ -147,19 +149,47 @@ module.exports = ( _app ) ->
 @GAUGE = {}
 
 #-----------------------------------------------------------------------------------------------------------
-@GAUGE.get_px_per_mm = ( app, matter ) =>
-  { jQuery, window, } = app
-  gauge               = jQuery '#meter-gauge'
-  ### Since the gauge is 1m = 1000mm wide, a thousandth of its width in pixels equals pixels per
-  millimeter: ###
-  return ( window.BD.get_rectangle gauge, 'width' ) / 1000
+@GAUGE.new = ( app ) =>
+  R =
+    'd.mm':                 1000
+    'd.npx':                null
+    'd.rpx':                null
+    'rho':                  null
+    'rpx-per-mm':           null
+    'npx-per-mm':           null
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
-@GAUGE.get_rho = ( app, matter ) =>
-  { jQuery, window, } = app
-  gauge               = jQuery '#meter-gauge'
-  nominal_width       = parseInt ( gauge.css 'width' ), 10
-  return nominal_width / window.BD.get_rectangle gauge, 'width'
+@GAUGE.set_ratios = ( app ) =>
+  ### Since the gauge is 1m = 1000mm wide, a thousandth of its width in pixels equals pixels per
+  millimeter: ###
+  { jQuery
+    window }  = app
+  # gauge_jq                      = jQuery '#meter-gauge'
+  gauge_jq    = jQuery "<div id='meter-gauge' style='position:absolute;width:1000mm;'></div>"
+  ( jQuery 'body' ).append gauge_jq
+  #.........................................................................................................
+  gauge                         = app[ 'gauge' ]
+  d_mm                          = gauge[ 'd.mm' ]
+  gauge[ 'd.npx'      ] = d_npx = parseInt ( gauge_jq.css 'width' ), 10
+  gauge[ 'd.rpx'      ] = d_rpx = window.BD.get_rectangle gauge_jq, 'width'
+  gauge[ 'rho'        ] =         d_npx / d_rpx
+  gauge[ 'rpx-per-mm' ] =         d_rpx / d_mm
+  gauge[ 'npx-per-mm' ] =         d_npx / d_mm
+  #.........................................................................................................
+  gauge_jq.detach()
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@GAUGE._get = ( app ) =>
+  ( @GAUGE.set_ratios app ) unless ( ( R = app[ 'gauge' ] )[ 'px-per-mm' ] )?
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@GAUGE.mm_from_rpx = ( app, d_rpx ) => d_rpx / ( @GAUGE._get app )[ 'rpx-per-mm' ]
+@GAUGE.mm_from_npx = ( app, d_npx ) => d_npx / ( @GAUGE._get app )[ 'npx-per-mm' ]
+@GAUGE.rpx_from_mm = ( app, d_mm  ) => d_mm  * ( @GAUGE._get app )[ 'rpx-per-mm' ]
+@GAUGE.npx_from_mm = ( app, d_mm  ) => d_mm  * ( @GAUGE._get app )[ 'npx-per-mm' ]
 
 
 #===========================================================================================================
@@ -208,6 +238,11 @@ module.exports = ( _app ) ->
   ( q window ).scrollTop  app[ 'pages-last-scroll-xy' ][ 1 ]
   ( q 'artboard.pages' ).animate opacity: 1, =>
     handler null if handler?
+
+#-----------------------------------------------------------------------------------------------------------
+@VIEW.test_page = =>
+  app[ 'window' ].location.href = app[ 'window' ].location.href.replace /index\.html$/, 'test.html'
+  return null
 
 
 # #-----------------------------------------------------------------------------------------------------------

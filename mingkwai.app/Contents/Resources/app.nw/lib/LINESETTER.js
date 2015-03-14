@@ -45,7 +45,8 @@
   XCSS = require('./XCSS');
 
   this.demo = function(app, md, settings, handler) {
-    var BD, MKTS, arity, document, gcolumn, gcolumn_left, gcolumn_offset, gcolumn_top, input, jQuery, live, mark_chrs, mark_lines, matter, mm_from_px, t0, window, zoomer, ƒ;
+    var BD, MKTS, arity, document, gcolumn, gcolumn_left, gcolumn_offset, gcolumn_top, input, jQuery, live, mark_chrs, mark_lines, matter, mm_from_npx, mm_from_rpx, npx_from_mm, rpx_from_mm, t0, window, zoomer, ƒ;
+    debug('©E054j', 'demo');
     switch (arity = arguments.length) {
       case 3:
         handler = settings;
@@ -70,8 +71,17 @@
     zoomer = jQuery('zoomer');
     window.gcolumn = gcolumn;
     input = D.create_throughstream();
-    mm_from_px = function(px) {
-      return px * app['mm-per-px'];
+    mm_from_rpx = function(d) {
+      return MKTS.GAUGE.mm_from_rpx(app, d);
+    };
+    mm_from_npx = function(d) {
+      return MKTS.GAUGE.mm_from_npx(app, d);
+    };
+    rpx_from_mm = function(d) {
+      return MKTS.GAUGE.rpx_from_mm(app, d);
+    };
+    npx_from_mm = function(d) {
+      return MKTS.GAUGE.npx_from_mm(app, d);
     };
     ƒ = function(x, precision) {
       if (precision == null) {
@@ -128,9 +138,7 @@
             line_counter = line_counters.eq(block_idx);
             client_rectangles = (line_counter.get(0)).getClientRects();
             line_count = client_rectangles.length;
-
-            /* TAINT use BLAIDDDRWG */
-            height_px = (block.get(0)).getBoundingClientRect()['height'];
+            height_px = BD.get_rectangle(block, 'height');
             block_info = {
               '~isa': 'MKTS/LINESETTER/block-info',
               '%block': block,
@@ -154,7 +162,7 @@
     })(this)()).pipe((function(_this) {
       return function() {
         return $(function(block_infos, send) {
-          var block, block_height_px, block_info, caret, column, column_count, columns, page, pages, target_height_px, _i, _len, _results;
+          var block, block_height_px, block_idx, block_info, caret, column, column_count, columns, current_line_count, height_nmm, height_rmm, page, pages, target_height_px, _i, _len, _results;
           MKTS.VIEW.show_pages();
           caret = matter.caret;
           pages = jQuery('artboard.pages page');
@@ -163,13 +171,12 @@
           column_count = null;
           column = null;
           target_height_px = null;
-          debug('©lZha4', MKTS.GAUGE.get_px_per_mm(app, matter));
-          debug('©hraj6', MKTS.GAUGE.get_rho(app, matter));
+          current_line_count = null;
 
           /* Move to target */
           _results = [];
-          for (_i = 0, _len = block_infos.length; _i < _len; _i++) {
-            block_info = block_infos[_i];
+          for (block_idx = _i = 0, _len = block_infos.length; _i < _len; block_idx = ++_i) {
+            block_info = block_infos[block_idx];
             if (page == null) {
               page = pages.eq(caret['page-nr'] - 1);
             }
@@ -179,15 +186,25 @@
             if (column_count == null) {
               column_count = columns.length;
             }
+            if (column_count < 1) {
+              warn("skipped " + (block_infos.length - block_idx) + " blocks because of missing columns");
+              break;
+            }
             if (column == null) {
               column = columns.eq(caret['column-nr'] - 1);
+            }
+            if (current_line_count == null) {
+              current_line_count = 0;
             }
 
             /* TAINT use BLAIDDDRWG */
             if (target_height_px == null) {
               target_height_px = BD.get_rectangle(column, 'height');
             }
-            debug('©u0xZx', target_height_px, caret['y.px']);
+            height_nmm = current_line_count * 5;
+            height_rmm = mm_from_rpx(caret['y.px']);
+            debug('©u0xZx', height_nmm, height_rmm, height_nmm - height_rmm);
+            current_line_count += block_info['line-count'];
             block = block_info['%block'];
             block_height_px = block_info['height.px'];
             column.append(block);
@@ -198,6 +215,7 @@
             caret['column-nr'] += +1;
             caret['y.px'] = 0;
             column = null;
+            current_line_count = null;
             urge('©08Nsv', MKTS.CARET.as_url(app, matter));
             if (caret['column-nr'] > column_count) {
               page = null;
