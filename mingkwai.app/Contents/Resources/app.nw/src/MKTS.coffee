@@ -29,6 +29,9 @@ echo                      = CND.echo.bind CND
 # after                     = suspend.after
 # sleep                     = suspend.sleep
 #...........................................................................................................
+### https://github.com/TooTallNate/node-applescript ###
+APPLESCRIPT               = require 'applescript'
+#...........................................................................................................
 app                       = null
 MKTS                      = @
 ƒ                         = ( x, precision = 2 ) -> x.toFixed precision
@@ -98,44 +101,42 @@ module.exports = ( _app ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @ZOOM.by = ( factor ) =>
-  throw new Error "##########################################################"
-  window                  = app[ 'window' ]
-  q                       = app[ 'jQuery' ]
-  document                = window.document
-  width                   = ( q window ).width()
-  height                  = ( q window ).height()
-  left                    = ( q document ).scrollLeft()
-  top                     = ( q document ).scrollTop()
-  page_x                  = left + width  / 2
-  page_y                  =  top + height / 2
-  zmr                     = window.convertPointFromPageToNode ( app[ 'zoomer' ].get 0 ), page_x, page_y
+  # window                  = app[ 'window' ]
+  # q                       = app[ 'jQuery' ]
+  # document                = window.document
+  # width                   = ( q window ).width()
+  # height                  = ( q window ).height()
+  # left                    = ( q document ).scrollLeft()
+  # top                     = ( q document ).scrollTop()
+  # page_x                  = left + width  / 2
+  # page_y                  =  top + height / 2
+  # zmr                     = window.convertPointFromPageToNode ( app[ 'zoomer' ].get 0 ), page_x, page_y
   zoom_0                  = app[ 'zoom' ]
   zoom_1                  = zoom_0 * factor
   app[ 'zoom' ]           = zoom_1
   #.........................................................................................................
   # ( q '#tg' ).css 'left', zmr[ 'x' ] - 5
   # ( q '#tg' ).css 'top',  zmr[ 'y' ] - 5
-  matrix  = app[ 'zoomer' ].css 'transform'
+  # matrix  = app[ 'zoomer' ].css 'transform'
   # app[ 'zoomer' ].css 'transform',        "matrix(1, 0, 0, 1, 0, 0)"
   # app[ 'zoomer' ].css 'transform-origin', "#{zmr[ 'x' ]}px #{zmr[ 'y' ]}px"
   # app[ 'zoomer' ].css 'transform', matrix
   app[ 'zoomer' ].css 'transform-origin', "top left"
   app[ 'zoomer' ].transition scale: zoom_1, 100, 'linear'
   #.........................................................................................................
-  echo 'factor:  ', ƒ factor
-  echo 'zoom_0:  ', ƒ zoom_0
-  echo 'zoom_1:  ', ƒ zoom_1
-  echo 'width:   ', ƒ width
-  echo 'height:  ', ƒ height
-  echo 'left:    ', ƒ left
-  echo 'top:     ', ƒ top
-  echo 'page_x:  ', ƒ page_x
-  echo 'page_y:  ', ƒ page_y
+  # echo 'factor:  ', ƒ factor
+  # echo 'zoom_0:  ', ƒ zoom_0
+  # echo 'zoom_1:  ', ƒ zoom_1
+  # echo 'width:   ', ƒ width
+  # echo 'height:  ', ƒ height
+  # echo 'left:    ', ƒ left
+  # echo 'top:     ', ƒ top
+  # echo 'page_x:  ', ƒ page_x
+  # echo 'page_y:  ', ƒ page_y
   echo "zoomed to [ #{ƒ zoom_1}, ]"
 
 #-----------------------------------------------------------------------------------------------------------
 @ZOOM.to = ( zoom_1 ) =>
-  throw new Error "##########################################################"
   zoom_0                  = app[ 'zoom' ]
   app[ 'zoom' ]           = zoom_1
   app[ 'zoomer' ].transition scale: zoom_1, 100, 'linear'
@@ -292,9 +293,9 @@ module.exports = ( _app ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_print_dialog = ( me ) ->
-  @switch_to_print_view me
+  # @switch_to_print_view me
   window.print()
-  @switch_to_dev_view me
+  # @switch_to_dev_view me
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_save_dialog = ( me ) -> throw new Error "not implemented"
@@ -304,8 +305,9 @@ MKTS.save = ( me ) -> throw new Error "not implemented"
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_print_preview = ( me ) ->
-  @switch_to_print_view me
-  # MKTS.open_print_dialog()
+  help "MKTS.open_print_preview"
+  # @switch_to_print_view me
+  MKTS.open_print_dialog()
   #.........................................................................................................
   ### thx to http://apple.stackexchange.com/a/36947/59895, http://www.jaimerios.com/?p=171 ###
   script = """
@@ -321,10 +323,13 @@ MKTS.open_print_preview = ( me ) ->
       end tell
     end tell
     """
+      # tell process "Preview"
+      #   keystroke "p" using {shift down, command down}
+      # end tell
   #.........................................................................................................
   APPLESCRIPT.execString script, ( error ) =>
     throw error if error?
-    @switch_to_dev_view me
+    # @switch_to_dev_view me
     help "MKTS.open_print_preview: ok"
 
 

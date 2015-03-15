@@ -33,9 +33,6 @@ CHR                       = require 'coffeenode-chr'
 #...........................................................................................................
 LINESETTER                = require './LINESETTER'
 #...........................................................................................................
-### https://github.com/TooTallNate/node-applescript ###
-APPLESCRIPT               = require 'applescript'
-#...........................................................................................................
 ƒ                         = ( x, precision = 2 ) -> x.toFixed precision
 
 ### see https://github.com/nwjs/nw.js/wiki/Window ###
@@ -135,7 +132,7 @@ build_menu = ->
   file_menu.append new NW.MenuItem label: 'Save',                   key: 's', modifiers: 'cmd',       click: -> urge "saving..."
   file_menu.append new NW.MenuItem label: 'Take Screenshot',        key: 's', modifiers: 'cmd-shift', click: -> MKTS.take_screenshot app
   file_menu.append new NW.MenuItem label: 'Typeset Demo',           key: 'y', modifiers: 'cmd',       click: -> MKTS.demo app
-  file_menu.append new NW.MenuItem label: 'Print...',               key: 'p', modifiers: 'cmd-shift', click: -> MKTS.open_print_dialog app
+  # file_menu.append new NW.MenuItem label: 'Print...',               key: 'p', modifiers: 'cmd-shift', click: -> MKTS.open_print_dialog app
   file_menu.append new NW.MenuItem label: 'Open Print Preview...',  key: 'p', modifiers: 'cmd',       click: -> MKTS.open_print_preview app
   file_menu_entry = new NW.MenuItem label: 'File', 'submenu': file_menu
   #.........................................................................................................
@@ -143,6 +140,12 @@ build_menu = ->
   # view_menu.append new NW.MenuItem label: 'Toggle Dev / Print View',  key: 't', modifiers: 'cmd',     click: -> MKTS.toggle_view app
   view_menu.append new NW.MenuItem label: 'Toggle Galley',            key: 't', modifiers: 'cmd',     click: -> MKTS.VIEW.toggle_galley()
   view_menu.append new NW.MenuItem label: 'View Test Page',                                           click: -> MKTS.VIEW.test_page()
+  view_menu.append new NW.MenuItem label: 'Zoom In',   key: '+', modifiers: 'cmd', click: -> debug '©yVRqU', "Zoom In";  MKTS.ZOOM.by 1 * app[ 'zoom-delta-factor' ]
+  view_menu.append new NW.MenuItem label: 'Zoom 100%', key: '0', modifiers: 'cmd', click: -> debug '©AINX1', "Zoom 100"; MKTS.ZOOM.to 1
+  view_menu.append new NW.MenuItem label: 'Zoom Out',  key: '-', modifiers: 'cmd', click: -> debug '©KO8qN', "Zoom Out"; MKTS.ZOOM.by 1 / app[ 'zoom-delta-factor' ]
+  # 'meta+plus':
+  # 'meta+0':
+  # 'meta+minus':
   # view_menu.append new NW.MenuItem label: 'Toggle Galley',            key: 't', modifiers: 'cmd',     click: -> console.log 'XXXXXXXXXXXX'
   view_menu_entry = new NW.MenuItem label: 'View', 'submenu': view_menu
   #.........................................................................................................
@@ -349,7 +352,7 @@ MKTS.demo = ( me ) ->
     30 <br>
 
     """
-  # md = require './demo-text'
+  md = require './demo-text'
   step ( resume ) =>
     yield MKTS.VIEW.show_galley resume
     LINESETTER.demo me, md, ( error ) =>
@@ -376,11 +379,9 @@ keycodes = require './BLAIDDDRWG-keycodes'
 
 #-----------------------------------------------------------------------------------------------------------
 bindings =
-  'meta+plus':            -> MKTS.ZOOM.by 1 * app[ 'zoom-delta-factor' ]
-  'meta+minus':           -> MKTS.ZOOM.by 1 / app[ 'zoom-delta-factor' ]
-  # 'meta+plus':            -> MKTS.ZOOM.to_delta +0.1
-  # 'meta+minus':           -> MKTS.ZOOM.to_delta -0.1
-  'meta+0':               -> MKTS.ZOOM.to 1
+  # 'meta+plus':            -> MKTS.ZOOM.by 1 * app[ 'zoom-delta-factor' ]
+  # 'meta+minus':           -> MKTS.ZOOM.by 1 / app[ 'zoom-delta-factor' ]
+  # 'meta+0':               -> MKTS.ZOOM.to 1
   'h':                    -> MKTS.toggle_tool_mode 'hand'
   # 'g':                    -> MKTS.VIEW.toggle_galley()
   # 'meta+shift+asterisk':  -> MKTS.zoom app, +0.1

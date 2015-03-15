@@ -1,36 +1,42 @@
 
 
 
-// /* ------------------------------------------------------------------------------------------------------ */
-// // page
-// // paper
-// // galley
-// tabletop
-//   position:               relative
-//
-// /* ------------------------------------------------------------------------------------------------------ */
-// tabletop
-//   position:               relative
-//   z-index:                -1
-//   background-image:       url( "./background_linen.png" )
-
 /* ------------------------------------------------------------------------------------------------------ */
-artboard
-  position:               absolute
-  background-image:       url( "./background_linen_lime.png" )
-  min-width:              1000mm
-  padding:                50mm
-  // perspective:            6000px
-  // perspective-origin:     50% 0%
+overlay
+  display:                none
 
-/* ------------------------------------------------------------------------------------------------------ */
-zoomer
-  overflow:               auto
-  transform:              scale( 1 )
-  transform-origin:       top left
-  position:               absolute
+/* =========================================================================================================
+  SCREEN
+--------------------------------------------------------------------------------------------------------- */
+@media screen
 
+  /* ---------------------------------------------------------------------------------------------------- */
+  artboard
+    position:               absolute
+    background-image:       url( "./background_linen_lime.png" )
+    min-width:              1000mm
+    padding:                50mm
+    // perspective:            6000px
+    // perspective-origin:     50% 0%
 
+  /* ---------------------------------------------------------------------------------------------------- */
+  zoomer
+    overflow:               auto
+    // transform:              scale( 1 )
+    // transform-origin:       top left
+    position:               absolute
 
+  /* ---------------------------------------------------------------------------------------------------- */
+  overlay
+    display:                block
+    position:               absolute
+    top:                    10mm
+    left:                   10mm
+    color:                  $gray
+    pointer-events:         none
+    font-family:            "Century Schoolbook"
+    font-style:             italic
+    font-weight:            bold
+    font-size:              30mm
 
 

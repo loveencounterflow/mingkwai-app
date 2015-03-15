@@ -1,41 +1,48 @@
 
+@media screen
+  body
+    display:                flex
+    flex-direction:         column
+    background-color:       $dark-lime
 
-// body
-// html
-//   height:                 100%
+  ribbon
+  vribbon
+    display:                flex
+    flex-direction:         column
 
-body
-  display:                flex
-  flex-direction:         column
-  background-color:       $dark-lime
+  hribbon
+    position:               fixed
+    top:                    5mm
+    left:                   5mm
+    display:                flex
+    flex-direction:         row
+    -mkts-draggable:        xy
+    resize:                 both
 
-ribbon
-vribbon
-  display:                flex
-  flex-direction:         column
+  .gui-console
+    /* ### TAINT make resizable, hideable ### */
+    width:                  100%
+    height:                 50mm
+    background-color:       $slate
 
-hribbon
-  position:               fixed
-  top:                    5mm
-  left:                   5mm
-  display:                flex
-  flex-direction:         row
-  -mkts-draggable:        xy
-  resize:                 both
-  // overflow:               hidden
+  i.mkts-tool-hand
+    font-size:                2rem // not used
+    background-image:         url(./icons/mkts-tool-hand.png)
+    width:                    2rem
+    height:                   2rem
+    background-repeat:        no-repeat
+    background-size:          100%
+    display:                  block
 
-// .gui-rigid
-//   flex-shrink:            0
-//   flex-grow:              0
+  body.cursor-default
+    cursor:                   default
 
-// .gui-scrolling
-//   overflow:               auto
+  body.cursor-hand
+    cursor:                   url(./icons/mkts-tool-hand-cursor.png), auto
 
-.gui-console
-  /* ### TAINT make resizable, hideable ### */
-  width:                  100%
-  height:                 50mm
-  background-color:       $slate
+  body.grabbing
+    cursor:                   url(./icons/mkts-tool-hand-grabbing-cursor.png), auto
+
 
 /* materialdesign-css buttons: */
 .btn
@@ -52,24 +59,11 @@ hribbon
     width:                  100%
     // height:                 100%
 
+@media print
+  ribbon
+  hribbon
+  vribbon
+    display:                none
 
-i.mkts-tool-hand
-  font-size:                2rem // not used
-  background-image:         url(./icons/mkts-tool-hand.png)
-  width:                    2rem
-  height:                   2rem
-  background-repeat:        no-repeat
-  background-size:          100%
-  display:                  block
 
-body.cursor-default
-  cursor:                   default
-
-body.cursor-hand
-  cursor:                   url(./icons/mkts-tool-hand-cursor.png), auto
-
-// .ui-draggable
-// .ui-draggable-handle
-body.grabbing
-  cursor:                   url(./icons/mkts-tool-hand-grabbing-cursor.png), auto
 
