@@ -189,8 +189,6 @@
       window = app['window'];
       q = app['jQuery'];
       app['view'] = 'galley';
-      app['pages-last-scroll-xy'][0] = (q(window)).scrollLeft();
-      app['pages-last-scroll-xy'][1] = (q(window)).scrollTop();
       return (q('artboard.pages')).animate({
         opacity: 0
       }, function() {
@@ -210,8 +208,6 @@
       window = app['window'];
       q = app['jQuery'];
       app['view'] = 'pages';
-      (q(window)).scrollLeft(app['pages-last-scroll-xy'][0]);
-      (q(window)).scrollTop(app['pages-last-scroll-xy'][1]);
       return (q('artboard.pages')).animate({
         opacity: 1
       }, function() {

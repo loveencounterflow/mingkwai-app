@@ -98,7 +98,6 @@ app =
   'tool-modes':           []
   'tool-modes-default':   'default'
   'view':                 'pages'
-  'pages-last-scroll-xy': [ 0, 0, ]
   'matter':               matter
 
 

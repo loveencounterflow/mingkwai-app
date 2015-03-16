@@ -1,4 +1,45 @@
 
+
+
+
+/* ------------------------------------------------------------------------------------------------------ */
+overlay
+  display:                none
+
+/* =========================================================================================================
+  SCREEN
+--------------------------------------------------------------------------------------------------------- */
+@media screen
+
+  /* ---------------------------------------------------------------------------------------------------- */
+  artboard
+    position:               absolute
+    background-image:       url( "./background_linen_lime.png" )
+    min-width:              1000mm
+    padding:                50mm
+
+  /* ---------------------------------------------------------------------------------------------------- */
+  zoomer
+    overflow:               auto
+    // transform:              scale( 1 )
+    // transform-origin:       top left
+    // position:               absolute
+
+  /* ---------------------------------------------------------------------------------------------------- */
+  overlay
+    display:                block
+    position:               absolute
+    top:                    10mm
+    left:                   10mm
+    color:                  $gray
+    pointer-events:         none
+    font-family:            "Century Schoolbook"
+    font-style:             italic
+    font-weight:            bold
+    font-size:              30mm
+
+
+
 @media screen
   body
     display:                flex
