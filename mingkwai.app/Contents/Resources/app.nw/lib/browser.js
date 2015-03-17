@@ -335,14 +335,20 @@
   demo_count = 0;
 
   MKTS.demo = function(me) {
-    var md;
+    var md, settings;
     debug('©iNl2F', 'demo');
     md = "\n# Behind the Looking-Glass\n\n'But everything's curious today. I think I may as well go in at once.' And in\nshe went.\n\nThe *King **and** Queen* of Hearts were <xbig>seated</xbig> on their throne when they\narrived, with a great crowd assembled about them--all sorts of little\nbirds and beasts.\n\n1 <br>\n2 <br>\n3 <br>\n4 <br>\n5 <br>\n6 <br>\n7 <br>\n8 <br>\n9 <br>\n10 <br>\n11 <br>\n12 <br>\n13 <br>\n14 <br>\n15 <br>\n16 <br>\n17 <br>\n18 <br>\n19 <br>\n20 <br>\n21 <br>\n22 <br>\n23 <br>\n24 <br>\n25 <br>\n26 <br>\n27 <br>\n28 <br>\n29 <br>\n30 <br>\n";
     md = require('./demo-text');
+    md = njs_fs.readFileSync('/tmp/tailer', {
+      encoding: 'utf-8'
+    });
+    settings = {
+      'format': 'html'
+    };
     step((function(_this) {
       return function*(resume) {
         (yield MKTS.VIEW.show_galley(resume));
-        return LINESETTER.demo(me, md, function(error) {
+        return LINESETTER.demo(me, md, settings, function(error) {
           return help("MKTS.demo ok");
         });
       };

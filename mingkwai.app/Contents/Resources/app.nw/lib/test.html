@@ -12,12 +12,12 @@
       __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
   (function () {
               return ($('document')).ready(function() {
-                var d_npx, d_rpx, gauge, i, results;
+                var d_npx, d_rpx, gauge, j, results;
                 log = console.log.bind(console);
                 gauge = $("<div id='meter-gauge' style='position:absolute;'></div>");
                 ($('body')).append(gauge);
                 results = [];
-                for (d_npx = i = 1; i <= 1000; d_npx = ++i) {
+                for (d_npx = j = 1; j <= 1000; d_npx = ++j) {
                   gauge.css('height', d_npx + "px");
                   d_rpx = gauge[0].getBoundingClientRect()['height'];
                   results.push(log(d_npx, d_rpx));

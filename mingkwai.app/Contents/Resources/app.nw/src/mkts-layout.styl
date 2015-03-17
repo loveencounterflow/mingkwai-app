@@ -69,6 +69,29 @@ galley chase
   top:                    0
 
 /* ------------------------------------------------------------------------------------------------------ */
+@media screen
+  paper
+  page
+  galley
+    background-color:       $paper-white
+    box-shadow              10px 10px 35px 0px rgba(0,0,0,0.5)
+    float:                  left
+    margin:                 10mm
+    position:               relative
+
+  galley
+    display:                flex
+
+/* ------------------------------------------------------------------------------------------------------ */
+@media print
+  paper
+  page
+    overflow:               hidden
+    page-break-after:       always
+
+/* ====================================================================================================== */
+/* BOXES, COLUMNS & GAPS */
+/* ------------------------------------------------------------------------------------------------------ */
 box
 hbox
   flex-shrink:            1
@@ -83,8 +106,6 @@ vbox
   display:                flex
   flex-direction:         column
 
-/* ====================================================================================================== */
-/* COLUMNS & GAPS */
 /* ------------------------------------------------------------------------------------------------------ */
 column
   // height:                 100%
@@ -115,6 +136,15 @@ vgap
   max-width:              5mm
   flex-shrink:            0
   flex-grow:              0
+
+/* ------------------------------------------------------------------------------------------------------ */
+@media screen
+  gap
+  vgap
+  hgap
+  xhgap
+    background-color:       $gray
+
 
 /* ====================================================================================================== */
 /* MARGINS */
@@ -149,29 +179,14 @@ bottommargin
 
 /* ------------------------------------------------------------------------------------------------------ */
 @media screen
-  paper
-  page
-  galley
-    background-color:       $paper-white
-    box-shadow              10px 10px 35px 0px rgba(0,0,0,0.5)
-    float:                  left
-    margin:                 10mm
-    position:               relative
-
-  galley
-    display:                flex
-
   leftmargin
   rightmargin
   topmargin
   bottommargin
     background-color:       $gray
 
-  gap
-  vgap
-  hgap
-  xhgap
-    background-color:       $gray
+
+
 
 /* ------------------------------------------------------------------------------------------------------ */
 line
@@ -207,17 +222,7 @@ xsmall
   font-size:              50%
 
 html, body
-  font-family:            'eb_garamond'
-  // font-family:            'garamond'
-  // font-family:            'imfellgreatprimer'
-  // font-family:            'IM FELL Great Primer PRO Roman'
-  // font-family:            'xxx'
-
-// em, i
-//   font-family:            'eb_garamond12_italic'
-  // font-family:            'garamond-italic'
-  // font-family:            'imfellgreatprimer-italic'
-  // font-family:            'IM FELL Great Primer PRO Italic'
+  font-family:            'cjk', 'latin', 'lastresort'
 
 strong
 b
@@ -226,8 +231,12 @@ h2
 h3
   font-family:            'Impact'
 
-
-
-
+/* ------------------------------------------------------------------------------------------------------ */
+/* DOCUMENT-SPECIFIC STUFF which should really get its own stylesheet */
+/* ------------------------------------------------------------------------------------------------------ */
+kwic-lineup
+  display:                block
+  white-space:            nowrap
+  font-family:            'cjk'
 
 

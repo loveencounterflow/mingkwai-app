@@ -352,9 +352,12 @@ MKTS.demo = ( me ) ->
 
     """
   md = require './demo-text'
+  md = njs_fs.readFileSync '/tmp/tailer', encoding: 'utf-8'
+  settings =
+    'format':   'html'
   step ( resume ) =>
     yield MKTS.VIEW.show_galley resume
-    LINESETTER.demo me, md, ( error ) =>
+    LINESETTER.demo me, md, settings, ( error ) =>
       # MKTS.revert_zoom me
       help "MKTS.demo ok"
   return null

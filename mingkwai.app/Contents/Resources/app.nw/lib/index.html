@@ -13,32 +13,12 @@
               page_y = null;
               dragging = false;
               shifted = false;
-              ($(document)).on('keyup keydown', function(event) {
+              return ($(document)).on('keyup keydown', function(event) {
                 shifted = event.shiftKey;
                 return true;
               });
-              ($(document)).on('dragstart', function(event, data) {
-                console.log('dragstart', event);
-                scroll_x = ($(window)).scrollLeft();
-                scroll_y = ($(window)).scrollTop();
-                page_x = event.pageX;
-                page_y = event.pageY;
-                dragging = true;
-                return ($('body')).addClass('grabbing');
-              });
-              ($(document)).on('mousemove', function(event) {
-                var factor;
-                if (!dragging) {
-                  return;
-                }
-                factor = 1;
-                ($(window)).scrollLeft(($(window)).scrollLeft() + (page_x - event.pageX) * factor);
-                return ($(window)).scrollTop(($(window)).scrollTop() + (page_y - event.pageY) * factor);
-              });
-              return ($(document)).on('dragend', function(event) {
-                dragging = false;
-                return ($('body')).removeClass('grabbing');
-              });
+
+              /* DRAGGING / HAND TOOL SUPPORT */
             });
           })();
 })();</script><body><artboard class="galley"><zoomer><galley><overlay>Galley</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></galley></zoomer></artboard><artboard class="pages"><zoomer><page><overlay>1</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page><page><overlay>2</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page><page><overlay>3</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page><page><overlay>4</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page><page><overlay>5</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page></zoomer></artboard><hribbon class="draggable" style="height:20mm;"><i class="small mkts-tool-hand" action="tool-mode-hand"></i><i class="small mdi-editor-insert-chart" action="editor-insert-chart"></i><i class="small mdi-action-3d-rotation" action="action-3d-rotation"></i><i class="small mdi-action-assignment" action="action-assignment"></i><i class="small mdi-image-blur-on" action="image-blur-on"></i><i class="small mdi-action-print" action="action-print"></i><i class="small mdi-action-cached" action="action-cached"></i><i class="small mdi-content-content-cut" action="content-content-cut"></i><i class="small mdi-content-content-copy" action="content-content-copy"></i></hribbon></body></html>

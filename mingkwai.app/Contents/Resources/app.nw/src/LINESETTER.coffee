@@ -45,6 +45,8 @@ XCSS                      = require './XCSS'
 
 
 
+
+
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
@@ -59,6 +61,14 @@ XCSS                      = require './XCSS'
     else
       throw new Error " expected 3 or 4 arguments, got #{arity}"
 
+  #---------------------------------------------------------------------------------------------------------
+  switch format = settings[ 'format' ] ? 'md'
+    when 'md'
+      as_html = D.MD.$as_html()
+    when 'html'
+      as_html = D.$pass_through()
+    else
+      return handler new Error "unknown format #{rpr format}"
   #---------------------------------------------------------------------------------------------------------
   matter              = app[ 'matter' ]
   jQuery              = app[ 'jQuery' ]
@@ -125,8 +135,13 @@ XCSS                      = require './XCSS'
     #.......................................................................................................
     # .pipe D.TYPO.$quotes()
     # .pipe D.TYPO.$dashes()
-    .pipe D.MD.$as_html()
+    .pipe as_html
+    .pipe D.$show()
     # .pipe D.HTML.$parse disperse: no, hyphenation: yes, whitespace: no, chrs: no
+    # #.......................................................................................................
+    # .pipe $ ( html, send ) =>
+    #   ### TAINT adhoc method to avoid wrapping `<kwic-lineup>` tags inside a `<p>` ###
+    #   send html.replace /^\s*<p>(.*)<\/p>\s*$/, '$1'
     #.......................................................................................................
     .pipe do =>
       return $ ( html, send ) =>
@@ -212,7 +227,7 @@ XCSS                      = require './XCSS'
           target_height_px ?= BD.get_rectangle column, 'height'
           height_nmm = current_line_count * 5
           height_rmm = mm_from_rpx caret[ 'y.px' ]
-          debug '©u0xZx', height_nmm, height_rmm, height_nmm - height_rmm
+          # debug '©u0xZx', height_nmm, height_rmm, height_nmm - height_rmm
           #.................................................................................................
           current_line_count += block_info[ 'line-count' ]
           block               = block_info[ '%block' ]

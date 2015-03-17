@@ -19,6 +19,7 @@ urge                      = CND.get_logger 'urge',      badge
 #...........................................................................................................
 # MKTS                      = require './main'
 TEACUP                    = require 'coffeenode-teacup'
+CHR                       = require 'coffeenode-chr'
 #...........................................................................................................
 # STYLUS                    = require 'stylus'
 # as_css                    = STYLUS.render.bind STYLUS
@@ -91,6 +92,90 @@ BUTTON = ->
 JS          = new_tag ( route ) -> SCRIPT type: 'text/javascript',  src: route
 CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
 
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@font_test = ( app, md, settings, handler ) ->
+  n           = 10
+  triplets    = [
+    [  0x0061,  0x007a,    'u-latn',        ]
+    [  0x4e00,  0x9fff,    'u-cjk',         ]
+    [  0x3400,  0x4dbf,    'u-cjk-xa',      ]
+    [ 0x2a700, 0x2b73f,    'u-cjk-xc',      ]
+    [ 0x2b740, 0x2b81f,    'u-cjk-xd',      ]
+    [  0x2f00,  0x2fdf,    'u-cjk-rad1',    ]
+    [  0x2e80,  0x2eff,    'u-cjk-rad2',    ]
+    [  0x3000,  0x303f,    'u-cjk-sym',     ]
+    [  0x31c0,  0x31ef,    'u-cjk-strk',    ]
+    [  0x3200,  0x32ff,    'u-cjk-enclett', ]
+    [  0x3300,  0x33ff,    'u-cjk-cmp',     ]
+    [  0xf900,  0xfaff,    'u-cjk-cmpi1',   ]
+    [  0xfe30,  0xfe4f,    'u-cjk-cmpf',    ]
+    [ 0x2f800, 0x2fa1f,    'u-cjk-cmpi2',   ]
+    [ 0x20000, 0x2b81f,    'u-cjk-xb',      ]
+    [  0xe000,  0xf8ff,    'jzr',           ] ]
+  #.........................................................................................................
+  return render =>
+    DOCTYPE 5
+    HTML =>
+      HEAD =>
+        META charset: 'utf-8'
+        # META name: 'viewport', content: 'width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;'
+        TITLE 'mingkwai'
+        # TITLE '眀快排字机'
+        LINK rel: 'shortcut icon', href: './favicon.icon'
+        CSS './html5doctor-css-reset.css'
+        # CSS './fonts/webfontkit-20150311-073132/stylesheet.css'
+        JS  './jquery-2.1.3.js'
+        CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
+        JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
+        JS  './jquery.event.drag-2.2/jquery.event.drag-2.2.js'
+        JS  './outerHTML-2.1.0.js'
+        JS  './blaidddrwg.js'
+        # JS  './convertPointFromPageToNode.js'
+        JS  './jquery-transit.js'
+        JS  './browser.js'
+        JS  './process-xcss-rules.js'
+        CSS './materialize/css/materialize.css'
+        JS  './materialize/js/materialize.min.js'
+        CSS './mkts-main.css'
+      #=====================================================================================================
+      BODY style: "transform:scale(3);transform-origin:top left;", =>
+        for [ cid, _, rsg, ] in triplets
+          P =>
+            # SPAN style: "font-family:'cjk','lastresort';", =>
+            SPAN =>
+              for i in [ 0 ... n ]
+                SPAN => CHR.as_uchr cid + i
+            SPAN =>
+              TEXT "(#{rsg})"
+        P style: "font-family:'spincycle-eot','lastresort';", =>
+          SPAN => "一丁"
+          SPAN => "abcdef (spincycle-eot)"
+        P style: "font-family:'spincycle-embedded-opentype','lastresort';", =>
+          SPAN => "一丁"
+          SPAN => "abcdef (spincycle-embedded-opentype)"
+        P style: "font-family:'spincycle-woff2','lastresort';", =>
+          SPAN => "一丁"
+          SPAN => "abcdef (spincycle-woff2)"
+        P style: "font-family:'spincycle-woff','lastresort';", =>
+          SPAN => "一丁"
+          SPAN => "abcdef (spincycle-woff)"
+        P style: "font-family:'spincycle-truetype','lastresort';", =>
+          SPAN => "一丁"
+          SPAN => "abcdef (spincycle-truetype)"
+        P style: "font-family:'spincycle-svg','lastresort';", =>
+          SPAN => "一丁"
+          SPAN => "abcdef (spincycle-svg)"
+        P style: "font-family:'lastresort';", =>
+          SPAN => "一丁"
+          SPAN => "abcdef (lastresort)"
+
+
+
+
+#===========================================================================================================
+#
 #-----------------------------------------------------------------------------------------------------------
 @test_page = ->
   #.........................................................................................................
@@ -222,29 +307,30 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
           dragging  = no
           shifted   = no
           ( $ document ).on 'keyup keydown', ( event ) -> shifted = event.shiftKey; return true
-          ( $ document ).on 'dragstart', ( event, data ) ->
-            console.log 'dragstart', event
-            scroll_x  = ( $ window ).scrollLeft()
-            scroll_y  = ( $ window ).scrollTop()
-            page_x    = event.pageX
-            page_y    = event.pageY
-            dragging  = yes
-            ( $ 'body' ).addClass 'grabbing'
-          # ( $ document ).on 'drag', ( event, data ) ->
-          #   console.log 'drag', [ data.deltaX, data.deltaY, ]
-          #   ( $ window ).scrollLeft scroll_x - data.deltaX
-          #   ( $ window ).scrollTop  scroll_y - data.deltaY
-          ( $ document ).on 'mousemove', ( event ) ->
-            return unless dragging
-            factor = 1 # if shifted then 2 else 1
-            ( $ window ).scrollLeft ( $ window ).scrollLeft() + ( page_x - event.pageX ) * factor
-            ( $ window ).scrollTop  ( $ window ).scrollTop()  + ( page_y - event.pageY ) * factor
-          # ( $ document ).on 'draginit', ( event ) ->
-          #   console.log 'draginit', event
-          ( $ document ).on 'dragend', ( event ) ->
-            # console.log 'dragend', event
-            dragging  = no
-            ( $ 'body' ).removeClass 'grabbing'
+          ### DRAGGING / HAND TOOL SUPPORT ###
+          # ( $ document ).on 'dragstart', ( event, data ) ->
+          #   console.log 'dragstart', event
+          #   scroll_x  = ( $ window ).scrollLeft()
+          #   scroll_y  = ( $ window ).scrollTop()
+          #   page_x    = event.pageX
+          #   page_y    = event.pageY
+          #   dragging  = yes
+          #   ( $ 'body' ).addClass 'grabbing'
+          # # ( $ document ).on 'drag', ( event, data ) ->
+          # #   console.log 'drag', [ data.deltaX, data.deltaY, ]
+          # #   ( $ window ).scrollLeft scroll_x - data.deltaX
+          # #   ( $ window ).scrollTop  scroll_y - data.deltaY
+          # ( $ document ).on 'mousemove', ( event ) ->
+          #   return unless dragging
+          #   factor = 1 # if shifted then 2 else 1
+          #   ( $ window ).scrollLeft ( $ window ).scrollLeft() + ( page_x - event.pageX ) * factor
+          #   ( $ window ).scrollTop  ( $ window ).scrollTop()  + ( page_y - event.pageY ) * factor
+          # # ( $ document ).on 'draginit', ( event ) ->
+          # #   console.log 'draginit', event
+          # ( $ document ).on 'dragend', ( event ) ->
+          #   # console.log 'dragend', event
+          #   dragging  = no
+          #   ( $ 'body' ).removeClass 'grabbing'
 
           # ( $ document ).on 'drag',        -> console.log 'drag'; return true
           # ( $ document ).on 'touchstart',  -> console.log 'touchstart'; return true

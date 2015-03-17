@@ -45,7 +45,7 @@
   XCSS = require('./XCSS');
 
   this.demo = function(app, md, settings, handler) {
-    var BD, MKTS, arity, document, gcolumn, gcolumn_left, gcolumn_offset, gcolumn_top, input, jQuery, live, mark_chrs, mark_lines, matter, mm_from_npx, mm_from_rpx, npx_from_mm, rpx_from_mm, t0, window, zoomer, ƒ;
+    var BD, MKTS, arity, as_html, document, format, gcolumn, gcolumn_left, gcolumn_offset, gcolumn_top, input, jQuery, live, mark_chrs, mark_lines, matter, mm_from_npx, mm_from_rpx, npx_from_mm, rpx_from_mm, t0, window, zoomer, ƒ, _ref;
     debug('©E054j', 'demo');
     switch (arity = arguments.length) {
       case 3:
@@ -57,6 +57,16 @@
         break;
       default:
         throw new Error(" expected 3 or 4 arguments, got " + arity);
+    }
+    switch (format = (_ref = settings['format']) != null ? _ref : 'md') {
+      case 'md':
+        as_html = D.MD.$as_html();
+        break;
+      case 'html':
+        as_html = D.$pass_through();
+        break;
+      default:
+        return handler(new Error("unknown format " + (rpr(format))));
     }
     matter = app['matter'];
     jQuery = app['jQuery'];
@@ -95,7 +105,7 @@
     mark_chrs = true;
     mark_lines = true;
     t0 = +new Date();
-    input.pipe(D.MD.$as_html()).pipe((function(_this) {
+    input.pipe(as_html).pipe(D.$show()).pipe((function(_this) {
       return function() {
         return $(function(html, send) {
 
@@ -126,14 +136,14 @@
     })(this)()).pipe((function(_this) {
       return function() {
         return $(function(batch_info, send) {
-          var batch, batch_id, block, block_idx, block_info, block_infos, blocks, client_rectangle, client_rectangles, height, height_px, left, line_count, line_counter, line_counters, top, width, zleft, ztop, _i, _j, _len, _ref;
+          var batch, batch_id, block, block_idx, block_info, block_infos, blocks, client_rectangle, client_rectangles, height, height_px, left, line_count, line_counter, line_counters, top, width, zleft, ztop, _i, _j, _len, _ref1;
           batch = batch_info['%batch'];
           blocks = batch_info['%blocks'];
           batch_id = batch_info['batch-id'];
           block_infos = [];
           line_counters = blocks.find('.line-counter');
           gcolumn.append(batch);
-          for (block_idx = _i = 0, _ref = blocks.length; 0 <= _ref ? _i < _ref : _i > _ref; block_idx = 0 <= _ref ? ++_i : --_i) {
+          for (block_idx = _i = 0, _ref1 = blocks.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; block_idx = 0 <= _ref1 ? ++_i : --_i) {
             block = blocks.eq(block_idx);
             line_counter = line_counters.eq(block_idx);
             client_rectangles = (line_counter.get(0)).getClientRects();
@@ -203,7 +213,6 @@
             }
             height_nmm = current_line_count * 5;
             height_rmm = mm_from_rpx(caret['y.px']);
-            debug('©u0xZx', height_nmm, height_rmm, height_nmm - height_rmm);
             current_line_count += block_info['line-count'];
             block = block_info['%block'];
             block_height_px = block_info['height.px'];

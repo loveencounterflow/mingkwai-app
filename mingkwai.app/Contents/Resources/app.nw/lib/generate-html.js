@@ -23,7 +23,7 @@
 
   /* TAINT consider to define filenames in TEMPLATES */
 
-  methods_and_locators = [['layout', njs_path.join(__dirname, './index.html')], ['test_page', njs_path.join(__dirname, './test.html')], ['splash_window', njs_path.join(__dirname, './splash.html')]];
+  methods_and_locators = [['layout', njs_path.join(__dirname, './index.html')], ['test_page', njs_path.join(__dirname, './test.html')], ['splash_window', njs_path.join(__dirname, './splash.html')], ['font_test', njs_path.join(__dirname, './font-test.html')]];
 
   for (_i = 0, _len = methods_and_locators.length; _i < _len; _i++) {
     _ref = methods_and_locators[_i], method_name = _ref[0], locator = _ref[1];

@@ -1,73 +1,156 @@
 
 @font-face
-  font-family:            'Sun-ExtA';
-  src:                    local( 'Sun-ExtA' );
-  unicode-range: U+4e00-9fff     /* CJK Unified Ideographs                  u-cjk          */
-  unicode-range: U+3400-4dbf     /* CJK Unified Ideographs Extension A      u-cjk-xa       */
-  unicode-range: U+20000-2a6df   /* CJK Unified Ideographs Extension B      u-cjk-xb       */
-  unicode-range: U+2a700-2b73f   /* CJK Unified Ideographs Extension C      u-cjk-xc       */
-  unicode-range: U+2b740-2b81f   /* CJK Unified Ideographs Extension D      u-cjk-xd       */
-  unicode-range: U+2f00-2fdf     /* Kangxi Radicals                         u-cjk-rad1     */
-  unicode-range: U+2e80-2eff     /* CJK Radicals Supplement                 u-cjk-rad2     */
-  unicode-range: U+3000-303f     /* CJK Symbols and Punctuation             u-cjk-sym      */
-  unicode-range: U+31c0-31ef     /* CJK Strokes                             u-cjk-strk     */
-  unicode-range: U+3200-32ff     /* Enclosed CJK Letters and Months         u-cjk-enclett  */
-  unicode-range: U+3300-33ff     /* CJK Compatibility                       u-cjk-cmp      */
-  unicode-range: U+f900-faff     /* CJK Compatibility Ideographs            u-cjk-cmpi1    */
-  unicode-range: U+fe30-fe4f     /* CJK Compatibility Forms                 u-cjk-cmpf     */
-  unicode-range: U+2f800-2fa1f   /* CJK Compatibility Ideographs Supplement u-cjk-cmpi2    */
-  // color: red
-
-@font-face
-  font-family:            'Ampersand'
-  src:                    local( 'Schwabacher' )
-  unicode-range:          U+26
-
-@font-face
   font-family:            'cjk'
   src:                    local( 'Sun-ExtA' )
-  unicode-range:          U+4e00-9fff, U+3000-303f
+  unicode-range: \
+    U+4e00-9fff,    // CJK Unified Ideographs                  u-cjk
+    U+3400-4dbf,    // CJK Unified Ideographs Extension A      u-cjk-xa
+    U+2a700-2b73f,  // CJK Unified Ideographs Extension C      u-cjk-xc
+    U+2b740-2b81f,  // CJK Unified Ideographs Extension D      u-cjk-xd
+    U+2f00-2fdf,    // Kangxi Radicals                         u-cjk-rad1
+    U+2e80-2eff,    // CJK Radicals Supplement                 u-cjk-rad2
+    U+3000-303f,    // CJK Symbols and Punctuation             u-cjk-sym
+    U+31c0-31ef,    // CJK Strokes                             u-cjk-strk
+    U+3200-32ff,    // Enclosed CJK Letters and Months         u-cjk-enclett
+    U+3300-33ff,    // CJK Compatibility                       u-cjk-cmp
+    U+f900-faff,    // CJK Compatibility Ideographs            u-cjk-cmpi1
+    U+fe30-fe4f,    // CJK Compatibility Forms                 u-cjk-cmpf
+    U+2f800-2fa1f   // CJK Compatibility Ideographs Supplement u-cjk-cmpi2
+  // U+20000-2a6df,  // CJK Unified Ideographs Extension B      u-cjk-xb
+  color: green
+
+
+// @font-face
+//   font-family:            'cjk'
+//   src:                    local( 'Sun-ExtA' )
+//   unicode-range:          U+4e00-9fff, U+3000-303f
 
 @font-face
-  font-family:            'cjk-xb'
+  // font-family:            'cjk-xb'
+  font-family:            'cjk'
   src:                    local( 'sunflower-u-cjk-xb' )
   unicode-range:          U+20000-2b81f
 
 @font-face
-  font-family:            'jzr'
+  // font-family:            'jzr'
+  font-family:            'cjk'
   src:                    local( 'jizura3b' )
   unicode-range:          U+e000-f8ff
   // font-size: 200%
   // font-size-adjust: 2
   // color: red
+  color: red
 
 @font-face
   font-family:            'jzr-babel'
   src:                    local( 'BabelStone Han' )
 
-// @font-face
-//     font-family:          'garamond'
-//     src:                  url( './fonts/EBGaramond12-Regular.eot' ) format( 'embedded-opentype' )
 
-// @font-face
-//     font-family:          'garamond-italic'
-//     src:                  url( './fonts/EBGaramond12-Italic.eot' ) format( 'embedded-opentype' )
-//     font-style:           italic
+/* ====================================================================================================== */
+/* LATIN (EB Garamond) */
+/* ------------------------------------------------------------------------------------------------------ */
+/*
+- EBGaramond-Initials: Initials
+- EBGaramond-InitialsF1: Background (the ornament) of initials
+- EBGaramond-InitialsF2: Foreground (the letter) of initials
+- EBGaramond08-Italic: Italic font for design size 8pt (very rough spacing!)
+- EBGaramond08-Regular: Regular font for design size 8pt
+- EBGaramond12-AllSC: All smallcaps font for programs that ignore opentype features
+- EBGaramond12-Bold: Bold font for design size 12pt (very rough/unusable; not included in releases)
+- EBGaramond12-Italic: Italic font for design size 12pt
+- EBGaramond12-Regular: Regular font for design size 12pt
+- EBGaramond12-SC: Smallcaps font for programs that ignore opentype features (12pt)
+*/
+/* http://www.georgduffner.at/ebgaramond */
 
 @font-face
-    font-family:          'imfellgreatprimer'
-    src:                  url( './fonts/IMFeGPrm29C.otf' ) format( 'opentype' )
+    font-family:          'latin'
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramond12-Regular.ttf' )
 
 @font-face
-    font-family:          'imfellgreatprimer-italic'
-    src:                  url( './fonts/IMFeGPit29C.otf' ) format( 'opentype' )
+    font-family:          'latin'
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramond12-Italic.ttf' )
     font-style:           italic
 
-// @font-face
-//     font-family:          'xxx'
-//     src:                  url( '/Users/flow/Library/Fonts/AlteSchwabacher.ttf' ) format( 'truetype' )
-//     font-weight:          normal
-//     font-style:           italic
+/* pending:
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramond08-Italic.woff' )
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramond08-Regular.woff' )
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramond-Initials.woff' )
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramond-InitialsF1.woff' )
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramond-InitialsF2.woff' )
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramond12-AllSC.woff' )
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramondSC08-Regular.woff' )
+    src:                  url( './fonts/EBGaramond-0.016-web/EBGaramondSC12-Regular.woff' )
+*/
+
+
+/* ====================================================================================================== */
+/* LAST RESORT */
+/* ------------------------------------------------------------------------------------------------------ */
+@font-face
+    font-family:          'lastresort'
+    src:                  url('./fonts/LastResort.ttf')
+    font-weight:          normal
+    font-style:           normal
+
+
+/* ====================================================================================================== */
+/* FONT TEST */
+/* ------------------------------------------------------------------------------------------------------ */
+@font-face
+    font-family: 'spincycle-eot'
+    src: url('./fonts/spincycle/spincycle_ot.eot')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'spincycle-woff2'
+    src: url('./fonts/spincycle/spincycle_ot.woff2')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'spincycle-woff'
+    src: url('./fonts/spincycle/spincycle_ot.woff')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'spincycle-truetype'
+    src: url('./fonts/spincycle/spincycle_ot.ttf')
+    font-weight: normal
+    font-style: normal
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
