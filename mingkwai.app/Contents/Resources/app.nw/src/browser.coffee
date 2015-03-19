@@ -19,6 +19,7 @@ help                      = CND.get_logger 'help',    badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
 NW                        = require 'nw.gui'
+debug '©8pJxf', 'Y'
 win                       = NW.Window.get()
 #...........................................................................................................
 suspend                   = require 'coffeenode-suspend'
@@ -473,6 +474,7 @@ win.on 'document-end', ->
   # dev_win.moveTo 1200, 848
   # dev_win.maximize()
   # dev_win.blur()
+  debug '©oSxv5', '1'
   #.........................................................................................................
   show_splash = no
   if show_splash
@@ -487,11 +489,13 @@ win.on 'document-end', ->
       splash_win.hide()
       win.show()
       win.focus()
+  debug '©oSxv5', '2'
   #.........................................................................................................
   app[ 'artboard' ] = $ 'artboard'
   app[ 'zoomer'   ] = $ 'zoomer'
   MKTS.enable_console()
   step ( resume ) ->
+    debug '©oSxv5', '3'
     MKTS.maximize app
     # MKTS.ZOOM.to app, 1.85
     win.zoomLevel = 1

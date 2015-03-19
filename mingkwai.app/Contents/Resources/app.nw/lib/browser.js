@@ -33,6 +33,8 @@
 
   NW = require('nw.gui');
 
+  debug('©8pJxf', 'Y');
+
   win = NW.Window.get();
 
   suspend = require('coffeenode-suspend');
@@ -497,6 +499,7 @@
 
   win.on('document-end', function() {
     var show_splash;
+    debug('©oSxv5', '1');
     show_splash = false;
     if (show_splash) {
       after(2, function() {
@@ -514,10 +517,12 @@
       win.show();
       win.focus();
     }
+    debug('©oSxv5', '2');
     app['artboard'] = $('artboard');
     app['zoomer'] = $('zoomer');
     MKTS.enable_console();
     step(function*(resume) {
+      debug('©oSxv5', '3');
       MKTS.maximize(app);
       win.zoomLevel = 1;
       (yield step.wrap(($(document)).ready, resume));

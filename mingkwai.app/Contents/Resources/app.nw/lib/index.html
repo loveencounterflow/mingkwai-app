@@ -1,24 +1,42 @@
-<!DOCTYPE html><html><head><meta charset="utf-8" /><title>mingkwai</title><link rel="shortcut icon" href="./favicon.icon" /><link rel="stylesheet" href="./html5doctor-css-reset.css" /><script type="text/javascript" src="./jquery-2.1.3.js"></script><link rel="stylesheet" href="./jquery-ui-1.11.3.custom/jquery-ui.css" /><script type="text/javascript" src="./jquery-ui-1.11.3.custom/jquery-ui.js"></script><script type="text/javascript" src="./jquery.event.drag-2.2/jquery.event.drag-2.2.js"></script><script type="text/javascript" src="./outerHTML-2.1.0.js"></script><script type="text/javascript" src="./blaidddrwg.js"></script><script type="text/javascript" src="./jquery-transit.js"></script><script type="text/javascript" src="./browser.js"></script><script type="text/javascript" src="./process-xcss-rules.js"></script><link rel="stylesheet" href="./materialize/css/materialize.css" /><script type="text/javascript" src="./materialize/js/materialize.min.js"></script><link rel="stylesheet" href="./mkts-main.css" /></head><script type="text/javascript">(function() {
-  var __slice = [].slice,
-      __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-      __hasProp = {}.hasOwnProperty,
-      __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-  (function () {
-            return ($(document)).ready(function() {
-              var dragging, page_x, page_y, scroll_x, scroll_y, shifted;
-              window.zoomer = $('zoomer');
-              scroll_x = null;
-              scroll_y = null;
-              page_x = null;
-              page_y = null;
-              dragging = false;
-              shifted = false;
-              return ($(document)).on('keyup keydown', function(event) {
-                shifted = event.shiftKey;
-                return true;
-              });
+<!DOCTYPE html><html><head><meta charset="utf-8" /><title>mingkwai</title><link rel="shortcut icon" href="./favicon.icon" /><link rel="stylesheet" href="./html5doctor-css-reset.css" /><script type="text/javascript" src="./jquery-2.1.3.js"></script><link rel="stylesheet" href="./jquery-ui-1.11.3.custom/jquery-ui.css" /><script type="text/javascript" src="./jquery-ui-1.11.3.custom/jquery-ui.js"></script><script type="text/javascript" src="./jquery.event.drag-2.2/jquery.event.drag-2.2.js"></script><script type="text/javascript" src="./outerHTML-2.1.0.js"></script><script type="text/javascript" src="./blaidddrwg.js"></script><script type="text/javascript" src="./jquery-transit.js"></script><script type="text/javascript" src="./browser.js"></script><link rel="stylesheet" href="./materialize/css/materialize.css" /><script type="text/javascript" src="./materialize/js/materialize.min.js"></script><link rel="stylesheet" href="./mkts-main.css" /><style>  @font-face {
+    font-family:    'ampersand';
+    src:            local('Schwabacher');
+    unicode-range:  U+0026;
+  }
 
-              /* DRAGGING / HAND TOOL SUPPORT */
-            });
-          })();
-})();</script><body><artboard class="galley"><zoomer><galley><overlay>Galley</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></galley></zoomer></artboard><artboard class="pages"><zoomer><page><overlay>1</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page><page><overlay>2</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page><page><overlay>3</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page><page><overlay>4</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page><page><overlay>5</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page></zoomer></artboard><hribbon class="draggable" style="height:20mm;"><i class="small mkts-tool-hand" action="tool-mode-hand"></i><i class="small mdi-editor-insert-chart" action="editor-insert-chart"></i><i class="small mdi-action-3d-rotation" action="action-3d-rotation"></i><i class="small mdi-action-assignment" action="action-assignment"></i><i class="small mdi-image-blur-on" action="image-blur-on"></i><i class="small mdi-action-print" action="action-print"></i><i class="small mdi-action-cached" action="action-cached"></i><i class="small mdi-content-content-cut" action="content-content-cut"></i><i class="small mdi-content-content-copy" action="content-content-copy"></i></hribbon></body></html>
+  @font-face {
+    font-family:    'cjk';
+    src:            local('Sun-ExtA');
+    unicode-range:  U+4e00-9fff;
+  }
+
+  @font-face {
+    font-family:    'cjk';
+    src:            local('sunflower-u-cjk-xb');
+    unicode-range:  U+20000-2b81f, U+d800-dfff;
+  }
+
+  @font-face {
+    font-family:    'cjk';
+    src:            local('jizura3b');
+    unicode-range:  U+e000-f8ff;
+  }
+
+  @font-face {
+    font-family:    'ancientsymbols';
+    src:            local('Geneva');
+    unicode-range:  U+10190-1019B;
+  }
+
+  body, html {
+    font-family:    'ampersand', 'cjk', 'ancientsymbols', 'Source Code Pro';
+  }
+
+html {
+  text-rendering:  geometricPrecision;
+  }
+</style></head><body><div>&amp;</div>
+<div>𐆓</div>
+<div>一丁丂七丄丅丆万丈三 u-cjk</div>
+<div>𠀀𠀁𠀂𠀃𠀄𠀅𠀆𠀇𠀈𠀉 u-cjk-xb</div>
+<div> jzr</div></body></html>

@@ -250,7 +250,7 @@
   this.font_test = function(app, md, settings, handler) {
     var n, triplets;
     n = 10;
-    triplets = [[0x0061, 0x007a, 'u-latn'], [0x4e00, 0x9fff, 'u-cjk'], [0x3400, 0x4dbf, 'u-cjk-xa'], [0x2a700, 0x2b73f, 'u-cjk-xc'], [0x2b740, 0x2b81f, 'u-cjk-xd'], [0x2f00, 0x2fdf, 'u-cjk-rad1'], [0x2e80, 0x2eff, 'u-cjk-rad2'], [0x3000, 0x303f, 'u-cjk-sym'], [0x31c0, 0x31ef, 'u-cjk-strk'], [0x3200, 0x32ff, 'u-cjk-enclett'], [0x3300, 0x33ff, 'u-cjk-cmp'], [0xf900, 0xfaff, 'u-cjk-cmpi1'], [0xfe30, 0xfe4f, 'u-cjk-cmpf'], [0x2f800, 0x2fa1f, 'u-cjk-cmpi2'], [0x20000, 0x2b81f, 'u-cjk-xb'], [0xe000, 0xf8ff, 'jzr']];
+    triplets = [[0x0061, 0x007a, 'u-latn'], [0x2e80, 0x2eff, 'u-cjk-rad2'], [0x2f00, 0x2fdf, 'u-cjk-rad1'], [0x3000, 0x303f, 'u-cjk-sym'], [0x31c0, 0x31ef, 'u-cjk-strk'], [0x3200, 0x32ff, 'u-cjk-enclett'], [0x3300, 0x33ff, 'u-cjk-cmp'], [0x3400, 0x4dbf, 'u-cjk-xa'], [0x4e00, 0x9fff, 'u-cjk'], [0xe000, 0xf8ff, 'jzr'], [0xf900, 0xfaff, 'u-cjk-cmpi1'], [0xfe30, 0xfe4f, 'u-cjk-cmpf'], [0x20000, 0x2b81f, 'u-cjk-xb'], [0x2a700, 0x2b73f, 'u-cjk-xc'], [0x2b740, 0x2b81f, 'u-cjk-xd'], [0x2f800, 0x2fa1f, 'u-cjk-cmpi2']];
     return render((function(_this) {
       return function() {
         DOCTYPE(5);
@@ -289,7 +289,9 @@
                   var i, _j, _results;
                   _results = [];
                   for (i = _j = 0; 0 <= n ? _j < n : _j > n; i = 0 <= n ? ++_j : --_j) {
-                    _results.push(SPAN(function() {
+                    _results.push(SPAN({
+                      style: "display:inline-block;"
+                    }, function() {
                       return CHR.as_uchr(cid + i);
                     }));
                   }
@@ -423,7 +425,7 @@
     })(this));
   };
 
-  this.layout = function() {
+  this.NORMAL_layout = function() {
     return render((function(_this) {
       return function() {
         DOCTYPE(5);
@@ -470,6 +472,12 @@
             });
           });
           return BODY(function() {
+            A({
+              style: "display:block;position:absolute;top:0;z-index:1000;",
+              href: './font-test.html'
+            }, function() {
+              return "font-test";
+            });
             ARTBOARD('.galley', function() {
               return ZOOMER(function() {
                 return GALLEY(function() {
@@ -551,5 +559,72 @@
       };
     })(this));
   };
+
+
+  /*  * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # */
+
+
+  /*  * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # */
+
+
+  /*  * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # */
+
+
+  /*  * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # */
+
+
+  /*  * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # */
+
+
+  /*  * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # */
+
+
+  /*  * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # */
+
+
+  /*  * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # */
+
+
+  /* just for testing of CSS @font-face, unicode-range */
+
+  this.TEST_layout = function() {
+    return render((function(_this) {
+      return function() {
+        DOCTYPE(5);
+        return HTML(function() {
+          HEAD(function() {
+            META({
+              charset: 'utf-8'
+            });
+            TITLE('mingkwai');
+            LINK({
+              rel: 'shortcut icon',
+              href: './favicon.icon'
+            });
+            CSS('./html5doctor-css-reset.css');
+            JS('./jquery-2.1.3.js');
+            CSS('./jquery-ui-1.11.3.custom/jquery-ui.css');
+            JS('./jquery-ui-1.11.3.custom/jquery-ui.js');
+            JS('./jquery.event.drag-2.2/jquery.event.drag-2.2.js');
+            JS('./outerHTML-2.1.0.js');
+            JS('./blaidddrwg.js');
+            JS('./jquery-transit.js');
+            JS('./browser.js');
+            CSS('./materialize/css/materialize.css');
+            JS('./materialize/js/materialize.min.js');
+            CSS('./mkts-main.css');
+            return STYLE("@font-face {\n  font-family:    'ampersand';\n  src:            local('Schwabacher');\n  unicode-range:  U+0026;\n}\n\n@font-face {\n  font-family:    'cjk';\n  src:            local('Sun-ExtA');\n  unicode-range:  U+4e00-9fff;\n}\n\n@font-face {\n  font-family:    'cjk';\n  src:            local('sunflower-u-cjk-xb');\n  unicode-range:  U+20000-2b81f, U+d800-dfff;\n}\n\n@font-face {\n  font-family:    'cjk';\n  src:            local('jizura3b');\n  unicode-range:  U+e000-f8ff;\n}\n\n@font-face {\n  font-family:    'ancientsymbols';\n  src:            local('Geneva');\n  unicode-range:  U+10190-1019B;\n}\n\nbody, html {\n  font-family:    'ampersand', 'cjk', 'ancientsymbols', 'Source Code Pro';\n}\n\n");
+          });
+          return BODY(function() {
+            return RAW("<div>&amp;</div>\n<div>𐆓</div>\n<div>一丁丂七丄丅丆万丈三 u-cjk</div>\n<div>𠀀𠀁𠀂𠀃𠀄𠀅𠀆𠀇𠀈𠀉 u-cjk-xb</div>\n<div> jzr</div>");
+          });
+        });
+      };
+    })(this));
+  };
+
+  this.layout = this.TEST_layout;
+
+  this.layout = this.NORMAL_layout;
 
 }).call(this);

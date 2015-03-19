@@ -99,21 +99,22 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
   n           = 10
   triplets    = [
     [  0x0061,  0x007a,    'u-latn',        ]
-    [  0x4e00,  0x9fff,    'u-cjk',         ]
-    [  0x3400,  0x4dbf,    'u-cjk-xa',      ]
-    [ 0x2a700, 0x2b73f,    'u-cjk-xc',      ]
-    [ 0x2b740, 0x2b81f,    'u-cjk-xd',      ]
-    [  0x2f00,  0x2fdf,    'u-cjk-rad1',    ]
     [  0x2e80,  0x2eff,    'u-cjk-rad2',    ]
+    [  0x2f00,  0x2fdf,    'u-cjk-rad1',    ]
     [  0x3000,  0x303f,    'u-cjk-sym',     ]
     [  0x31c0,  0x31ef,    'u-cjk-strk',    ]
     [  0x3200,  0x32ff,    'u-cjk-enclett', ]
     [  0x3300,  0x33ff,    'u-cjk-cmp',     ]
+    [  0x3400,  0x4dbf,    'u-cjk-xa',      ]
+    [  0x4e00,  0x9fff,    'u-cjk',         ]
+    [  0xe000,  0xf8ff,    'jzr',           ]
     [  0xf900,  0xfaff,    'u-cjk-cmpi1',   ]
     [  0xfe30,  0xfe4f,    'u-cjk-cmpf',    ]
-    [ 0x2f800, 0x2fa1f,    'u-cjk-cmpi2',   ]
     [ 0x20000, 0x2b81f,    'u-cjk-xb',      ]
-    [  0xe000,  0xf8ff,    'jzr',           ] ]
+    [ 0x2a700, 0x2b73f,    'u-cjk-xc',      ]
+    [ 0x2b740, 0x2b81f,    'u-cjk-xd',      ]
+    [ 0x2f800, 0x2fa1f,    'u-cjk-cmpi2',   ]
+    ]
   #.........................................................................................................
   return render =>
     DOCTYPE 5
@@ -146,7 +147,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
             # SPAN style: "font-family:'cjk','lastresort';", =>
             SPAN =>
               for i in [ 0 ... n ]
-                SPAN => CHR.as_uchr cid + i
+                SPAN style: "display:inline-block;", => CHR.as_uchr cid + i
             SPAN =>
               TEXT "(#{rsg})"
         P style: "font-family:'spincycle-eot','lastresort';", =>
@@ -249,7 +250,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
       BODY =>
 
 #-----------------------------------------------------------------------------------------------------------
-@layout = ->
+@NORMAL_layout = ->
   #.........................................................................................................
   return render =>
     DOCTYPE 5
@@ -360,6 +361,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         #   window[ 'app' ][ 'mouse-position' ] = [ event.pageX, event.pageY, ]
       #=====================================================================================================
       BODY =>
+        A style: "display:block;position:absolute;top:0;z-index:1000;", href: './font-test.html', => "font-test"
         #...............................................................................................
         ARTBOARD '.galley', =>
           ZOOMER =>
@@ -403,4 +405,97 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
           I '.small.mdi-action-cached',         action: 'action-cached'
           I '.small.mdi-content-content-cut',   action: 'content-content-cut'
           I '.small.mdi-content-content-copy',  action: 'content-content-copy'
+
+
+
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+
+#-----------------------------------------------------------------------------------------------------------
+### just for testing of CSS @font-face, unicode-range ###
+@TEST_layout = ->
+  #.........................................................................................................
+  return render =>
+    DOCTYPE 5
+    HTML =>
+      HEAD =>
+        META charset: 'utf-8'
+        TITLE 'mingkwai'
+        LINK rel: 'shortcut icon', href: './favicon.icon'
+        CSS './html5doctor-css-reset.css'
+        # # CSS './fonts/webfontkit-20150311-073132/stylesheet.css'
+        JS  './jquery-2.1.3.js'
+        CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
+        JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
+        JS  './jquery.event.drag-2.2/jquery.event.drag-2.2.js'
+        JS  './outerHTML-2.1.0.js'
+        JS  './blaidddrwg.js'
+        # JS  './convertPointFromPageToNode.js'
+        JS  './jquery-transit.js'
+        JS  './browser.js'
+        # JS  './process-xcss-rules.js'
+        CSS './materialize/css/materialize.css'
+        JS  './materialize/js/materialize.min.js'
+        CSS './mkts-main.css'
+        STYLE """
+          @font-face {
+            font-family:    'ampersand';
+            src:            local('Schwabacher');
+            unicode-range:  U+0026;
+          }
+
+          @font-face {
+            font-family:    'cjk';
+            src:            local('Sun-ExtA');
+            unicode-range:  U+4e00-9fff;
+          }
+
+          @font-face {
+            font-family:    'cjk';
+            src:            local('sunflower-u-cjk-xb');
+            unicode-range:  U+20000-2b81f, U+d800-dfff;
+          }
+
+          @font-face {
+            font-family:    'cjk';
+            src:            local('jizura3b');
+            unicode-range:  U+e000-f8ff;
+          }
+
+          @font-face {
+            font-family:    'ancientsymbols';
+            src:            local('Geneva');
+            unicode-range:  U+10190-1019B;
+          }
+
+          body, html {
+            font-family:    'ampersand', 'cjk', 'ancientsymbols', 'Source Code Pro';
+          }
+
+
+          """
+        # html {
+        #   text-rendering:  geometricPrecision;
+        #   }
+      # -webkit-font-feature-settings:  "liga" 1, "dlig" 1;
+      # // text-rendering:                 optimizeLegibility
+      # // font-variant-ligatures:         common-ligatures
+      # // font-kerning:                   normal
+      #=====================================================================================================
+      BODY =>
+        RAW """
+          <div>&amp;</div>
+          <div>𐆓</div>
+          <div>一丁丂七丄丅丆万丈三 u-cjk</div>
+          <div>𠀀𠀁𠀂𠀃𠀄𠀅𠀆𠀇𠀈𠀉 u-cjk-xb</div>
+          <div> jzr</div>
+          """
+@layout = @TEST_layout
+@layout = @NORMAL_layout
 
