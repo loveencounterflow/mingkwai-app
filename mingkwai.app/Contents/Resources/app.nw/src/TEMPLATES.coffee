@@ -459,7 +459,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
           @font-face {
             font-family:    'cjk';
             src:            local('sunflower-u-cjk-xb');
-            unicode-range:  U+20000-2b81f, U+d800-dfff;
+            unicode-range:  U+20000-2b81f;
           }
 
           @font-face {
