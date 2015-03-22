@@ -28,6 +28,10 @@ $                         = D.remit.bind D
 # LODASH                    = D.LODASH
 HOTMETAL                  = D.HOTMETAL
 XCSS                      = require './XCSS'
+glyph_replacements        = require './glyph-replacements'
+#...........................................................................................................
+### https://github.com/meryn/performance-now ###
+now                       = require 'performance-now'
 
   # #---------------------------------------------------------------------------------------------------------
   # has_hanging_margin = ( hotml ) ->
@@ -42,8 +46,6 @@ XCSS                      = require './XCSS'
   #     return 'is-first'
   #   return 'is-last' if is_last
   #   return 'is-middle'
-
-
 
 
 
@@ -126,9 +128,9 @@ XCSS                      = require './XCSS'
   #---------------------------------------------------------------------------------------------------------
   live                = yes
   live                = no
-  mark_chrs           = no
+  # mark_chrs           = no
   mark_chrs           = yes
-  mark_lines          = yes
+  mark_lines          = no
   t0                  = +new Date()
   #.........................................................................................................
   input
@@ -136,12 +138,23 @@ XCSS                      = require './XCSS'
     # .pipe D.TYPO.$quotes()
     # .pipe D.TYPO.$dashes()
     .pipe as_html
-    .pipe D.$show()
+    #.......................................................................................................
+    # .pipe D.$show()
     # .pipe D.HTML.$parse disperse: no, hyphenation: yes, whitespace: no, chrs: no
     # #.......................................................................................................
     # .pipe $ ( html, send ) =>
     #   ### TAINT adhoc method to avoid wrapping `<kwic-lineup>` tags inside a `<p>` ###
     #   send html.replace /^\s*<p>(.*)<\/p>\s*$/, '$1'
+    #.......................................................................................................
+    .pipe do =>
+      ### TAINT temporary fix for CJK Ext. B-related bug; see
+      https://productforums.google.com/forum/#!category-topic/chrome/report-a-problem-and-get-troubleshooting-help/mac/Stable/_bLJl0pNS4Y
+      Regex matches CJK Ext. B codepoints; constructed using http://apps.timwhitlock.info/js/regex
+      Also see https://github.com/mathiasbynens/regenerate.
+      ###
+      matcher = /([\ud840-\ud868][\udc00-\udfff]|\ud869[\udc00-\udede]+)/g
+      return $ ( html, send ) =>
+        send html.replace matcher, '<cjkxbfix>$1</cjkxbfix>'
     #.......................................................................................................
     .pipe do =>
       return $ ( html, send ) =>
@@ -166,12 +179,28 @@ XCSS                      = require './XCSS'
     #.......................................................................................................
     .pipe do =>
       return $ ( batch_info, send ) =>
+        blocks          = batch_info[ '%blocks'   ]
+        #...................................................................................................
+        for block_idx in [ 0 ... blocks.length ]
+          block       = blocks.eq block_idx
+          text_nodes  = block.text_nodes()
+          for [ matcher, replacement, ] in glyph_replacements
+            continue unless replacement[ 0 ] is '<'
+            block.replace_text matcher, replacement, text_nodes
+          # block.replace_text /(王)/g, "helo <xbig>$1</xbig> king"
+          # block.replace_text /(王)/g, "helo"
+        #...................................................................................................
+        send batch_info
+    #.......................................................................................................
+    .pipe do =>
+      return $ ( batch_info, send ) =>
         batch           = batch_info[ '%batch'    ]
         blocks          = batch_info[ '%blocks'   ]
         batch_id        = batch_info[ 'batch-id'  ]
         block_infos     = []
         line_counters   = blocks.find '.line-counter'
         gcolumn.append batch
+        debug '©4QfDG', "typesetting #{blocks.length} blocks into galley..."
         #...................................................................................................
         for block_idx in [ 0 ... blocks.length ]
           block             =        blocks.eq block_idx
@@ -196,62 +225,79 @@ XCSS                      = require './XCSS'
               ztop                          = top  - gcolumn_top
               batch.append jQuery """<div style='position:absolute;left:#{zleft}px;top:#{ztop}px;width:#{width}px;height:#{height}px;outline:1px solid rgba(255,0,0,0.25);'></div>"""
         #...................................................................................................
-        # debug '©e6CfD', block_infos.length
+        debug '©4QfDG', "...done"
         send block_infos
     #.......................................................................................................
     .pipe do =>
-      return $ ( block_infos, send ) =>
+      return $ ( block_infos, send, end ) =>
         #...................................................................................................
-        MKTS.VIEW.show_pages()
-        { caret }           = matter
-        pages               = jQuery 'artboard.pages page'
-        page                = null
-        columns             = null
-        column_count        = null
-        column              = null
-        target_height_px    = null
-        current_line_count  = null
-        #...................................................................................................
-        ### Move to target ###
-        # yield MKTS.VIEW.show_galley resume
-        for block_info, block_idx in block_infos
-          page               ?= pages.eq caret[ 'page-nr' ] - 1
-          columns            ?= page.find 'column'
-          column_count       ?= columns.length
-          if column_count < 1
-            warn "skipped #{block_infos.length - block_idx} blocks because of missing columns"
-            break
-          column             ?= columns.eq caret[ 'column-nr' ] - 1
-          current_line_count ?= 0
-          ### TAINT use BLAIDDDRWG ###
-          target_height_px ?= BD.get_rectangle column, 'height'
-          height_nmm = current_line_count * 5
-          height_rmm = mm_from_rpx caret[ 'y.px' ]
-          # debug '©u0xZx', height_nmm, height_rmm, height_nmm - height_rmm
-          #.................................................................................................
-          current_line_count += block_info[ 'line-count' ]
-          block               = block_info[ '%block' ]
-          block_height_px     = block_info[ 'height.px' ]
-          column.append block
-          caret[ 'y.px' ]    += block_height_px
-          #.................................................................................................
-          continue if caret[ 'y.px' ] < target_height_px
-          #.................................................................................................
-          caret[ 'column-nr' ] += +1
-          caret[ 'y.px'      ]  = 0
-          column                = null
-          current_line_count    = null
-          urge '©08Nsv', MKTS.CARET.as_url app, matter
-          #.................................................................................................
-          if caret[ 'column-nr' ] > column_count
-            page                  = null
-            columns               = null
-            column_count          = null
-            target_height_px      = null
-            caret[ 'column-nr' ]  = 1
-            caret[ 'page-nr'   ] += +1
+        if block_infos?
+          MKTS.VIEW.show_pages()
+          { caret }           = matter
+          pages               = jQuery 'artboard.pages page'
+          page                = null
+          columns             = null
+          column_count        = null
+          column              = null
+          target_height_px    = null
+          current_line_count  = null
+          #...................................................................................................
+          ### Move to target ###
+          # yield MKTS.VIEW.show_galley resume
+          for block_info, block_idx in block_infos
+            page               ?= pages.eq caret[ 'page-nr' ] - 1
+            columns            ?= page.find 'column'
+            column_count       ?= columns.length
+            if column_count < 1
+              warn "skipped #{block_infos.length - block_idx} blocks because of missing columns"
+              break
+            column             ?= columns.eq caret[ 'column-nr' ] - 1
+            current_line_count ?= 0
+            target_height_px ?= BD.get_rectangle column, 'height'
+            height_nmm        = current_line_count * 5
+            height_rmm        = mm_from_rpx caret[ 'y.px' ]
+            #.................................................................................................
+            current_line_count += block_info[ 'line-count' ]
+            block               = block_info[ '%block' ]
+            block_height_px     = block_info[ 'height.px' ]
+            #.................................................................................................
+            column.append block
+            #.................................................................................................
+            caret[ 'y.px' ]    += block_height_px
+            #.................................................................................................
+            continue if caret[ 'y.px' ] < target_height_px
+            #.................................................................................................
+            caret[ 'column-nr' ] += +1
             caret[ 'y.px'      ]  = 0
-            help '©l4U89', MKTS.CARET.as_url app, matter
+            column                = null
+            current_line_count    = null
+            urge '©08Nsv', MKTS.CARET.as_url app, matter
+            #.................................................................................................
+            if caret[ 'column-nr' ] > column_count
+              page                  = null
+              columns               = null
+              column_count          = null
+              target_height_px      = null
+              caret[ 'column-nr' ]  = 1
+              caret[ 'page-nr'   ] += +1
+              caret[ 'y.px'      ]  = 0
+              help '©l4U89', MKTS.CARET.as_url app, matter
+        #...................................................................................................
+        if end?
+          # help "spent #{dt}ms doing `column.append block` etc"
+          end()
+
+          # t_A_0 = now()            # +++++++++++++++++++++++++++++++++++++++
+          # dt_A = 0                 # +++++++++++++++++++++++++++++++++++++++
+          # dt_B = 0                 # +++++++++++++++++++++++++++++++++++++++
+          # t_A_1 = now()            # +++++++++++++++++++++++++++++++++++++++
+          # dt_A += t_A_1 - t_A_0    # +++++++++++++++++++++++++++++++++++++++
+          # t_B_0 = now()            # +++++++++++++++++++++++++++++++++++++++
+          # t_B_1 = now()            # +++++++++++++++++++++++++++++++++++++++
+          # dt_B += t_B_1 - t_B_0    # +++++++++++++++++++++++++++++++++++++++
+          # help "dt_A: #{ƒ dt_A}ms" # +++++++++++++++++++++++++++++++++++++++
+          # help "dt_B: #{ƒ dt_B}ms" # +++++++++++++++++++++++++++++++++++++++
+
     # #.......................................................................................................
     # .pipe do =>
     #   return $ ( block_infos, send ) =>

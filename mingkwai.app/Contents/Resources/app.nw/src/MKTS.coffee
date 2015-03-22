@@ -166,7 +166,6 @@ module.exports = ( _app ) ->
   millimeter: ###
   { jQuery
     window }  = app
-  # gauge_jq                      = jQuery '#meter-gauge'
   gauge_jq    = jQuery "<div id='meter-gauge' style='position:absolute;width:1000mm;'></div>"
   ( jQuery 'body' ).append gauge_jq
   #.........................................................................................................
@@ -183,7 +182,7 @@ module.exports = ( _app ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @GAUGE._get = ( app ) =>
-  ( @GAUGE.set_ratios app ) unless ( ( R = app[ 'gauge' ] )[ 'px-per-mm' ] )?
+  ( @GAUGE.set_ratios app ) unless ( ( R = app[ 'gauge' ] )[ 'rpx-per-mm' ] )?
   return R
 
 #-----------------------------------------------------------------------------------------------------------

@@ -42,9 +42,13 @@
 
 @font-face
   font-family:            'cjk'
-  src:                    local( 'sunflower-u-cjk-xb' )
+  // src:                    local( 'sunflower-u-cjk-xb' )
+  // src:                    url( './fonts/cjk/Sun-ExtB.ttf' )
+  // src:                    url( '/private/tmp/Untitled1.ttf' )
+  src:                    local( 'HanaMinB' )
   unicode-range: \
-    U+20000-2b81f         // CJK Unified Ideographs Extension B      u-cjk-xb
+    U+20000-2a6df,        // CJK Unified Ideographs Extension B      u-cjk-xb
+    U+2a700-2b73f         // CJK Unified Ideographs Extension C      u-cjk-xc
 
 @font-face
   font-family:            'cjk'
@@ -52,5 +56,9 @@
   unicode-range:          U+e000-f8ff
 
 @font-face
-  font-family:            'jzr-babel'
+  font-family:            'mkts-babel'
   src:                    local( 'BabelStone Han' )
+
+mkts-babel
+  font-family:            'mkts-babel'
+

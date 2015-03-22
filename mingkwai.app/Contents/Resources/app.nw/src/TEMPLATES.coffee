@@ -141,7 +141,17 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         JS  './materialize/js/materialize.min.js'
         CSS './mkts-main.css'
       #=====================================================================================================
-      BODY style: "transform:scale(3);transform-origin:top left;", =>
+      BODY style: "transform:scale(2);transform-origin:top left;", =>
+        H1 => """Ligatures"""
+        P =>
+          TEXT """Standard Ligatures* (feature liga): fluffy, shy, official; """
+          EM """gg, nagy, gjuha, Qyteti."""
+        #...................................................................................................
+        H1 => """Unicode Ranges"""
+        DIV =>
+          for cids in [ [ 0x2a6d6 - 9 .. 0x2a6d6 ], [ 0x2a700 .. 0x2a70a ], ]
+            for cid in cids
+              TEXT CHR.as_uchr cid
         for [ cid, _, rsg, ] in triplets
           P =>
             # SPAN style: "font-family:'cjk','lastresort';", =>
@@ -150,6 +160,8 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
                 SPAN style: "display:inline-block;", => CHR.as_uchr cid + i
             SPAN =>
               TEXT "(#{rsg})"
+        #...................................................................................................
+        H1 => """Other Stuff"""
         P style: "font-family:'spincycle-eot','lastresort';", =>
           SPAN => "一丁"
           SPAN => "abcdef (spincycle-eot)"
@@ -268,6 +280,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
         JS  './jquery.event.drag-2.2/jquery.event.drag-2.2.js'
         JS  './outerHTML-2.1.0.js'
+        JS  '../node_modules/jquery-replace-text/jquery-replace-text.js'
         JS  './blaidddrwg.js'
         # JS  './convertPointFromPageToNode.js'
         JS  './jquery-transit.js'

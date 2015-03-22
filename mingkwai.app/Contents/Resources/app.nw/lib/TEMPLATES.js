@@ -279,9 +279,43 @@
             return CSS('./mkts-main.css');
           });
           return BODY({
-            style: "transform:scale(3);transform-origin:top left;"
+            style: "transform:scale(2);transform-origin:top left;"
           }, function() {
             var cid, rsg, _, _i, _len, _ref;
+            H1(function() {
+              return "Ligatures";
+            });
+            P(function() {
+              TEXT("Standard Ligatures* (feature liga): fluffy, shy, official; ");
+              return EM("gg, nagy, gjuha, Qyteti.");
+            });
+            H1(function() {
+              return "Unicode Ranges";
+            });
+            DIV(function() {
+              var cid, cids, _i, _j, _len, _ref, _ref1, _results, _results1;
+              _ref1 = [
+                (function() {
+                  _results1 = [];
+                  for (var _j = _ref = 0x2a6d6 - 9; _ref <= 0x2a6d6 ? _j <= 0x2a6d6 : _j >= 0x2a6d6; _ref <= 0x2a6d6 ? _j++ : _j--){ _results1.push(_j); }
+                  return _results1;
+                }).apply(this), [173824, 173825, 173826, 173827, 173828, 173829, 173830, 173831, 173832, 173833, 173834]
+              ];
+              _results = [];
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                cids = _ref1[_i];
+                _results.push((function() {
+                  var _k, _len1, _results2;
+                  _results2 = [];
+                  for (_k = 0, _len1 = cids.length; _k < _len1; _k++) {
+                    cid = cids[_k];
+                    _results2.push(TEXT(CHR.as_uchr(cid)));
+                  }
+                  return _results2;
+                })());
+              }
+              return _results;
+            });
             for (_i = 0, _len = triplets.length; _i < _len; _i++) {
               _ref = triplets[_i], cid = _ref[0], _ = _ref[1], rsg = _ref[2];
               P(function() {
@@ -302,6 +336,9 @@
                 });
               });
             }
+            H1(function() {
+              return "Other Stuff";
+            });
             P({
               style: "font-family:'spincycle-eot','lastresort';"
             }, function() {
@@ -445,6 +482,7 @@
             JS('./jquery-ui-1.11.3.custom/jquery-ui.js');
             JS('./jquery.event.drag-2.2/jquery.event.drag-2.2.js');
             JS('./outerHTML-2.1.0.js');
+            JS('../node_modules/jquery-replace-text/jquery-replace-text.js');
             JS('./blaidddrwg.js');
             JS('./jquery-transit.js');
             JS('./browser.js');

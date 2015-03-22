@@ -119,7 +119,7 @@
   this.GAUGE._get = (function(_this) {
     return function(app) {
       var R;
-      if ((R = app['gauge'])['px-per-mm'] == null) {
+      if ((R = app['gauge'])['rpx-per-mm'] == null) {
         _this.GAUGE.set_ratios(app);
       }
       return R;

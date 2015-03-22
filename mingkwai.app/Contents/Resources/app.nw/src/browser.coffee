@@ -265,9 +265,9 @@ demo_count = 0
 #-----------------------------------------------------------------------------------------------------------
 MKTS.demo = ( me ) ->
   debug '©iNl2F', 'demo'
-  # md = """<em>Ab<xsmall>c</xsmall>d<xbig>e</xbig>ffiVA</em>"""
-  # md = """Xxxxxxxxxxxxxxxx, she noticed xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"""
-  # md = """
+  # source = """<em>Ab<xsmall>c</xsmall>d<xbig>e</xbig>ffiVA</em>"""
+  # source = """Xxxxxxxxxxxxxxxx, she noticed xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"""
+  # source = """
 
 
   #   # Behind the Looking-Glass
@@ -299,16 +299,16 @@ MKTS.demo = ( me ) ->
   #   one of the trees had a door
   #   leading right into it. 'That's very curious!' she thought.
   #   """
-  # md = "one <xbig>line</xbig>\n\n" +  md[ .. 500 ] + ( 'ddd' for i in [ 0 .. 150 ] ).join ' '
+  # source = "one <xbig>line</xbig>\n\n" +  source[ .. 500 ] + ( 'ddd' for i in [ 0 .. 150 ] ).join ' '
   # demo_count += +1
   # if demo_count is 1
-  #   md = """
+  #   source = """
   #     # Test
 
   #     just a **test**. *ffi*. abcdefghijklm Q Qu Queen the most unbelievable story."""
-  # debug '©uvL5t', md.length
-  # md = "Just as shé said this, she fluffi *noticed* that abc def ghi jkl mno pqr stu vwx xy"
-  md = """
+  # debug '©uvL5t', source.length
+  # source = "Just as shé said this, she fluffi *noticed* that abc def ghi jkl mno pqr stu vwx xy"
+  source = """
 
     # Behind the Looking-Glass
 
@@ -351,13 +351,14 @@ MKTS.demo = ( me ) ->
     30 <br>
 
     """
-  md = require './demo-text'
-  md = njs_fs.readFileSync '/tmp/tailer', encoding: 'utf-8'
+  # source = require './demo-text'
+  source = njs_fs.readFileSync '/tmp/kwic.html', encoding: 'utf-8'
+  help "source: approx. #{source.length} characters"
   settings =
     'format':   'html'
   step ( resume ) =>
     yield MKTS.VIEW.show_galley resume
-    LINESETTER.demo me, md, settings, ( error ) =>
+    LINESETTER.demo me, source, settings, ( error ) =>
       # MKTS.revert_zoom me
       help "MKTS.demo ok"
   return null
