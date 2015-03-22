@@ -16,7 +16,11 @@ debug                     = CND.get_logger 'debug',   badge
 # whisper                   = CND.get_logger 'whisper', badge
 # help                      = CND.get_logger 'help',    badge
 # echo                      = CND.echo.bind CND
-
+#...........................................................................................................
+# TEACUP                    = require 'coffeenode-teacup'
+# new_tag                   = TEACUP.TAG.bind     TEACUP
+# render                    = TEACUP.render.bind  TEACUP
+# raw                       = TEACUP.RAW.bind     TEACUP
 
 
 ### TAINT this module should be separated from the app proper; make it a plugin? ###
@@ -25,183 +29,187 @@ debug                     = CND.get_logger 'debug',   badge
 `龺` will always receive a markup stating that font `BabelStone Han` should be used for display even when
 the contextual style calls for, say, a Heiti-style font. ###
 
-### TAINT `glyph_replacements` should be a list ###
-
-### TAINT consider to consolidate list into fewer rules ###
 
 #...........................................................................................................
 glyph_replacements =
   ### 'Late Additions' in upper part of CJK unified ideographs (Unicode v5.2); glyphs are missing
     from Sun-ExtA but are included in BabelstoneHan: ###
-  '龺':            "<mkts-babel>龺</mkts-babel>"
-  '龻':            "<mkts-babel>龻</mkts-babel>"
-  '龼':            "<mkts-babel>龼</mkts-babel>"
-  '龽':            "<mkts-babel>龽</mkts-babel>"
-  '龾':            "<mkts-babel>龾</mkts-babel>"
-  '龿':            "<mkts-babel>龿</mkts-babel>"
-  '鿀':            "<mkts-babel>鿀</mkts-babel>"
-  '鿁':            "<mkts-babel>鿁</mkts-babel>"
-  '鿂':            "<mkts-babel>鿂</mkts-babel>"
-  '鿃':            "<mkts-babel>鿃</mkts-babel>"
-  '鿄':            "<mkts-babel>鿄</mkts-babel>"
-  '鿅':            "<mkts-babel>鿅</mkts-babel>"
-  '鿆':            "<mkts-babel>鿆</mkts-babel>"
-  '鿇':            "<mkts-babel>鿇</mkts-babel>"
-  '鿈':            "<mkts-babel>鿈</mkts-babel>"
-  '鿉':            "<mkts-babel>鿉</mkts-babel>"
-  '鿊':            "<mkts-babel>鿊</mkts-babel>"
-  '鿋':            "<mkts-babel>鿋</mkts-babel>"
-  '鿌':            "<mkts-babel>鿌</mkts-babel>"
+  '龺':            tag: 'mkts-babel' # >龺</mkts-babel>"
+  '龻':            tag: 'mkts-babel' # >龻</mkts-babel>"
+  '龼':            tag: 'mkts-babel' # >龼</mkts-babel>"
+  '龽':            tag: 'mkts-babel' # >龽</mkts-babel>"
+  '龾':            tag: 'mkts-babel' # >龾</mkts-babel>"
+  '龿':            tag: 'mkts-babel' # >龿</mkts-babel>"
+  '鿀':            tag: 'mkts-babel' # >鿀</mkts-babel>"
+  '鿁':            tag: 'mkts-babel' # >鿁</mkts-babel>"
+  '鿂':            tag: 'mkts-babel' # >鿂</mkts-babel>"
+  '鿃':            tag: 'mkts-babel' # >鿃</mkts-babel>"
+  '鿄':            tag: 'mkts-babel' # >鿄</mkts-babel>"
+  '鿅':            tag: 'mkts-babel' # >鿅</mkts-babel>"
+  '鿆':            tag: 'mkts-babel' # >鿆</mkts-babel>"
+  '鿇':            tag: 'mkts-babel' # >鿇</mkts-babel>"
+  '鿈':            tag: 'mkts-babel' # >鿈</mkts-babel>"
+  '鿉':            tag: 'mkts-babel' # >鿉</mkts-babel>"
+  '鿊':            tag: 'mkts-babel' # >鿊</mkts-babel>"
+  '鿋':            tag: 'mkts-babel' # >鿋</mkts-babel>"
+  '鿌':            tag: 'mkts-babel' # >鿌</mkts-babel>"
   #.........................................................................................................
   ### This glyph is damaged in Sun-ExtA; it happens to be included in HanaMinA: ###
-  '䗍':            "\\cnxHanaA{䗍}"
+  '䗍':            tag: 'mkts-hanaa' # "<mkts-hanaa>䗍</mkts-hanaa>"
+  #.........................................................................................................
+  '&#x3000;':      tag: 'mkts-jzr', glyph: ''
+  '囗':            tag: 'mkts-jzr', glyph: ''
   #.........................................................................................................
   ### Shifted glyphs: ###
-  '&#x3000;':      "\\cnjzr{}"
-  '《':            "\\prPushRaise{0}{-0.2}{\\jzrFontSunXA{《}}"
-  '》':            "\\prPushRaise{0}{-0.2}{\\jzrFontSunXA{》}}"
-  # '':   "\\cnjzr{}"
-  # '&jzr#xe352;':   "\\cnjzr{}"
-  '囗':            "\\cnjzr{}"
-  '。':            "\\prPushRaise{0.5}{0.25}{\\cn{。}}"
-  '亻':            "\\prPush{0.4}{\\cn{亻}}"
-  '冫':            "\\prPush{0.5}{\\cn{冫}}"
-  '灬':            "\\prRaise{0.25}{\\cn{灬}}"
-  '爫':            "\\prRaise{-0.125}{\\cn{爫}}"
-  '牜':            "\\prPush{0.4}{\\cn{牜}}"
-  '飠':            "\\prPush{0.4}{\\cn{飠}}"
-  '扌':            "\\prPush{0.05}{\\cn{扌}}"
-  '犭':            "\\prPush{0.3}{\\cn{犭}}"
-  '忄':            "\\prPush{0.4}{\\cn{忄}}"
-  '礻':            "\\prPush{0.2}{\\cn{礻}}"
-  '衤':            "\\prPush{0.1}{\\cn{衤}}"
-  '覀':            "\\prRaise{-0.125}{\\cn{覀}}"
-  '讠':            "\\prPush{0.4}{\\cn{讠}}"
-  '𧾷':            "\\prPush{0.4}{\\cnxb{𧾷}}"
-  '卩':            "\\prPush{-0.4}{\\cn{卩}}"
-  '癶':            "\\prRaise{-0.2}{\\cnxBabel{癶}}"
-  '':            "\\prRaise{0.1}{\\cnxJzr{}}"
-  '':            "\\prPushRaise{0.5}{-0.2}{\\cnxJzr{}}"
-  '乛':            "\\prRaise{-0.2}{\\cn{乛}}"
-  '糹':            "\\prPush{0.4}{\\cn{糹}}"
-  '纟':            "\\prPush{0.4}{\\cn{纟}}"
-  '𥫗':            "\\prRaise{-0.2}{\\cnxb{𥫗}}"
-  '罓':            "\\prRaise{-0.2}{\\cn{罓}}"
-  '钅':            "\\prPush{0.3}{\\cn{钅}}"
-  '阝':            "\\prPush{0.4}{\\cn{阝}}"
-  '龵':            "\\prRaise{-0.1}{\\cnxBabel{龵}}"
-  '𩰊':            "\\prPush{-0.15}{\\cnxb{𩰊}}"
-  '𩰋':            "\\prPush{0.15}{\\cnxb{𩰋}}"
-  '彳':            "\\prPush{0.15}{\\cn{彳}}"
-  '龹':            "\\prRaise{-0.12}{\\cn{龹}}"
-  '龸':            "\\prRaise{-0.15}{\\cn{龸}}"
-  '䒑':            "\\prRaise{-0.15}{\\cnxa{䒑}}"
-  '宀':            "\\prRaise{-0.15}{\\cn{宀}}"
-  '〇':            "\\prRaise{-0.05}{\\cnxBabel{〇}}"
+  '《':            push: 0.0,  raise: -0.2, tag: 'mkts-sunxa' # "\\prPushRaise{0}{-0.2}{<mkts-sunxa>《<mkts-sunxa>}"
+  '》':            push: 0.0,  raise: -0.2, tag: 'mkts-sunxa' # "\\prPushRaise{0}{-0.2}{<mkts-sunxa>》<mkts-sunxa>}"
+  '':            push: 0.5,  raise: -0.2, tag: 'mkts-jzr'   # "\\prPushRaise{0.5}{-0.2}{<mkts-jzr></mkts-jzr>}"
+  '。':            push: 0.5,  raise: 0.25, tag: 'mkts-sunxa' # "\\prPushRaise{0.5}{0.25}{<mkts-sunxa>。</mkts-sunxa>}"
+  # '':   "<mkts-jzr></mkts-jzr>"
+  # '&jzr#xe352;':   "<mkts-jzr></mkts-jzr>"
+  '亻':            push:   0.4,    tag: 'mkts-sunxa'
+  '冫':            push:   0.5,    tag: 'mkts-sunxa'
+  '牜':            push:   0.4,    tag: 'mkts-sunxa'
+  '飠':            push:   0.4,    tag: 'mkts-sunxa'
+  '扌':            push:   0.05,   tag: 'mkts-sunxa'
+  '犭':            push:   0.3,    tag: 'mkts-sunxa'
+  '忄':            push:   0.4,    tag: 'mkts-sunxa'
+  '礻':            push:   0.2,    tag: 'mkts-sunxa'
+  '衤':            push:   0.1,    tag: 'mkts-sunxa'
+  '讠':            push:   0.4,    tag: 'mkts-sunxa'
+  '𧾷':            push:   0.4,    tag: 'mkts-sunxb'
+  '卩':            push:  -0.4,    tag: 'mkts-sunxa'
+  '糹':            push:   0.4,    tag: 'mkts-sunxa'
+  '纟':            push:   0.4,    tag: 'mkts-sunxa'
+  '钅':            push:   0.3,    tag: 'mkts-sunxa'
+  '阝':            push:   0.4,    tag: 'mkts-sunxa'
+  '𩰊':            push:  -0.15,   tag: 'mkts-sunxb'
+  '𩰋':            push:   0.15,   tag: 'mkts-sunxb'
+  '彳':            push:   0.15,   tag: 'mkts-sunxa'
+  '':            raise:  0.1,    tag: 'mkts-jzr'
+  '灬':            raise:  0.45,   tag: 'mkts-sunxa'
+  '爫':            raise: -0.125,  tag: 'mkts-sunxa'
+  '覀':            raise: -0.125,  tag: 'mkts-sunxa'
+  '癶':            raise: -0.2,    tag: 'mkts-babel'
+  '乛':            raise: -0.2,    tag: 'mkts-sunxa'
+  '𥫗':            raise: -0.2,    tag: 'mkts-sunxb'
+  '罓':            raise: -0.2,    tag: 'mkts-sunxa'
+  '龵':            raise: -0.1,    tag: 'mkts-babel'
+  # '龹':            raise: -0.12,   tag: 'mkts-sunxa'
+  '龸':            raise: -0.15,   tag: 'mkts-sunxa'
+  # '䒑':            raise: -0.15,   tag: 'mkts-sunxa'
+  '宀':            raise: -0.15,   tag: 'mkts-sunxa'
+  '〇':            raise: -0.05,   tag: 'mkts-babel'
   #.........................................................................................................
-  ### Glyphs represented by other codepoints and/or with other than the standard fonts: ###
-  # '⺊':            "\\cnxHanaA{⺊}"
-  # '⺑':            "\\cnxHanaA{⺑}"
-  # '⺕':            "\\cnxHanaA{⺕}"
-  # '⺴':            "\\cnxHanaA{⺴}"
-  # '⺿':            "\\cnxHanaA{⺿}"
-  # '〆':            "\\cnxHanaA{〆}"
-  # '〻':            "\\cnxHanaA{〻}"
-  # '㇀':            "\\cnxHanaA{㇀}"
-  # '㇊':            "\\cnxHanaA{㇊}"
-  # '㇎':            "\\cnxHanaA{㇎}"
-  # '㇏':            "\\cnxHanaA{㇏}"
-  # '丷':            "\\cnxHanaA{丷}"
-  # '饣':            "\\cnxHanaA{饣}"
-  '⺀':            "\\cnxHanaA{⺀}"
-  '⺀':            "\\cnxHanaA{⺀}"
-  '⺄':            "\\cnxHanaA{⺄}"
-  '⺆':            "\\cnxBabel{⺆}"
-  '⺌':            "\\cnxHanaA{⺌}"
-  '⺍':            "\\cnxHanaA{⺍}"
-  '⺍':            "\\cnxHanaA{⺍}"
-  '⺗':            "\\cnxHanaA{⺗}"
-  '⺝':            "\\cnxBabel{⺝}"
-  '⺝':            "\\cnxHanaA{⺝}"
-  '⺥':            "\\cnxHanaA{⺥}"
-  '⺳':            "\\cnxHanaA{⺳}"
-  '⺶':            "\\cnxBabel{⺶}"
-  '⺻':            "\\cnxHanaA{⺻}"
-  '⺼':            "\\cnxBabel{⺼}"
-  '覀':            "\\cnxJzr{}"
-  '⻗':            "\\cnxJzr{}"
-  '𡗗':            "\\cnxJzr{}"
-  '〓':            "\\cnxBabel{〓}"
-  '〓':            "\\cnxBabel{〓}"
-  '〢':            "\\cnxSunXA{〢}"
-  '〣':            "\\cnxSunXA{〣}"
-  '〥':            "\\cnxBabel{〥}"
-  '〥':            "\\cnxSunXA{〥}"
-  '〧':            "\\cnxBabel{〧}"
-  '〨':            "\\cnxBabel{〨}"
-  '〽':            "\\cnxSunXA{〽}"
-  '丿':            "\\cnxJzr{}"
-  '㇁':            "\\cnxBabel{㇁}"
-  '㇂':            "\\cnxHanaA{㇂}"
-  '㇃':            "\\cnxBabel{㇃}"
-  '㇄':            "\\cnxBabel{㇄}"
-  '㇅':            "\\cnxBabel{㇅}"
-  '㇈':            "\\cnxBabel{㇈}"
-  '㇉':            "\\cnxHanaA{㇉}"
-  '㇋':            "\\cnxBabel{㇋}"
-  '㇌':            "\\cnxHanaA{㇌}"
-  '㇢':            "\\cnxHanaA{㇢}"
-  '㓁':            "\\cnxBabel{㓁}"
-  '冖':            "\\cnxHanaA{冖}"
-  '刂':            "\\cnxHanaA{刂}"
-  '氵':            "\\cnxHanaA{氵}"
-  '罒':            "\\cnxHanaA{罒}"
-  '龴':            "\\cnxHanaA{龴}"
-  '𠂉':            "\\cnxHanaA{𠂉}"
-  '帯':            "\\cnxHanaA{帯}"
-  '齒':            "\\cnxBabel{齒}"
-  '龰':            "\\cnxBabel{龰}"
-  '𤴔':            "\\cnxBabel{𤴔}"
-  '㐃':            "\\cnxBabel{㐃}"
-  '𠥓':            "\\cnxJzr{}"
-  '𠚜':            "\\cnxHanaB{𠚜}"
-  '𠚡':            "\\cnxHanaB{𠚡}"
-  '𠥧':            "\\cnxHanaB{𠥧}"
-  '𠥩':            "\\cnxHanaB{𠥩}"
-  '𠥪':            "\\cnxHanaB{𠥪}"
-  '𠥫':            "\\cnxHanaB{𠥫}"
-  '𠥬':            "\\cnxHanaB{𠥬}"
-  '𧀍':            "\\cnxHanaB{𧀍}"
-  '龷':            "\\cnxJzr{}"
-  '龶':            "\\cnxJzr{}"
+  ### Glyphs represented by other codepoints: ###
+  '覀':            tag: 'mkts-jzr', glyph: '' # "<mkts-jzr></mkts-jzr>"
+  '⻗':            tag: 'mkts-jzr', glyph: '' # "<mkts-jzr></mkts-jzr>"
+  '𡗗':            tag: 'mkts-jzr', glyph: '' # "<mkts-jzr></mkts-jzr>"
+  '丿':            tag: 'mkts-jzr', glyph: '' # "<mkts-jzr></mkts-jzr>"
+  '𠥓':            tag: 'mkts-jzr', glyph: '' # "<mkts-jzr></mkts-jzr>"
+  '龷':            tag: 'mkts-jzr', glyph: '' # "<mkts-jzr></mkts-jzr>"
+  '龶':            tag: 'mkts-jzr', glyph: '' # "<mkts-jzr></mkts-jzr>"
+  #.........................................................................................................
+  # '⺊':            "<mkts-hanaa>⺊</mkts-hanaa>"
+  # '⺑':            "<mkts-hanaa>⺑</mkts-hanaa>"
+  # '⺕':            "<mkts-hanaa>⺕</mkts-hanaa>"
+  # '⺴':            "<mkts-hanaa>⺴</mkts-hanaa>"
+  # '⺿':            "<mkts-hanaa>⺿</mkts-hanaa>"
+  # '〆':            "<mkts-hanaa>〆</mkts-hanaa>"
+  # '〻':            "<mkts-hanaa>〻</mkts-hanaa>"
+  # '㇀':            "<mkts-hanaa>㇀</mkts-hanaa>"
+  # '㇊':            "<mkts-hanaa>㇊</mkts-hanaa>"
+  # '㇎':            "<mkts-hanaa>㇎</mkts-hanaa>"
+  # '㇏':            "<mkts-hanaa>㇏</mkts-hanaa>"
+  # '丷':            "<mkts-hanaa>丷</mkts-hanaa>"
+  # '饣':            "<mkts-hanaa>饣</mkts-hanaa>"
+  '⺆':           tag: 'mkts-babel' # "<mkts-babel>⺆</mkts-babel>"
+  '⺝':           tag: 'mkts-babel' # "<mkts-babel>⺝</mkts-babel>"
+  '⺶':           tag: 'mkts-babel' # "<mkts-babel>⺶</mkts-babel>"
+  '⺼':           tag: 'mkts-babel' # "<mkts-babel>⺼</mkts-babel>"
+  '〓':           tag: 'mkts-babel' # "<mkts-babel>〓</mkts-babel>"
+  '〥':           tag: 'mkts-babel' # "<mkts-babel>〥</mkts-babel>"
+  '〧':           tag: 'mkts-babel' # "<mkts-babel>〧</mkts-babel>"
+  '〨':           tag: 'mkts-babel' # "<mkts-babel>〨</mkts-babel>"
+  '㇁':           tag: 'mkts-babel' # "<mkts-babel>㇁</mkts-babel>"
+  '㇃':           tag: 'mkts-babel' # "<mkts-babel>㇃</mkts-babel>"
+  '㇄':           tag: 'mkts-babel' # "<mkts-babel>㇄</mkts-babel>"
+  '㇅':           tag: 'mkts-babel' # "<mkts-babel>㇅</mkts-babel>"
+  '㇈':           tag: 'mkts-babel' # "<mkts-babel>㇈</mkts-babel>"
+  '㇋':           tag: 'mkts-babel' # "<mkts-babel>㇋</mkts-babel>"
+  '㓁':           tag: 'mkts-babel' # "<mkts-babel>㓁</mkts-babel>"
+  '齒':           tag: 'mkts-babel' # "<mkts-babel>齒</mkts-babel>"
+  '龰':           tag: 'mkts-babel' # "<mkts-babel>龰</mkts-babel>"
+  '𤴔':           tag: 'mkts-babel' # "<mkts-babel>𤴔</mkts-babel>"
+  '㐃':           tag: 'mkts-babel' # "<mkts-babel>㐃</mkts-babel>"
+  '⺀':           tag: 'mkts-hanaa' # "<mkts-hanaa>⺀</mkts-hanaa>"
+  '⺄':           tag: 'mkts-hanaa' # "<mkts-hanaa>⺄</mkts-hanaa>"
+  '⺌':           tag: 'mkts-hanaa' # "<mkts-hanaa>⺌</mkts-hanaa>"
+  '⺍':           tag: 'mkts-hanaa' # "<mkts-hanaa>⺍</mkts-hanaa>"
+  '⺗':           tag: 'mkts-hanaa' # "<mkts-hanaa>⺗</mkts-hanaa>"
+  '⺝':           tag: 'mkts-hanaa' # "<mkts-hanaa>⺝</mkts-hanaa>"
+  '⺥':           tag: 'mkts-hanaa' # "<mkts-hanaa>⺥</mkts-hanaa>"
+  '⺳':           tag: 'mkts-hanaa' # "<mkts-hanaa>⺳</mkts-hanaa>"
+  '⺻':           tag: 'mkts-hanaa' # "<mkts-hanaa>⺻</mkts-hanaa>"
+  '㇂':           tag: 'mkts-hanaa' # "<mkts-hanaa>㇂</mkts-hanaa>"
+  '㇉':           tag: 'mkts-hanaa' # "<mkts-hanaa>㇉</mkts-hanaa>"
+  '㇌':           tag: 'mkts-hanaa' # "<mkts-hanaa>㇌</mkts-hanaa>"
+  '㇢':           tag: 'mkts-hanaa' # "<mkts-hanaa>㇢</mkts-hanaa>"
+  '冖':           tag: 'mkts-hanaa' # "<mkts-hanaa>冖</mkts-hanaa>"
+  '刂':           tag: 'mkts-hanaa' # "<mkts-hanaa>刂</mkts-hanaa>"
+  '氵':           tag: 'mkts-hanaa' # "<mkts-hanaa>氵</mkts-hanaa>"
+  '罒':           tag: 'mkts-hanaa' # "<mkts-hanaa>罒</mkts-hanaa>"
+  '龴':           tag: 'mkts-hanaa' # "<mkts-hanaa>龴</mkts-hanaa>"
+  '𠂉':           tag: 'mkts-hanaa' # "<mkts-hanaa>𠂉</mkts-hanaa>"
+  '帯':           tag: 'mkts-hanaa' # "<mkts-hanaa>帯</mkts-hanaa>"
+  '𠚜':           tag: 'mkts-hanab' # "<mkts-hanab>𠚜</mkts-hanab>"
+  '𠚡':           tag: 'mkts-hanab' # "<mkts-hanab>𠚡</mkts-hanab>"
+  '𠥧':           tag: 'mkts-hanab' # "<mkts-hanab>𠥧</mkts-hanab>"
+  '𠥩':           tag: 'mkts-hanab' # "<mkts-hanab>𠥩</mkts-hanab>"
+  '𠥪':           tag: 'mkts-hanab' # "<mkts-hanab>𠥪</mkts-hanab>"
+  '𠥫':           tag: 'mkts-hanab' # "<mkts-hanab>𠥫</mkts-hanab>"
+  '𠥬':           tag: 'mkts-hanab' # "<mkts-hanab>𠥬</mkts-hanab>"
+  '𧀍':           tag: 'mkts-hanab' # "<mkts-hanab>𧀍</mkts-hanab>"
+  '〢':           tag: 'mkts-sunxa' # "<mkts-sunxa>〢</mkts-sunxa>"
+  '〣':           tag: 'mkts-sunxa' # "<mkts-sunxa>〣</mkts-sunxa>"
+  '〥':           tag: 'mkts-sunxa' # "<mkts-sunxa>〥</mkts-sunxa>"
+  '〽':           tag: 'mkts-sunxa' # "<mkts-sunxa>〽</mkts-sunxa>"
+
+#-----------------------------------------------------------------------------------------------------------
+translate = ( source_glyph, settings ) ->
+  { tag
+    glyph
+    push
+    raise }     = settings
+  #.........................................................................................................
+  target_glyph  = glyph ? source_glyph
+  R             = if tag? then "<#{tag}>#{target_glyph}</#{tag}>" else target_glyph
+  #.........................................................................................................
+  if push? or raise?
+    style   = ''
+    style  +=  "left:#{push}ex;" if  push?
+    style  += "top:#{-raise}em;" if raise?
+    R       = "<shift style='#{style}'>#{R}</shift>"
+  #.........................................................................................................
+  return R
+
 
 ############################################################################################################
-module.exports = R = []
-for matcher, replacement of glyph_replacements
-  matcher = new RegExp matcher, 'g' if CND.isa_text matcher
-  R.push [ matcher, replacement, ]
+module.exports = {}
+do ->
+  for source_glyph, settings of glyph_replacements
+    throw new Error "duplicate key: #{rpr source_glyph}" if module.exports[ source_glyph ]?
+    module.exports[ source_glyph ] = translate source_glyph, settings
 
 
+###
 
+'〽': tag: 'mkts-sunxa' => """<mkts-sunxa>〽</mkts-sunxa>"""
+'彳': push:   0.15, tag: 'mkts-sunxa' => """<shift style='left:-0.15em;'><mkts-sunxa>彳</mkts-sunxa></shift>"""
+'': raise:  0.1,  tag: 'mkts-jzr'   => """<shift style='top:-0.1em'><mkts-jzr></mkts-jzr></shift>"""
+'。': push:   0.5,  raise: 0.25, tag: 'mkts-sunxa' => """<shift style='left:-0.5em;top:-0.25em'><mkts-sunxa>。</mkts-sunxa></shift>"""
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+###
 
 
 

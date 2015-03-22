@@ -33,6 +33,7 @@ glyph_replacements        = require './glyph-replacements'
 ### https://github.com/meryn/performance-now ###
 now                       = require 'performance-now'
 
+
   # #---------------------------------------------------------------------------------------------------------
   # has_hanging_margin = ( hotml ) ->
   #   # debug '©mnhYJ',  ( CND.last_of ( CND.last_of hotml )[ 1 ] ), ( CND.last_of ( CND.last_of hotml )[ 1 ] ) in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ]
@@ -140,7 +141,6 @@ now                       = require 'performance-now'
     .pipe as_html
     #.......................................................................................................
     # .pipe D.$show()
-    # .pipe D.HTML.$parse disperse: no, hyphenation: yes, whitespace: no, chrs: no
     # #.......................................................................................................
     # .pipe $ ( html, send ) =>
     #   ### TAINT adhoc method to avoid wrapping `<kwic-lineup>` tags inside a `<p>` ###
@@ -149,12 +149,25 @@ now                       = require 'performance-now'
     .pipe do =>
       ### TAINT temporary fix for CJK Ext. B-related bug; see
       https://productforums.google.com/forum/#!category-topic/chrome/report-a-problem-and-get-troubleshooting-help/mac/Stable/_bLJl0pNS4Y
-      Regex matches CJK Ext. B codepoints; constructed using http://apps.timwhitlock.info/js/regex
+      Regex matches CJK Ext. B codepoints; constructed using http://apps.timwhitlock.info/js/regex.
       Also see https://github.com/mathiasbynens/regenerate.
       ###
       matcher = /([\ud840-\ud868][\udc00-\udfff]|\ud869[\udc00-\udede]+)/g
       return $ ( html, send ) =>
         send html.replace matcher, '<cjkxbfix>$1</cjkxbfix>'
+    #.......................................................................................................
+    .pipe D.HTML.$split disperse: yes, hyphenation: yes, whitespace: no, chrs: yes
+    #.......................................................................................................
+    .pipe do =>
+      return $ ( tags_and_chrs, send ) =>
+        for element_idx in [ 1 ... tags_and_chrs.length ] by +2
+          text_element = tags_and_chrs[ element_idx ]
+          for chr, chr_idx in text_element
+            text_element[ chr_idx ] = glyph_replacements[ chr ] ? chr
+        send tags_and_chrs
+    #.......................................................................................................
+    .pipe $ ( tags_and_chrs, send ) =>
+      send ( ( if idx % 2 then ( e.join '' ) else e ) for e, idx in tags_and_chrs ).join ''
     #.......................................................................................................
     .pipe do =>
       return $ ( html, send ) =>
@@ -175,21 +188,6 @@ now                       = require 'performance-now'
           '%batch':         batch
           '%blocks':        blocks
           'batch-id':       batch_id
-        send batch_info
-    #.......................................................................................................
-    .pipe do =>
-      return $ ( batch_info, send ) =>
-        blocks          = batch_info[ '%blocks'   ]
-        #...................................................................................................
-        for block_idx in [ 0 ... blocks.length ]
-          block       = blocks.eq block_idx
-          text_nodes  = block.text_nodes()
-          for [ matcher, replacement, ] in glyph_replacements
-            continue unless replacement[ 0 ] is '<'
-            block.replace_text matcher, replacement, text_nodes
-          # block.replace_text /(王)/g, "helo <xbig>$1</xbig> king"
-          # block.replace_text /(王)/g, "helo"
-        #...................................................................................................
         send batch_info
     #.......................................................................................................
     .pipe do =>

@@ -116,7 +116,7 @@
 
         /* TAINT temporary fix for CJK Ext. B-related bug; see
         https://productforums.google.com/forum/#!category-topic/chrome/report-a-problem-and-get-troubleshooting-help/mac/Stable/_bLJl0pNS4Y
-        Regex matches CJK Ext. B codepoints; constructed using http://apps.timwhitlock.info/js/regex
+        Regex matches CJK Ext. B codepoints; constructed using http://apps.timwhitlock.info/js/regex.
         Also see https://github.com/mathiasbynens/regenerate.
          */
         var matcher;
@@ -125,7 +125,39 @@
           return send(html.replace(matcher, '<cjkxbfix>$1</cjkxbfix>'));
         });
       };
-    })(this)()).pipe((function(_this) {
+    })(this)()).pipe(D.HTML.$split({
+      disperse: true,
+      hyphenation: true,
+      whitespace: false,
+      chrs: true
+    })).pipe((function(_this) {
+      return function() {
+        return $(function(tags_and_chrs, send) {
+          var chr, chr_idx, element_idx, text_element, _i, _j, _len, _ref1, _ref2;
+          for (element_idx = _i = 1, _ref1 = tags_and_chrs.length; _i < _ref1; element_idx = _i += +2) {
+            text_element = tags_and_chrs[element_idx];
+            for (chr_idx = _j = 0, _len = text_element.length; _j < _len; chr_idx = ++_j) {
+              chr = text_element[chr_idx];
+              text_element[chr_idx] = (_ref2 = glyph_replacements[chr]) != null ? _ref2 : chr;
+            }
+          }
+          return send(tags_and_chrs);
+        });
+      };
+    })(this)()).pipe($((function(_this) {
+      return function(tags_and_chrs, send) {
+        var e, idx;
+        return send(((function() {
+          var _i, _len, _results;
+          _results = [];
+          for (idx = _i = 0, _len = tags_and_chrs.length; _i < _len; idx = ++_i) {
+            e = tags_and_chrs[idx];
+            _results.push(idx % 2 ? e.join('') : e);
+          }
+          return _results;
+        })()).join(''));
+      };
+    })(this))).pipe((function(_this) {
       return function() {
         return $(function(html, send) {
 
@@ -150,25 +182,6 @@
             '%blocks': blocks,
             'batch-id': batch_id
           };
-          return send(batch_info);
-        });
-      };
-    })(this)()).pipe((function(_this) {
-      return function() {
-        return $(function(batch_info, send) {
-          var block, block_idx, blocks, matcher, replacement, text_nodes, _i, _j, _len, _ref1, _ref2;
-          blocks = batch_info['%blocks'];
-          for (block_idx = _i = 0, _ref1 = blocks.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; block_idx = 0 <= _ref1 ? ++_i : --_i) {
-            block = blocks.eq(block_idx);
-            text_nodes = block.text_nodes();
-            for (_j = 0, _len = glyph_replacements.length; _j < _len; _j++) {
-              _ref2 = glyph_replacements[_j], matcher = _ref2[0], replacement = _ref2[1];
-              if (replacement[0] !== '<') {
-                continue;
-              }
-              block.replace_text(matcher, replacement, text_nodes);
-            }
-          }
           return send(batch_info);
         });
       };
