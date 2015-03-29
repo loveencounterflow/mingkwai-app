@@ -317,6 +317,12 @@ MKTS.open_print_preview = ( me ) ->
     end tell
     """
       # tell process "Preview"
+      #   repeat until exists window "Preview"
+      #   end repeat
+      #   key code 48 using {shift down}
+      #   key code 48 using {shift down}
+      # end tell
+      # tell process "Preview"
       #   keystroke "p" using {shift down, command down}
       # end tell
   #.........................................................................................................

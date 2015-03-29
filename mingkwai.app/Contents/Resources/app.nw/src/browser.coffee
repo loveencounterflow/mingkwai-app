@@ -319,43 +319,83 @@ MKTS.demo = ( me ) ->
     arrived, with a great crowd assembled about them--all sorts of little
     birds and beasts.
 
-    1 <br>
-    2 <br>
-    3 <br>
-    4 <br>
-    5 <br>
-    6 <br>
-    7 <br>
-    8 <br>
-    9 <br>
-    10 <br>
-    11 <br>
-    12 <br>
-    13 <br>
-    14 <br>
-    15 <br>
-    16 <br>
-    17 <br>
-    18 <br>
-    19 <br>
-    20 <br>
-    21 <br>
-    22 <br>
-    23 <br>
-    24 <br>
-    25 <br>
-    26 <br>
-    27 <br>
-    28 <br>
-    29 <br>
-    30 <br>
-
+  """
+  source = """
+    <kwic-lineup>1 中國皇帝</kwic-lineup>
+    <kwic-lineup>2 中國皇帝</kwic-lineup>
+    <kwic-lineup>3 中國皇帝</kwic-lineup>
+    <kwic-lineup>4 中國皇帝</kwic-lineup>
+    <kwic-lineup>5 中國皇帝</kwic-lineup>
+    <kwic-lineup>6 中國皇帝</kwic-lineup>
+    <kwic-lineup>7 中國皇帝</kwic-lineup>
+    <kwic-lineup>8 中國皇帝</kwic-lineup>
+    <kwic-lineup>9 中國皇帝</kwic-lineup>
+    <kwic-lineup>10 中國皇帝</kwic-lineup>
+    <kwic-lineup>11 中國皇帝</kwic-lineup>
+    <kwic-lineup>12 中國皇帝</kwic-lineup>
+    <kwic-lineup>13 中國皇帝</kwic-lineup>
+    <kwic-lineup>14 中國皇帝</kwic-lineup>
+    <kwic-lineup>15 中國皇帝</kwic-lineup>
+    <kwic-lineup>16 中國皇帝</kwic-lineup>
+    <kwic-lineup>17 中國皇帝</kwic-lineup>
+    <kwic-lineup>18 中國皇帝</kwic-lineup>
+    <kwic-lineup>19 中國皇帝</kwic-lineup>
+    <kwic-lineup>20 中國皇帝</kwic-lineup>
+    <kwic-lineup>21 中國皇帝</kwic-lineup>
+    <kwic-lineup>22 中國皇帝</kwic-lineup>
+    <kwic-lineup>23 中國皇帝</kwic-lineup>
+    <kwic-lineup>24 中國皇帝</kwic-lineup>
+    <kwic-lineup>25 中國皇帝</kwic-lineup>
+    <kwic-lineup>26 中國皇帝</kwic-lineup>
+    <kwic-lineup>27 中國皇帝</kwic-lineup>
+    <kwic-lineup>28 中國皇帝</kwic-lineup>
+    <kwic-lineup>29 中國皇帝</kwic-lineup>
+    <kwic-lineup>30 中國皇帝</kwic-lineup>
+    <kwic-lineup>31 中國皇帝</kwic-lineup>
+    <kwic-lineup>32 中國皇帝</kwic-lineup>
+    <kwic-lineup>33 中國皇帝</kwic-lineup>
+    <kwic-lineup>34 中國皇帝</kwic-lineup>
+    <kwic-lineup>35 中國皇帝</kwic-lineup>
+    <kwic-lineup>36 中國皇帝</kwic-lineup>
+    <kwic-lineup>37 中國皇帝</kwic-lineup>
+    <kwic-lineup>38 中國皇帝</kwic-lineup>
+    <kwic-lineup>39 中國皇帝</kwic-lineup>
+    <kwic-lineup>40 中國皇帝</kwic-lineup>
+    <kwic-lineup>41 中國皇帝</kwic-lineup>
+    <kwic-lineup>42 中國皇帝</kwic-lineup>
+    <kwic-lineup>43 中國皇帝</kwic-lineup>
+    <kwic-lineup>44 中國皇帝</kwic-lineup>
+    <kwic-lineup>45 中國皇帝</kwic-lineup>
+    <kwic-lineup>46 中國皇帝</kwic-lineup>
+    <kwic-lineup>47 中國皇帝</kwic-lineup>
+    <kwic-lineup>48 中國皇帝</kwic-lineup>
+    <kwic-lineup>49 中國皇帝</kwic-lineup>
+    <kwic-lineup>50 中國皇帝</kwic-lineup>
+    <kwic-lineup>51 中國皇帝</kwic-lineup>
+    <kwic-lineup>52 中國皇帝</kwic-lineup>
+    <kwic-lineup>53 中國皇帝</kwic-lineup>
+    <kwic-lineup>54 中國皇帝</kwic-lineup>
+    <kwic-lineup>55 中國皇帝</kwic-lineup>
+    <kwic-lineup>56 中國皇帝</kwic-lineup>
+    <kwic-lineup>57 中國皇帝</kwic-lineup>
+    <kwic-lineup>58 中國皇帝</kwic-lineup>
+    <kwic-lineup>59 中國皇帝</kwic-lineup>
+    <kwic-lineup>60 中國皇帝</kwic-lineup>
+    <kwic-lineup>61 中國皇帝</kwic-lineup>
+    <kwic-lineup>62 中國皇帝</kwic-lineup>
+    <kwic-lineup>63 中國皇帝</kwic-lineup>
+    <kwic-lineup>64 中國皇帝</kwic-lineup>
+    <kwic-lineup>65 中國皇帝</kwic-lineup>
+    <kwic-lineup>66 中國皇帝</kwic-lineup>
+    <kwic-lineup>67 中國皇帝</kwic-lineup>
+    <kwic-lineup>68 中國皇帝</kwic-lineup>
     """
   # source = require './demo-text'
-  source = njs_fs.readFileSync '/tmp/kwic.html', encoding: 'utf-8'
+  # source = njs_fs.readFileSync '/tmp/kwic.html', encoding: 'utf-8'
   help "source: approx. #{source.length} characters"
   settings =
     'format':   'html'
+    # 'format':   'md'
   step ( resume ) =>
     yield MKTS.VIEW.show_galley resume
     LINESETTER.demo me, source, settings, ( error ) =>

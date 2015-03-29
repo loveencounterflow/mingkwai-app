@@ -183,6 +183,7 @@ now                       = require 'performance-now'
         batch                   = jQuery "<div id='#{batch_id}' class='mkts-galley-batch'>" + html + "</div>"
         blocks                  = batch.children()
         blocks.wrapInner "<span class='line-counter'></span>"
+        ( blocks.find '.line-counter' ).attr 'id', ( idx ) -> "mkts-lc-#{idx}"
         batch_info              =
           '~isa':           'MKTS/LINESETTER/batch-info'
           '%batch':         batch

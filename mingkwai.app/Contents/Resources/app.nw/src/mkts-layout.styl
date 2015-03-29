@@ -27,29 +27,20 @@ $chase-height               = $paper-height - $gutter-top   - $gutter-bottom
 /* ...................................................................................................... */
 $galley-width               = $paper-width
 
-// /* ...................................................................................................... */
-// // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// $content-width              = $page-width   - $margin-left  - $margin-right
-// $content-height             = $page-height  - $margin-top   - $margin-bottom
-// // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-// $galley-width               = $page-width   - $margin-left  - $margin-right
-// $galley-height              = $page-height  - $margin-top   - $margin-bottom
-
 /* ------------------------------------------------------------------------------------------------------ */
 paper
 page
-  width:                  $paper-width
-  height:                 $paper-height
-  display:                flex
+ width:                  $paper-width
+ height:                 $paper-height
+ display:                flex
 
 /* ------------------------------------------------------------------------------------------------------ */
 galley
-  display:                none
-  min-height:             10mm
-  width:                  $paper-width
-  float:                  left
-  height:                 auto
+ display:                none
+ min-height:             10mm
+ width:                  $paper-width
+ float:                  left
+ height:                 auto
 
 /* ------------------------------------------------------------------------------------------------------ */
 chase
@@ -57,11 +48,13 @@ chase
   left:                   $gutter-left
   top:                    $gutter-top
   width:                  $chase-width
+  /* ### TAINT ### */
   height:                 $chase-height
   display:                flex
   flex-direction:         column
   float:                  left
-  // overflow:               auto
+
+ // overflow:               auto
 
 /* ------------------------------------------------------------------------------------------------------ */
 galley chase
@@ -84,10 +77,11 @@ galley chase
 
 /* ------------------------------------------------------------------------------------------------------ */
 @media print
-  paper
-  page
-    overflow:               hidden
-    page-break-after:       always
+ paper
+ page
+   overflow:               hidden
+   page-break-after:       always
+
 
 /* ====================================================================================================== */
 /* BOXES, COLUMNS & GAPS */
@@ -184,9 +178,6 @@ bottommargin
   topmargin
   bottommargin
     background-color:       $gray
-
-
-
 
 /* ------------------------------------------------------------------------------------------------------ */
 line

@@ -21,7 +21,7 @@ urge                      = CND.get_logger 'urge',      badge
 TEACUP                    = require 'coffeenode-teacup'
 CHR                       = require 'coffeenode-chr'
 #...........................................................................................................
-# STYLUS                    = require 'stylus'
+_STYLUS                   = require 'stylus'
 # as_css                    = STYLUS.render.bind STYLUS
 # style_route               = njs_path.join __dirname, '../src/mingkwai-typesetter.styl'
 # css                       = as_css njs_fs.readFileSync style_route, encoding: 'utf-8'
@@ -68,10 +68,14 @@ HRIBBON             = new_tag ( p... ) -> TAG 'hribbon',          p...
 VRIBBON             = new_tag ( p... ) -> TAG 'vribbon',          p...
 ZOOMER              = new_tag ( p... ) -> TAG 'zoomer',           p...
 COLUMN              = new_tag ( p... ) -> TAG 'column',           p...
+GAP                 = new_tag ( p... ) -> TAG 'gap',              p...
+ROW                 = new_tag ( p... ) -> TAG 'row',              p...
+CELL                = new_tag ( p... ) -> TAG 'cell',             p...
 VGAP                = new_tag ( p... ) -> TAG 'vgap',             p...
 HGAP                = new_tag ( p... ) -> TAG 'hgap',             p...
 XHGAP               = new_tag ( p... ) -> TAG 'xhgap',            p...
 CHASE               = new_tag ( p... ) -> TAG 'chase',            p...
+MARGIN              = new_tag ( p... ) -> TAG 'margin',           p...
 LEFTMARGIN          = new_tag ( p... ) -> TAG 'leftmargin',       p...
 RIGHTMARGIN         = new_tag ( p... ) -> TAG 'rightmargin',      p...
 TOPMARGIN           = new_tag ( p... ) -> TAG 'topmargin',        p...
@@ -91,6 +95,7 @@ BUTTON = ->
 #...........................................................................................................
 JS          = new_tag ( route ) -> SCRIPT type: 'text/javascript',  src: route
 CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
+STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
 
 #===========================================================================================================
 #
@@ -274,7 +279,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         # TITLE '眀快排字机'
         LINK rel: 'shortcut icon', href: './favicon.icon'
         CSS './html5doctor-css-reset.css'
-        # CSS './fonts/webfontkit-20150311-073132/stylesheet.css'
+        # # CSS './fonts/webfontkit-20150311-073132/stylesheet.css'
         JS  './jquery-2.1.3.js'
         CSS './jquery-ui-1.11.3.custom/jquery-ui.css'
         JS  './jquery-ui-1.11.3.custom/jquery-ui.js'
@@ -289,6 +294,11 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         CSS './materialize/css/materialize.css'
         JS  './materialize/js/materialize.min.js'
         CSS './mkts-main.css'
+        STYLE """
+          body {
+            font-size: 4mm;
+          }
+          """
       #=====================================================================================================
       COFFEESCRIPT =>
         ( $ document ).ready ->
@@ -374,9 +384,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
         #   window[ 'app' ][ 'mouse-position' ] = [ event.pageX, event.pageY, ]
       #=====================================================================================================
       BODY =>
-        A style: "display:block;position:absolute;top:0;z-index:1000;", href: './font-test.html', => "font-test"
-        TAG 'push', d: '0.4', =>
-          TAG 'raise', d: '-0.1'
+        # A style: "display:block;position:absolute;top:0;z-index:1000;", href: './font-test.html', => "font-test"
         #...............................................................................................
         ARTBOARD '.galley', =>
           ZOOMER =>
@@ -434,7 +442,7 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
 
 #-----------------------------------------------------------------------------------------------------------
 ### just for testing of CSS @font-face, unicode-range ###
-@TEST_layout = ->
+@FONTTEST_layout = ->
   #.........................................................................................................
   return render =>
     DOCTYPE 5
@@ -511,6 +519,359 @@ CSS         = new_tag ( route ) -> LINK   rel:  'stylesheet',      href: route
           <div>𠀀𠀁𠀂𠀃𠀄𠀅𠀆𠀇𠀈𠀉 u-cjk-xb</div>
           <div> jzr</div>
           """
-@layout = @TEST_layout
+
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+
+#-----------------------------------------------------------------------------------------------------------
+### for testing of possible rendering bug related to CSS `display: flex; height: ...;` ###
+@FLEXHEIGHTTEST_layout = ->
+  #.........................................................................................................
+  return render =>
+    DOCTYPE 5
+    HTML =>
+      HEAD =>
+        META charset: 'utf-8'
+        TITLE 'mingkwai'
+        JS  './jquery-2.1.3.js'
+        JS  './blaidddrwg.js'
+        JS  './browser.js'
+        STYLUS """
+
+          html
+            font-size:        3mm
+
+          chase
+          column
+            outline:                1px dotted red
+            outline-offset:         -1px
+
+          chase
+            position:               relative
+            left:                   4.5mm
+            top:                    8mm
+            // width:                  201mm
+            // /* ### TAINT ### */
+            height:                 278.85mm
+            display:                flex
+            flex-direction:         column
+            float:                  left
+
+          column
+            display:                block
+            flex-shrink:            1
+            flex-grow:              1
+
+                    """
+      #=====================================================================================================
+      BODY =>
+        CHASE =>
+          COLUMN =>
+            for idx in [ 0 ... 90 ]
+              DIV "#{idx}"
+
+      # DIV '.chase', =>
+      #   DIV '.column', =>
+      #     for idx in [ 0 ... 90 ]
+      #       DIV "#{idx}"
+
+
+#-----------------------------------------------------------------------------------------------------------
+### rendering with float instead of flex ###
+@FLOAT_layout = ->
+  #.........................................................................................................
+  return render =>
+    DOCTYPE 5
+    HTML =>
+      HEAD =>
+        META charset: 'utf-8'
+        TITLE 'mingkwai'
+        JS  './jquery-2.1.3.js'
+        JS  './blaidddrwg.js'
+        JS  './browser.js'
+        STYLUS """
+
+
+          /* ------------------------------------------------------------------------------------------------------ */
+          /* Experimentally detected that `$paper-height = 297mm - 0.13mm` is not enough but
+            `297mm - 0.15mm` is enough to avoid intervening blank pages in the PDF. */
+          $paper-width                = 210mm
+          $paper-height               = 297mm - 0.15mm
+          // $paper-width                = 210mm
+          // $paper-height               = 297mm
+          /* ...................................................................................................... */
+          // 'gutters' in typographic terms (non-printable areas) become 'paddings' in CSS:
+          $gutter-left                = 4.5mm
+          $gutter-right               = $gutter-left
+          $gutter-top                 = 8mm
+          $gutter-bottom              = 10mm
+          /* ...................................................................................................... */
+          // 'margins' in typographic terms (areas outside the main content) become 'paddings' in CSS:
+          $margin-left                = 15mm
+          $margin-right               = $margin-left
+          $margin-top                 = 11mm
+          $margin-bottom              = 5mm
+          /* ...................................................................................................... */
+          $gap-vertical-width         = 5mm
+          /* ...................................................................................................... */
+          // the chase represents the printable area; inside, flanked by the margins, is the main content area:
+          $chase-width                = $paper-width  - $gutter-left  - $gutter-right
+          $chase-height               = $paper-height - $gutter-top   - $gutter-bottom
+          /* ...................................................................................................... */
+          $galley-width               = $paper-width
+
+
+          /* ------------------------------------------------------------------------------------------------------ */
+          paper
+          page
+           width:                   $paper-width
+           height:                  $paper-height
+           display:                 block
+
+          html
+            font-size:              4mm
+
+          margin
+            display:                block
+
+          margin.left
+            height:                 100%
+            min-width:              $margin-left
+            max-width:              $margin-left
+
+          margin.right
+            min-width:              $margin-right
+            max-width:              $margin-right
+
+          margin.top
+          margin.bottom
+            width:                  100%
+
+          margin.top
+            min-height:             $margin-top
+            max-height:             $margin-top
+
+          margin.bottom
+            min-height:             $margin-bottom
+            max-height:             $margin-bottom
+
+          chase
+          column
+          box
+          margin
+          gap
+          page
+            outline:                1px dotted red
+            outline-offset:         -1px
+
+          chase
+            position:               relative
+            left:                   $gutter-left
+            top:                    $gutter-top
+            width:                  $chase-width
+            height:                 $chase-height
+            display:                block
+
+          gap
+            display:                block
+            width:                  $gap-vertical-width
+            float:                  left
+            height:                 100%
+
+          column
+            display:                block
+            height:                 100%
+            float:                  left
+
+          .columns-3 column
+            width:                  ( ( $chase-width - 2 * $gap-vertical-width ) / 3 )
+                    """
+      #=====================================================================================================
+      BODY =>
+        ARTBOARD '.pages', =>
+          ZOOMER =>
+            for page_nr in [ 1 .. 5 ]
+              PAGE =>
+                OVERLAY page_nr
+                CHASE =>
+                  MARGIN '.top', =>
+                  BOX '.horizontal.columns-3', =>
+                    MARGIN '.left', =>
+                    COLUMN =>
+                      if page_nr is 1
+                        for idx in [ 0 ... 70 ]
+                          DIV '', "#{idx}"
+                    GAP '.vertical', =>
+                    COLUMN =>
+                    GAP '.vertical', =>
+                    COLUMN =>
+                    MARGIN '.right', =>
+                  MARGIN '.bottom', =>
+
+#-----------------------------------------------------------------------------------------------------------
+### rendering with float instead of flex ###
+@TABLE_layout = ->
+  #.........................................................................................................
+  return render =>
+    DOCTYPE 5
+    HTML =>
+      HEAD =>
+        META charset: 'utf-8'
+        TITLE 'mingkwai'
+        JS  './jquery-2.1.3.js'
+        JS  './blaidddrwg.js'
+        JS  './browser.js'
+        STYLUS """
+
+
+          /* ------------------------------------------------------------------------------------------------------ */
+          /* Experimentally detected that `$paper-height = 297mm - 0.13mm` is not enough but
+            `297mm - 0.15mm` is enough to avoid intervening blank pages in the PDF. */
+          $paper-width                = 210mm
+          $paper-height               = 297mm - 0.15mm
+          // $paper-width                = 210mm
+          // $paper-height               = 297mm
+          /* ...................................................................................................... */
+          // 'gutters' in typographic terms (non-printable areas) become 'paddings' in CSS:
+          $gutter-left                = 4.5mm
+          $gutter-right               = $gutter-left
+          $gutter-top                 = 8mm
+          $gutter-bottom              = 10mm
+          /* ...................................................................................................... */
+          // 'margins' in typographic terms (areas outside the main content) become 'paddings' in CSS:
+          $margin-left                = 15mm
+          $margin-right               = $margin-left
+          $margin-top                 = 11mm
+          $margin-bottom              = 5mm
+          /* ...................................................................................................... */
+          $gap-vertical-width         = 5mm
+          /* ...................................................................................................... */
+          // the chase represents the printable area; inside, flanked by the margins, is the main content area:
+          $chase-width                = $paper-width  - $gutter-left  - $gutter-right
+          $chase-height               = $paper-height - $gutter-top   - $gutter-bottom
+          /* ...................................................................................................... */
+          $galley-width               = $paper-width
+
+
+          /* ------------------------------------------------------------------------------------------------------ */
+          paper
+          page
+           width:                   $paper-width
+           height:                  $paper-height
+           display:                 block
+
+          html
+            font-size:              4mm
+
+          chase
+          column
+          box
+          margin
+          gap
+          page
+            outline:                1px dotted red
+            outline-offset:         -1px
+
+          chase
+            position:               relative
+            left:                   $gutter-left
+            top:                    $gutter-top
+            width:                  $chase-width
+            height:                 $chase-height
+            display:                table
+
+          margin
+            display:                table-cell
+
+          margin.left
+            height:                 $chase-height
+            width:                  $margin-left
+
+          margin.right
+            height:                 $chase-height
+            width:                  $margin-right
+
+          margin.top
+          margin.bottom
+            width:                  $galley-width - $margin-left - $margin-right
+
+          margin.top
+            height:                 $margin-top
+
+          margin.bottom
+            height:                 $margin-bottom
+
+          row
+            display:                table-row
+
+          cell
+            display:                table-cell
+
+          box
+            display:                table
+
+          gap
+            display:                table-cell
+            width:                  $gap-vertical-width
+            float:                  left
+            height:                 100%
+
+          column
+            display:                table-cell
+            height:                 100%
+            float:                  left
+
+          .columns-3 column
+            width:                  ( ( $chase-width - 2 * $gap-vertical-width ) / 3 )
+                    """
+      #=====================================================================================================
+      BODY =>
+        ARTBOARD '.pages', =>
+          ZOOMER =>
+            DIV style: "display:table;width:200mm;height:250mm;", =>
+            # TABLE style: "display:table;width:200mm;height:250mm;", =>
+              TR =>
+                TD '.margin-left', style: "border:1px solid black;", rowspan: 3,  =>
+                TD '.margin-top', style: "border:1px solid black;", =>
+                TD '.margin-right', style: "border:1px solid black;", rowspan: 3, =>
+              TR =>
+                TD '.cell', style: "border:1px solid black;"
+              TR =>
+                TD '.margin-bottom', style: "border:1px solid black;"
+            # for page_nr in [ 1 .. 5 ]
+            #   PAGE =>
+            #     OVERLAY page_nr
+            #     CHASE =>
+            #       ROW =>
+            #         MARGIN '.left', rowspan: 3, =>
+            #         MARGIN '.top', =>
+            #         MARGIN '.right', rowspan: 3, =>
+            #       ROW =>
+            #         CELL =>
+            #           BOX '.horizontal.columns-3', =>
+            #             ROW =>
+            #               COLUMN =>
+            #                 if page_nr is 1
+            #                   for idx in [ 0 ... 70 ]
+            #                     DIV '', "#{idx}"
+            #               GAP '.vertical', =>
+            #               COLUMN =>
+            #               GAP '.vertical', =>
+            #               COLUMN =>
+            #       ROW =>
+            #         MARGIN '.bottom', =>
+
+
+#-----------------------------------------------------------------------------------------------------------
+@layout = @FONTTEST_layout
 @layout = @NORMAL_layout
+@layout = @FLEXHEIGHTTEST_layout
+@layout = @FLOAT_layout
+@layout = @TABLE_layout
 
