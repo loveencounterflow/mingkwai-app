@@ -71,10 +71,12 @@ COLUMN              = new_tag ( p... ) -> TAG 'column',           p...
 GAP                 = new_tag ( p... ) -> TAG 'gap',              p...
 ROW                 = new_tag ( p... ) -> TAG 'row',              p...
 CELL                = new_tag ( p... ) -> TAG 'cell',             p...
+RULER               = new_tag ( p... ) -> TAG 'ruler',            p...
 VGAP                = new_tag ( p... ) -> TAG 'vgap',             p...
 HGAP                = new_tag ( p... ) -> TAG 'hgap',             p...
 XHGAP               = new_tag ( p... ) -> TAG 'xhgap',            p...
 CHASE               = new_tag ( p... ) -> TAG 'chase',            p...
+CHASEWRAP           = new_tag ( p... ) -> TAG 'chasewrap',        p...
 MARGIN              = new_tag ( p... ) -> TAG 'margin',           p...
 LEFTMARGIN          = new_tag ( p... ) -> TAG 'leftmargin',       p...
 RIGHTMARGIN         = new_tag ( p... ) -> TAG 'rightmargin',      p...
@@ -275,7 +277,7 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
       HEAD =>
         META charset: 'utf-8'
         # META name: 'viewport', content: 'width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;'
-        TITLE 'mingkwai'
+        TITLE 'mingkwai (NORMAL_layout)'
         # TITLE '眀快排字机'
         LINK rel: 'shortcut icon', href: './favicon.icon'
         CSS './html5doctor-css-reset.css'
@@ -403,9 +405,12 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
                 BOTTOMMARGIN =>
         ARTBOARD '.pages', =>
           ZOOMER =>
-            for page_nr in [ 1 .. 5 ]
+            for page_nr in [ 1 .. 1 ] # [ 1 .. 5 ]
               PAGE =>
                 OVERLAY page_nr
+                RULER '.horizontal'
+                RULER '.vertical'
+                # CHASEWRAP =>
                 CHASE =>
                   TOPMARGIN =>
                   HBOX =>
@@ -625,6 +630,8 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
           $chase-height               = $paper-height - $gutter-top   - $gutter-bottom
           /* ...................................................................................................... */
           $galley-width               = $paper-width
+          /* ...................................................................................................... */
+          $epsilon                    = 1mm
 
 
           /* ------------------------------------------------------------------------------------------------------ */
@@ -637,11 +644,19 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
           html
             font-size:              4mm
 
+          overlay
+            display:                block
+            position:               absolute
+
           margin
             display:                block
 
           margin.left
+          margin.right
+            float:                  left
             height:                 100%
+
+          margin.left
             min-width:              $margin-left
             max-width:              $margin-left
 
@@ -678,6 +693,13 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
             height:                 $chase-height
             display:                block
 
+          box
+            display:                block
+            float:                  left
+            width:                  $chase-width - $margin-left - $margin-right - $epsilon
+            height:                 10mm
+            background-color: #ddd
+
           gap
             display:                block
             width:                  $gap-vertical-width
@@ -696,23 +718,23 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
       BODY =>
         ARTBOARD '.pages', =>
           ZOOMER =>
-            for page_nr in [ 1 .. 5 ]
-              PAGE =>
-                OVERLAY page_nr
-                CHASE =>
-                  MARGIN '.top', =>
-                  BOX '.horizontal.columns-3', =>
-                    MARGIN '.left', =>
-                    COLUMN =>
-                      if page_nr is 1
-                        for idx in [ 0 ... 70 ]
-                          DIV '', "#{idx}"
-                    GAP '.vertical', =>
-                    COLUMN =>
-                    GAP '.vertical', =>
-                    COLUMN =>
-                    MARGIN '.right', =>
-                  MARGIN '.bottom', =>
+            # for page_nr in [ 1 .. 5 ]
+            PAGE =>
+              # OVERLAY page_nr
+              CHASE =>
+                MARGIN '.top', =>
+                MARGIN '.left', =>
+                BOX '.horizontal.columns-3', =>
+                  COLUMN =>
+                    # if page_nr is 1
+                      # for idx in [ 0 ... 70 ]
+                      #   DIV '', "#{idx}"
+                  # GAP '.vertical', =>
+                  # COLUMN =>
+                  # GAP '.vertical', =>
+                  # COLUMN =>
+                MARGIN '.right', =>
+                MARGIN '.bottom', =>
 
 #-----------------------------------------------------------------------------------------------------------
 ### rendering with float instead of flex ###
@@ -769,6 +791,214 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
           html
             font-size:              4mm
 
+          .chase
+          column
+          box
+          margin
+          gap
+          page
+            outline:                1px dotted red
+            outline-offset:         -1px
+
+          .chase
+            border-collapse:        collapse
+            margin:                 0
+            padding:                0
+            position:               relative
+            left:                   $gutter-left
+            top:                    $gutter-top
+            width:                  $chase-width
+            height:                 $chase-height
+
+          .margin
+            margin:                 0
+            padding:                0
+
+          .margin.margin-left
+            height:                 $chase-height
+            width:                  $margin-left
+
+          .margin.margin-right
+            height:                 $chase-height
+            width:                  $margin-right
+
+          .margin.margin-top
+          .margin.margin-bottom
+            width:                  $galley-width - $margin-left - $margin-right
+
+          .margin.margin-top
+            height:                 $margin-top
+
+          .margin.margin-bottom
+            height:                 $margin-bottom
+
+          .gap
+            margin:                 0
+            padding:                0
+            width:                  $gap-vertical-width
+            min-width:              $gap-vertical-width
+            max-width:              $gap-vertical-width
+
+          .columnbox
+          .column
+            border-collapse:        collapse
+            margin:                 0
+            padding:                0
+            height:                 100%
+
+          .columnbox
+            width:                  100%
+
+          .column.columns-3
+            width:                  ( ( $chase-width - 2 * $gap-vertical-width ) / 3 )
+            min-width:              ( ( $chase-width - 2 * $gap-vertical-width ) / 3 )
+            max-width:              ( ( $chase-width - 2 * $gap-vertical-width ) / 3 )
+
+          td
+            outline: 1px solid green
+          """
+      #=====================================================================================================
+      CHASE = ( p... ) =>
+        TABLE '.chase', =>
+          TR =>
+            TD '.margin.margin-left', rowspan: 3
+            TD '.margin.margin-top'
+            TD '.margin.margin-right', rowspan: 3
+          TR =>
+            TD '.main', p...
+          TR =>
+            TD '.margin.margin-bottom'
+      #-----------------------------------------------------------------------------------------------------
+      COLUMNBOX = ( column_count ) =>
+        TABLE '.columnbox', =>
+          TR =>
+            for column_nr in [ 1 .. column_count ]
+              unless column_nr is 1
+                TD '.gap.vertical'
+              TD ".column.columns-#{column_count}", =>
+                if column_nr is 1
+                  TEXT """xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+                    """
+      #=====================================================================================================
+      BODY =>
+        ARTBOARD '.pages', =>
+          ZOOMER =>
+            PAGE =>
+              CHASE {}, =>
+                COLUMNBOX 3, =>
+                #   MARGIN '.left', =>
+                #   COLUMN =>
+                #     for idx in [ 0 ... 70 ]
+                #       DIV '', "#{idx}"
+                #   GAP '.vertical', =>
+                #   COLUMN =>
+                #   GAP '.vertical', =>
+                #   COLUMN =>
+                #   MARGIN '.right', =>
+                # MARGIN '.bottom', =>
+
+
+#-----------------------------------------------------------------------------------------------------------
+### rendering with float instead of flex ###
+@INLINEBLOCK_layout = ->
+  #.........................................................................................................
+  return render =>
+    DOCTYPE 5
+    HTML =>
+      HEAD =>
+        META charset: 'utf-8'
+        TITLE 'mingkwai'
+        JS  './jquery-2.1.3.js'
+        JS  './blaidddrwg.js'
+        JS  './browser.js'
+        STYLUS """
+
+
+          /* ------------------------------------------------------------------------------------------------------ */
+          /* Experimentally detected that `$paper-height = 297mm - 0.13mm` is not enough but
+            `297mm - 0.15mm` is enough to avoid intervening blank pages in the PDF. */
+          $paper-width                = 210mm
+          $paper-height               = 297mm - 0.15mm
+          // $paper-width                = 210mm
+          // $paper-height               = 297mm
+          /* ...................................................................................................... */
+          // 'gutters' in typographic terms (non-printable areas) become 'paddings' in CSS:
+          $gutter-left                = 4.5mm
+          $gutter-right               = $gutter-left
+          $gutter-top                 = 8mm
+          $gutter-bottom              = 10mm
+          /* ...................................................................................................... */
+          // 'margins' in typographic terms (areas outside the main content) become 'paddings' in CSS:
+          $margin-left                = 15mm
+          $margin-right               = $margin-left
+          $margin-top                 = 11mm
+          $margin-bottom              = 5mm
+          /* ...................................................................................................... */
+          $gap-vertical-width         = 5mm
+          /* ...................................................................................................... */
+          // the chase represents the printable area; inside, flanked by the margins, is the main content area:
+          $chase-width                = $paper-width  - $gutter-left  - $gutter-right
+          $chase-height               = $paper-height - $gutter-top   - $gutter-bottom
+          /* ...................................................................................................... */
+          $galley-width               = $paper-width
+          /* ...................................................................................................... */
+          $epsilon                    = 1mm
+
+
+          /* ------------------------------------------------------------------------------------------------------ */
+          paper
+          page
+           width:                   $paper-width
+           height:                  $paper-height
+           display:                 block
+
+          html
+            font-size:              4mm
+
+          overlay
+            display:                block
+            position:               absolute
+
+          margin
+            background-color:       #e994ae
+
+          margin.left
+          margin.right
+            display:                inline-block
+            height:                 100%
+
+          margin.left
+            min-width:              $margin-left
+            max-width:              $margin-left
+
+          margin.right
+            min-width:              $margin-right
+            max-width:              $margin-right
+
+          margin.top
+          margin.bottom
+            display:                block
+            width:                  $chase-width
+
+          margin.top
+            min-height:             $margin-top
+            max-height:             $margin-top
+
+          margin.bottom
+            min-height:             $margin-bottom
+            max-height:             $margin-bottom
+
           chase
           column
           box
@@ -784,94 +1014,56 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
             top:                    $gutter-top
             width:                  $chase-width
             height:                 $chase-height
-            display:                table
-
-          margin
-            display:                table-cell
-
-          margin.left
-            height:                 $chase-height
-            width:                  $margin-left
-
-          margin.right
-            height:                 $chase-height
-            width:                  $margin-right
-
-          margin.top
-          margin.bottom
-            width:                  $galley-width - $margin-left - $margin-right
-
-          margin.top
-            height:                 $margin-top
-
-          margin.bottom
-            height:                 $margin-bottom
+            display:                block
 
           row
-            display:                table-row
-
-          cell
-            display:                table-cell
-
-          box
-            display:                table
+            display:                inline-block
+            width:                  $chase-width
+            white-space:            nowrap
+            // !!!!!
+            height:                 10mm
 
           gap
-            display:                table-cell
+            display:                inline-block
             width:                  $gap-vertical-width
-            float:                  left
             height:                 100%
+            background-color: #ddd
 
           column
-            display:                table-cell
+            display:                inline-block
+            white-space:            normal
             height:                 100%
-            float:                  left
 
           .columns-3 column
-            width:                  ( ( $chase-width - 2 * $gap-vertical-width ) / 3 )
+            width:                  ( ( $chase-width - 2 * $gap-vertical-width - $margin-left - $margin-right ) / 3 )
                     """
       #=====================================================================================================
       BODY =>
         ARTBOARD '.pages', =>
           ZOOMER =>
-            DIV style: "display:table;width:200mm;height:250mm;", =>
-            # TABLE style: "display:table;width:200mm;height:250mm;", =>
-              TR =>
-                TD '.margin-left', style: "border:1px solid black;", rowspan: 3,  =>
-                TD '.margin-top', style: "border:1px solid black;", =>
-                TD '.margin-right', style: "border:1px solid black;", rowspan: 3, =>
-              TR =>
-                TD '.cell', style: "border:1px solid black;"
-              TR =>
-                TD '.margin-bottom', style: "border:1px solid black;"
             # for page_nr in [ 1 .. 5 ]
-            #   PAGE =>
-            #     OVERLAY page_nr
-            #     CHASE =>
-            #       ROW =>
-            #         MARGIN '.left', rowspan: 3, =>
-            #         MARGIN '.top', =>
-            #         MARGIN '.right', rowspan: 3, =>
-            #       ROW =>
-            #         CELL =>
-            #           BOX '.horizontal.columns-3', =>
-            #             ROW =>
-            #               COLUMN =>
-            #                 if page_nr is 1
-            #                   for idx in [ 0 ... 70 ]
-            #                     DIV '', "#{idx}"
-            #               GAP '.vertical', =>
-            #               COLUMN =>
-            #               GAP '.vertical', =>
-            #               COLUMN =>
-            #       ROW =>
-            #         MARGIN '.bottom', =>
-
+            PAGE =>
+              # OVERLAY page_nr
+              CHASE =>
+                MARGIN '.top', =>
+                ROW '.horizontal.columns-3', =>
+                  MARGIN '.left', =>
+                  COLUMN =>
+                    # if page_nr is 1
+                      # for idx in [ 0 ... 70 ]
+                      #   DIV '', "#{idx}"
+                  GAP '.vertical', =>
+                  COLUMN =>
+                  GAP '.vertical', =>
+                  COLUMN =>
+                  MARGIN '.right', =>
+                MARGIN '.bottom', =>
 
 #-----------------------------------------------------------------------------------------------------------
 @layout = @FONTTEST_layout
-@layout = @NORMAL_layout
 @layout = @FLEXHEIGHTTEST_layout
-@layout = @FLOAT_layout
 @layout = @TABLE_layout
+@layout = @FLOAT_layout
+@layout = @INLINEBLOCK_layout
+@layout = @NORMAL_layout
 

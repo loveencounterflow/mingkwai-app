@@ -223,6 +223,7 @@ module.exports = ( _app ) ->
   q               = app[ 'jQuery' ]
   app[ 'view' ]   = 'galley'
   ( q 'artboard.pages' ).animate opacity: 0, =>
+    ( q 'artboard.pages' ).css 'display', 'none'
     handler null if handler?
 
 #-----------------------------------------------------------------------------------------------------------
@@ -230,6 +231,7 @@ module.exports = ( _app ) ->
   window          = app[ 'window' ]
   q               = app[ 'jQuery' ]
   app[ 'view' ]   = 'pages'
+  ( q 'artboard.pages' ).css 'display', 'block'
   ( q 'artboard.pages' ).animate opacity: 1, =>
     handler null if handler?
 
@@ -298,24 +300,98 @@ MKTS.save = ( me ) -> throw new Error "not implemented"
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.open_print_preview = ( me ) ->
+  ### NB the solution adopted here to get a quick shortcut to open a print preview of the current document
+  using AppleScript sending keys etc. is deeply flawed. Not only must tabbing be enabled in the
+  Accessibility Settings of the target machine, it would also appear that the outcome of such actions as
+  `click menu button "PDF" of window "Print"` are dependent on the OS language settings, and maybe even
+  OS version. Last but not least, it can experimentally be made plausible that it is the `repeat` loops
+  of the *previous* (not the *current*) script execution that really trigger the actions, which is
+  deeply unsatisfying and feels plain wrong. Furthermore, haphazard user actions such as hitting a key
+  or clicking during script execution may probably meddle with the intended flow of events. In short, the
+  solution as implemented is nothing more than a crude stop-gap. ###
   help "MKTS.open_print_preview"
   # @switch_to_print_view me
   MKTS.open_print_dialog()
   #.........................................................................................................
-  ### thx to http://apple.stackexchange.com/a/36947/59895, http://www.jaimerios.com/?p=171 ###
-  script = """
-    tell application "System Events"
-      tell process "mingkwai"
-        keystroke "p" using {shift down, command down}
-        repeat until exists window "Print"
-        end repeat
-        click menu button "PDF" of window "Print"
-        repeat until exists menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
-        end repeat
-        click menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
-      end tell
-    end tell
-    """
+  # script = """
+  #   tell application "System Events"
+  #     tell process "mingkwai"
+  #       keystroke "p" using {shift down, command down}
+  #       repeat until exists window "Print"
+  #       end repeat
+  #       click menu button "PDF" of window "Print"
+  #       repeat until exists menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+  #       end repeat
+  #       click menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+  #     end tell
+  #   end tell
+  #   """
+  # script = """
+  #   local hasWindowPrint
+  #   local hasOpenInPreview
+  #   set hasWindowPrint    to false
+  #   set hasOpenInPreview  to false
+  #   tell application "System Events"
+  #     tell process "mingkwai"
+  #       keystroke "p" using {shift down, command down}
+  #       repeat 3 times
+  #         say "trying to find print window" using "Pipe Organ"
+  #         if exists window "Print" then
+  #           set hasWindowPrint to true
+  #           exit repeat
+  #         end if
+  #         delay 0.5
+  #       end repeat
+  #       if hasWindowPrint then
+  #         click menu button "PDF" of window "Print"
+  #         repeat 3 times
+  #           say "trying to open in preview" using "Pipe Organ"
+  #           if exists menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print" then
+  #             set hasOpenInPreview to true
+  #             exit repeat
+  #           end if
+  #           delay 0.5
+  #         end repeat
+  #         if hasOpenInPreview then
+  #           click menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+  #         end if
+  #       end if
+  #     end tell
+  #   end tell
+  #   if hasWindowPrint and hasOpenInPreview then
+  #     say "enjoy" using "Good News"
+  #   else
+  #     say "i'm sorry" using "Good News"
+  #   end if
+  #   """
+  # script = """
+  #   tell application "System Events"
+  #     tell process "mingkwai"
+  #       keystroke "p" using {shift down, command down}
+  #     end tell
+  #   end tell
+  #   delay 0.5
+  #   tell application "System Events"
+  #     -- tell process "mingkwai"
+  #       click menu button "PDF" of window "Print"
+  #     -- end tell
+  #   end tell
+  #   delay 0.5
+  #   tell application "System Events"
+  #     -- tell process "mingkwai"
+  #       click menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+  #     -- end tell
+  #   end tell
+  #   """
+  # script = """
+  #   tell application "System Events"
+  #     tell process "mingkwai"
+  #       keystroke "p" using {shift down, command down}
+  #       click menu button "PDF" of window "Print"
+  #       click menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+  #     end tell
+  #   end tell
+  #   """
       # tell process "Preview"
       #   repeat until exists window "Preview"
       #   end repeat
@@ -325,6 +401,26 @@ MKTS.open_print_preview = ( me ) ->
       # tell process "Preview"
       #   keystroke "p" using {shift down, command down}
       # end tell
+  ### thx to http://apple.stackexchange.com/a/36947/59895, http://www.jaimerios.com/?p=171 ###
+  ### TAINT Note the delay clauses. Since it is the previous execution of the script that takes the intended
+  actions, each script invocation will run indefinitely, even after the app process itself has been
+  terminated. Programming a Tight Loop in AppleScript will cause a noticeable CPU load which is reduced
+  to the permille level by the timeout. As stated above, this is nothing more than a stop-gap solution. ###
+  script = """
+    tell application "System Events"
+      tell process "mingkwai"
+        keystroke "p" using {shift down, command down}
+        repeat until exists window "Print"
+          delay 0.1
+        end repeat
+        click menu button "PDF" of window "Print"
+        repeat until exists menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+          delay 0.1
+        end repeat
+        click menu item "Open PDF in Preview" of menu 1 of menu button "PDF" of window "Print"
+      end tell
+    end tell
+    """
   #.........................................................................................................
   APPLESCRIPT.execString script, ( error ) =>
     throw error if error?

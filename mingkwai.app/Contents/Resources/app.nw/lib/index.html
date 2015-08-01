@@ -1,80 +1,26 @@
-<!DOCTYPE html><html><head><meta charset="utf-8" /><title>mingkwai</title><script type="text/javascript" src="./jquery-2.1.3.js"></script><script type="text/javascript" src="./blaidddrwg.js"></script><script type="text/javascript" src="./browser.js"></script><style>/* ------------------------------------------------------------------------------------------------------ */
-/* Experimentally detected that `$paper-height = 297mm - 0.13mm` is not enough but
-  `297mm - 0.15mm` is enough to avoid intervening blank pages in the PDF. */
-/* ...................................................................................................... */
-/* ...................................................................................................... */
-/* ...................................................................................................... */
-/* ...................................................................................................... */
-/* ...................................................................................................... */
-/* ------------------------------------------------------------------------------------------------------ */
-paper,
-page {
-  width: 210mm;
-  height: 296.85mm;
-  display: block;
-}
-html {
+<!DOCTYPE html><html><head><meta charset="utf-8" /><title>mingkwai (NORMAL_layout)</title><link rel="shortcut icon" href="./favicon.icon" /><link rel="stylesheet" href="./html5doctor-css-reset.css" /><script type="text/javascript" src="./jquery-2.1.3.js"></script><link rel="stylesheet" href="./jquery-ui-1.11.3.custom/jquery-ui.css" /><script type="text/javascript" src="./jquery-ui-1.11.3.custom/jquery-ui.js"></script><script type="text/javascript" src="./jquery.event.drag-2.2/jquery.event.drag-2.2.js"></script><script type="text/javascript" src="./outerHTML-2.1.0.js"></script><script type="text/javascript" src="../node_modules/jquery-replace-text/jquery-replace-text.js"></script><script type="text/javascript" src="./blaidddrwg.js"></script><script type="text/javascript" src="./jquery-transit.js"></script><script type="text/javascript" src="./browser.js"></script><script type="text/javascript" src="./process-xcss-rules.js"></script><link rel="stylesheet" href="./materialize/css/materialize.css" /><script type="text/javascript" src="./materialize/js/materialize.min.js"></script><link rel="stylesheet" href="./mkts-main.css" /><style>body {
   font-size: 4mm;
-}
-chase,
-column,
-box,
-margin,
-gap,
-page {
-  outline: 1px dotted #f00;
-  outline-offset: -1px;
-}
-chase {
-  position: relative;
-  left: 4.5mm;
-  top: 8mm;
-  width: 201mm;
-  height: 278.85mm;
-  display: table;
-}
-margin {
-  display: table-cell;
-}
-margin.left {
-  height: 278.85mm;
-  width: 15mm;
-}
-margin.right {
-  height: 278.85mm;
-  width: 15mm;
-}
-margin.top,
-margin.bottom {
-  width: 180mm;
-}
-margin.top {
-  height: 11mm;
-}
-margin.bottom {
-  height: 5mm;
-}
-row {
-  display: table-row;
-}
-cell {
-  display: table-cell;
-}
-box {
-  display: table;
-}
-gap {
-  display: table-cell;
-  width: 5mm;
-  float: left;
-  height: 100%;
-}
-column {
-  display: table-cell;
-  height: 100%;
-  float: left;
-}
-.columns-3 column {
-  width: 63.666666666666664mm;
-}
-</style></head><body><artboard class="pages"><zoomer><div style="display:table;width:200mm;height:250mm;"><tr><td class="margin-left" style="border:1px solid black;" rowspan="3"></td><td class="margin-top" style="border:1px solid black;"></td><td class="margin-right" style="border:1px solid black;" rowspan="3"></td></tr><tr><td class="cell" style="border:1px solid black;"></td></tr><tr><td class="margin-bottom" style="border:1px solid black;"></td></tr></div></zoomer></artboard></body></html>
+}</style></head><script type="text/javascript">(function() {
+  var __slice = [].slice,
+      __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+      __hasProp = {}.hasOwnProperty,
+      __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  (function () {
+            return ($(document)).ready(function() {
+              var dragging, page_x, page_y, scroll_x, scroll_y, shifted;
+              window.zoomer = $('zoomer');
+              scroll_x = null;
+              scroll_y = null;
+              page_x = null;
+              page_y = null;
+              dragging = false;
+              shifted = false;
+              return ($(document)).on('keyup keydown', function(event) {
+                shifted = event.shiftKey;
+                return true;
+              });
+
+              /* DRAGGING / HAND TOOL SUPPORT */
+            });
+          })();
+})();</script><body><artboard class="galley"><zoomer><galley><overlay>Galley</overlay><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></galley></zoomer></artboard><artboard class="pages"><zoomer><page><overlay>1</overlay><ruler class="horizontal"></ruler><ruler class="vertical"></ruler><chase><topmargin></topmargin><hbox><leftmargin></leftmargin><column></column><vgap></vgap><column></column><vgap></vgap><column></column><rightmargin></rightmargin></hbox><bottommargin></bottommargin></chase></page></zoomer></artboard><hribbon class="draggable" style="height:20mm;"><i class="small mkts-tool-hand" action="tool-mode-hand"></i><i class="small mdi-editor-insert-chart" action="editor-insert-chart"></i><i class="small mdi-action-3d-rotation" action="action-3d-rotation"></i><i class="small mdi-action-assignment" action="action-assignment"></i><i class="small mdi-image-blur-on" action="image-blur-on"></i><i class="small mdi-action-print" action="action-print"></i><i class="small mdi-action-cached" action="action-cached"></i><i class="small mdi-content-content-cut" action="content-content-cut"></i><i class="small mdi-content-content-copy" action="content-content-copy"></i></hribbon></body></html>

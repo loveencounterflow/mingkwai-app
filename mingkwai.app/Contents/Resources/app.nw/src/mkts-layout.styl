@@ -30,29 +30,48 @@ $galley-width               = $paper-width
 /* ------------------------------------------------------------------------------------------------------ */
 paper
 page
- width:                  $paper-width
- height:                 $paper-height
- display:                flex
+  width:                  $paper-width
+  height:                 $paper-height
+  display:                flex
 
 /* ------------------------------------------------------------------------------------------------------ */
 galley
- display:                none
- min-height:             10mm
- width:                  $paper-width
- float:                  left
- height:                 auto
+  display:                none
+  min-height:             10mm
+  width:                  $paper-width
+  float:                  left
+  height:                 auto
+
+ruler
+  display:                block
+  position:               absolute
+
+ruler.horizontal
+  width:                  100%
+  height:                 0
+  border-top:             1px solid red
+
+ruler.vertical
+  height:                 100%
+  width:                  0
+  border-left:            1px solid red
 
 /* ------------------------------------------------------------------------------------------------------ */
+/* ### NOTE `chase` must *not* have `display: flex` to avoid strange bug when producing printout PDF.
+Generally speaking, it looks like there should be no nested `display: flex` elements. ### */
+// chasewrap
+//   height:                 $chase-height
+
 chase
+  // height:                 $chase-height
   position:               relative
   left:                   $gutter-left
   top:                    $gutter-top
   width:                  $chase-width
-  /* ### TAINT ### */
-  height:                 $chase-height
+  // height:                 100%
   display:                flex
   flex-direction:         column
-  float:                  left
+  // float:                  left
 
  // overflow:               auto
 
@@ -197,7 +216,10 @@ h3
   word-spacing:           0ex
   // word-spacing:           -0.5ex
 
-p:before
+/* ------------------------------------------------------------------------------------------------------ */
+// p[line-nr="1"]:before
+p.single:before
+p.first:before
   /* ### NB fixed-width space used here; see e.g. https://www.cs.tut.fi/~jkorpela/chars/spaces.html. ### */
   content:                ' '
   // content:                '❡ '
@@ -205,6 +227,38 @@ p:before
   // p:after
   //   content:                '❡ '
   //   color:                  red
+
+p.first
+p.middle
+  text-align:             justify
+  text-align-last:        justify
+
+p.last
+p.lone
+  text-align:             justify
+  text-align-last:        left
+
+p.single
+  text-align-last:        left
+
+p.first:after
+p.middle:after
+p.middle:before
+p.last:before
+  display:                none
+
+p.first
+p.middle
+  margin-bottom:          0
+
+p.middle
+p.last
+  margin-top:             0// p.first-line:before
+
+p.excess
+  background-color:       #d40066
+
+/* ------------------------------------------------------------------------------------------------------ */
 
 xbig
   font-size:              200%

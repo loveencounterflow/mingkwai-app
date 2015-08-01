@@ -1,0 +1,76 @@
+/* ====================================================================================================== */
+/* LAST RESORT */
+/* ------------------------------------------------------------------------------------------------------ */
+@font-face {
+  font-family: 'cjk';
+  src: url("./fonts/LastResort.ttf");
+  unicode-range: U+02e80-02eff, U+02f00-02fdf, U+03000-0303f, U+031c0-031ef, U+03200-032ff, U+03300-033ff, U+03400-04dbf, U+04e00-09fff, U+0f900-0faff, U+0fe30-0fe4f, U+20000-2a6df, U+2a700-2b73f, U+2b740-2b81f, U+2f800-2fa1f;
+}
+@font-face {
+  font-family: 'cjk';
+  src: local('Sun-ExtA');
+  unicode-range: U+02e80-02eff, U+02f00-02fdf, U+03000-0303f, U+031c0-031ef, U+03200-032ff, U+03300-033ff, U+03400-04dbf, U+04e00-09fff, U+0f900-0faff, U+0fe30-0fe4f, U+2f800-2fa1f;
+}
+@font-face {
+  font-family: 'cjk';
+  src: local('sunflower-u-cjk-xb');
+  unicode-range: U+20000-2a6df, U+2a700-2b73f;
+}
+@font-face {
+  font-family: 'cjk';
+  src: local('jizura3b');
+  unicode-range: U+e000-f8ff;
+}
+/* ------------------------------------------------------------------------------------------------------ */
+@font-face {
+  font-family: 'mkts-babel';
+  src: local('BabelStone Han');
+}
+mkts-babel {
+  font-family: 'mkts-babel';
+}
+/* ------------------------------------------------------------------------------------------------------ */
+@font-face {
+  font-family: 'mkts-hanaa';
+  src: local('HanaMinA');
+}
+mkts-hanaa {
+  font-family: 'mkts-hanaa';
+}
+/* ------------------------------------------------------------------------------------------------------ */
+@font-face {
+  font-family: 'mkts-hanab';
+  src: local('HanaMinB');
+}
+mkts-hanab {
+  font-family: 'mkts-hanab';
+}
+/* ------------------------------------------------------------------------------------------------------ */
+@font-face {
+  font-family: 'mkts-jzr';
+  src: local('jizura3b');
+}
+mkts-jzr {
+  font-family: 'mkts-jzr';
+}
+/* ------------------------------------------------------------------------------------------------------ */
+@font-face {
+  font-family: 'mkts-sunxa';
+  src: local('Sun-ExtA');
+}
+mkts-sunxa {
+  font-family: 'mkts-sunxa';
+}
+/* ------------------------------------------------------------------------------------------------------ */
+@font-face {
+  font-family: 'mkts-sunxb';
+  src: local('sunflower-u-cjk-xb');
+}
+mkts-sunxb {
+  font-family: 'mkts-sunxb';
+}
+/* ====================================================================================================== */
+shift {
+  display: inline;
+  position: relative;
+}

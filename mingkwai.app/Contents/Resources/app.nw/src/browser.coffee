@@ -310,92 +310,228 @@ MKTS.demo = ( me ) ->
   # source = "Just as shé said this, she fluffi *noticed* that abc def ghi jkl mno pqr stu vwx xy"
   source = """
 
+    supercalifragilisticexpialigoricalsupercalifragilisticexpialigorical
+
     # Behind the Looking-Glass
 
     'But everything's curious today. I think I may as well go in at once.' And in
     she went.
 
-    The *King **and** Queen* of Hearts were <xbig>seated</xbig> on their throne when they
+    The King and Queen of Hearts were <xbig>seated</xbig> on their throne when they
     arrived, with a great crowd assembled about them--all sorts of little
     birds and beasts.
 
+    There was nothing so VERY remarkable in that; nor did Alice think it so
+    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
+    Oh dear! I shall be late!' (when she thought it over afterwards, it
+    occurred to her that she ought to have wondered at this, but at the time
+    it all seemed quite natural); but when the Rabbit actually TOOK A WATCH
+    OUT OF ITS WAISTCOAT-POCKET, and looked at it, and then hurried on,
+    Alice started to her feet, for it flashed across her mind that she had
+    never before seen a rabbit with either a waistcoat-pocket, or a watch
+    to take out of it, and burning with curiosity, she ran across the field
+    after it, and fortunately was just in time to see it pop down a large
+    rabbit-hole under the hedge.
+
+    There was nothing so VERY remarkable in that; nor did Alice think it so
+    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
+    Oh dear! I shall be late!' (when she thought it over afterwards, it
+    occurred to her that she ought to have wondered at this, but at the time
+    it all seemed quite natural); but when the Rabbit actually *TOOK **A** WATCH
+    OUT OF ITS WAISTCOAT-POCKET*, and looked at it, and then hurried on,
+    Alice started to her feet, *King **and** Queen* for it flashed across her mind that she had
+    never before seen a rabbit with either a waistcoat-pocket, or a watch
+    to take out of it, and burning with curiosity, she ran across the field
+    after it, and fortunately was just in time to see it pop down a large
+    rabbit-hole under the hedge.
+
+    Short paragraph.
+
+    # Behind the Looking-Glass
+
+    'But everything's curious today. I think I may as well go in at once.' And in
+    she went.
+
+    The King and Queen of Hearts were <xbig>seated</xbig> on their throne when they
+    arrived, with a great crowd assembled about them--all sorts of little
+    birds and beasts.
+
+    There was nothing so VERY remarkable in that; nor did Alice think it so
+    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
+    Oh dear! I shall be late!' (when she thought it over afterwards, it
+    occurred to her that she ought to have wondered at this, but at the time
+    it all seemed quite natural); but when the Rabbit actually TOOK A WATCH
+    OUT OF ITS WAISTCOAT-POCKET, and looked at it, and then hurried on,
+    Alice started to her feet, for it flashed across her mind that she had
+    never before seen a rabbit with either a waistcoat-pocket, or a watch
+    to take out of it, and burning with curiosity, she ran across the field
+    after it, and fortunately was just in time to see it pop down a large
+    rabbit-hole under the hedge.
+
+    There was nothing so VERY remarkable in that; nor did Alice think it so
+    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
+    Oh dear! I shall be late!' (when she thought it over afterwards, it
+    occurred to her that she ought to have wondered at this, but at the time
+    it all seemed quite natural); but when the Rabbit actually *TOOK **A** WATCH
+    OUT OF ITS WAISTCOAT-POCKET*, and looked at it, and then hurried on,
+    Alice started to her feet, *King **and** Queen* for it flashed across her mind that she had
+    never before seen a rabbit with either a waistcoat-pocket, or a watch
+    to take out of it, and burning with curiosity, she ran across the field
+    after it, and fortunately was just in time to see it pop down a large
+    rabbit-hole under the hedge.
+
+    Short paragraph.
+
+    # Behind the Looking-Glass
+
+    'But everything's curious today. I think I may as well go in at once.' And in
+    she went.
+
+    The King and Queen of Hearts were <xbig>seated</xbig> on their throne when they
+    arrived, with a great crowd assembled about them--all sorts of little
+    birds and beasts.
+
+    There was nothing so VERY remarkable in that; nor did Alice think it so
+    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
+    Oh dear! I shall be late!' (when she thought it over afterwards, it
+    occurred to her that she ought to have wondered at this, but at the time
+    it all seemed quite natural); but when the Rabbit actually TOOK A WATCH
+    OUT OF ITS WAISTCOAT-POCKET, and looked at it, and then hurried on,
+    Alice started to her feet, for it flashed across her mind that she had
+    never before seen a rabbit with either a waistcoat-pocket, or a watch
+    to take out of it, and burning with curiosity, she ran across the field
+    after it, and fortunately was just in time to see it pop down a large
+    rabbit-hole under the hedge.
+
+    There was nothing so VERY remarkable in that; nor did Alice think it so
+    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
+    Oh dear! I shall be late!' (when she thought it over afterwards, it
+    occurred to her that she ought to have wondered at this, but at the time
+    it all seemed quite natural); but when the Rabbit actually *TOOK **A** WATCH
+    OUT OF ITS WAISTCOAT-POCKET*, and looked at it, and then hurried on,
+    Alice started to her feet, *King **and** Queen* for it flashed across her mind that she had
+    never before seen a rabbit with either a waistcoat-pocket, or a watch
+    to take out of it, and burning with curiosity, she ran across the field
+    after it, and fortunately was just in time to see it pop down a large
+    rabbit-hole under the hedge.
+
+    Short paragraph.
+
+    # Behind the Looking-Glass
+
+    'But everything's curious today. I think I may as well go in at once.' And in
+    she went.
+
+    The King and Queen of Hearts were <xbig>seated</xbig> on their throne when they
+    arrived, with a great crowd assembled about them--all sorts of little
+    birds and beasts.
+
+    There was nothing so VERY remarkable in that; nor did Alice think it so
+    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
+    Oh dear! I shall be late!' (when she thought it over afterwards, it
+    occurred to her that she ought to have wondered at this, but at the time
+    it all seemed quite natural); but when the Rabbit actually TOOK A WATCH
+    OUT OF ITS WAISTCOAT-POCKET, and looked at it, and then hurried on,
+    Alice started to her feet, for it flashed across her mind that she had
+    never before seen a rabbit with either a waistcoat-pocket, or a watch
+    to take out of it, and burning with curiosity, she ran across the field
+    after it, and fortunately was just in time to see it pop down a large
+    rabbit-hole under the hedge.
+
+    There was nothing so VERY remarkable in that; nor did Alice think it so
+    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
+    Oh dear! I shall be late!' (when she thought it over afterwards, it
+    occurred to her that she ought to have wondered at this, but at the time
+    it all seemed quite natural); but when the Rabbit actually *TOOK **A** WATCH
+    OUT OF ITS WAISTCOAT-POCKET*, and looked at it, and then hurried on,
+    Alice started to her feet, *King **and** Queen* for it flashed across her mind that she had
+    never before seen a rabbit with either a waistcoat-pocket, or a watch
+    to take out of it, and burning with curiosity, she ran across the field
+    after it, and fortunately was just in time to see it pop down a large
+    rabbit-hole under the hedge.
+
+    Short paragraph.
+
+
   """
-  source = """
-    <kwic-lineup>1 中國皇帝</kwic-lineup>
-    <kwic-lineup>2 中國皇帝</kwic-lineup>
-    <kwic-lineup>3 中國皇帝</kwic-lineup>
-    <kwic-lineup>4 中國皇帝</kwic-lineup>
-    <kwic-lineup>5 中國皇帝</kwic-lineup>
-    <kwic-lineup>6 中國皇帝</kwic-lineup>
-    <kwic-lineup>7 中國皇帝</kwic-lineup>
-    <kwic-lineup>8 中國皇帝</kwic-lineup>
-    <kwic-lineup>9 中國皇帝</kwic-lineup>
-    <kwic-lineup>10 中國皇帝</kwic-lineup>
-    <kwic-lineup>11 中國皇帝</kwic-lineup>
-    <kwic-lineup>12 中國皇帝</kwic-lineup>
-    <kwic-lineup>13 中國皇帝</kwic-lineup>
-    <kwic-lineup>14 中國皇帝</kwic-lineup>
-    <kwic-lineup>15 中國皇帝</kwic-lineup>
-    <kwic-lineup>16 中國皇帝</kwic-lineup>
-    <kwic-lineup>17 中國皇帝</kwic-lineup>
-    <kwic-lineup>18 中國皇帝</kwic-lineup>
-    <kwic-lineup>19 中國皇帝</kwic-lineup>
-    <kwic-lineup>20 中國皇帝</kwic-lineup>
-    <kwic-lineup>21 中國皇帝</kwic-lineup>
-    <kwic-lineup>22 中國皇帝</kwic-lineup>
-    <kwic-lineup>23 中國皇帝</kwic-lineup>
-    <kwic-lineup>24 中國皇帝</kwic-lineup>
-    <kwic-lineup>25 中國皇帝</kwic-lineup>
-    <kwic-lineup>26 中國皇帝</kwic-lineup>
-    <kwic-lineup>27 中國皇帝</kwic-lineup>
-    <kwic-lineup>28 中國皇帝</kwic-lineup>
-    <kwic-lineup>29 中國皇帝</kwic-lineup>
-    <kwic-lineup>30 中國皇帝</kwic-lineup>
-    <kwic-lineup>31 中國皇帝</kwic-lineup>
-    <kwic-lineup>32 中國皇帝</kwic-lineup>
-    <kwic-lineup>33 中國皇帝</kwic-lineup>
-    <kwic-lineup>34 中國皇帝</kwic-lineup>
-    <kwic-lineup>35 中國皇帝</kwic-lineup>
-    <kwic-lineup>36 中國皇帝</kwic-lineup>
-    <kwic-lineup>37 中國皇帝</kwic-lineup>
-    <kwic-lineup>38 中國皇帝</kwic-lineup>
-    <kwic-lineup>39 中國皇帝</kwic-lineup>
-    <kwic-lineup>40 中國皇帝</kwic-lineup>
-    <kwic-lineup>41 中國皇帝</kwic-lineup>
-    <kwic-lineup>42 中國皇帝</kwic-lineup>
-    <kwic-lineup>43 中國皇帝</kwic-lineup>
-    <kwic-lineup>44 中國皇帝</kwic-lineup>
-    <kwic-lineup>45 中國皇帝</kwic-lineup>
-    <kwic-lineup>46 中國皇帝</kwic-lineup>
-    <kwic-lineup>47 中國皇帝</kwic-lineup>
-    <kwic-lineup>48 中國皇帝</kwic-lineup>
-    <kwic-lineup>49 中國皇帝</kwic-lineup>
-    <kwic-lineup>50 中國皇帝</kwic-lineup>
-    <kwic-lineup>51 中國皇帝</kwic-lineup>
-    <kwic-lineup>52 中國皇帝</kwic-lineup>
-    <kwic-lineup>53 中國皇帝</kwic-lineup>
-    <kwic-lineup>54 中國皇帝</kwic-lineup>
-    <kwic-lineup>55 中國皇帝</kwic-lineup>
-    <kwic-lineup>56 中國皇帝</kwic-lineup>
-    <kwic-lineup>57 中國皇帝</kwic-lineup>
-    <kwic-lineup>58 中國皇帝</kwic-lineup>
-    <kwic-lineup>59 中國皇帝</kwic-lineup>
-    <kwic-lineup>60 中國皇帝</kwic-lineup>
-    <kwic-lineup>61 中國皇帝</kwic-lineup>
-    <kwic-lineup>62 中國皇帝</kwic-lineup>
-    <kwic-lineup>63 中國皇帝</kwic-lineup>
-    <kwic-lineup>64 中國皇帝</kwic-lineup>
-    <kwic-lineup>65 中國皇帝</kwic-lineup>
-    <kwic-lineup>66 中國皇帝</kwic-lineup>
-    <kwic-lineup>67 中國皇帝</kwic-lineup>
-    <kwic-lineup>68 中國皇帝</kwic-lineup>
-    """
+
+  # source = """
+  #   <kwic-lineup>1 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>2 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>3 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>4 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>5 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>6 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>7 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>8 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>9 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>10 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>11 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>12 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>13 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>14 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>15 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>16 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>17 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>18 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>19 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>20 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>21 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>22 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>23 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>24 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>25 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>26 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>27 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>28 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>29 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>30 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>31 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>32 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>33 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>34 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>35 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>36 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>37 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>38 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>39 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>40 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>41 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>42 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>43 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>44 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>45 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>46 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>47 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>48 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>49 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>50 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>51 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>52 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>53 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>54 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>55 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>56 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>57 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>58 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>59 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>60 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>61 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>62 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>63 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>64 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>65 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>66 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>67 中國皇帝</kwic-lineup>
+  #   <kwic-lineup>68 中國皇帝</kwic-lineup>
+  #   """
   # source = require './demo-text'
   # source = njs_fs.readFileSync '/tmp/kwic.html', encoding: 'utf-8'
+  # source = ( ( if line.length is 0 or line is '```' then line else "#{line}<!--##{idx}-->" ) for line, idx in source.split '\n' ).join '\n'
   help "source: approx. #{source.length} characters"
   settings =
-    'format':   'html'
-    # 'format':   'md'
+    # 'format':   'html'
+    'format':   'md'
   step ( resume ) =>
     yield MKTS.VIEW.show_galley resume
     LINESETTER.demo me, source, settings, ( error ) =>
@@ -533,7 +669,7 @@ win.on 'document-end', ->
   app[ 'zoomer'   ] = $ 'zoomer'
   MKTS.enable_console()
   step ( resume ) ->
-    MKTS.maximize app
+    # MKTS.maximize app
     # MKTS.ZOOM.to app, 1.85
     win.zoomLevel = 1
     # MKTS.ZOOM.to app[ 'zoom' ]

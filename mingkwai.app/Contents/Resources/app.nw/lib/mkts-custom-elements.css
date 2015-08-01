@@ -1,0 +1,27 @@
+/* ------------------------------------------------------------------------------------------------------ */
+/* GUI */
+splash,
+ribbon,
+tool,
+grip,
+overlay,
+button,
+tabletop,
+artboard,
+galley,
+paper,
+page,
+chase,
+box,
+column,
+gap,
+line,
+cork,
+zoomer,
+leftmargin,
+rightmargin,
+topmargin,
+bottommargin,
+shift {
+  display: block;
+}
