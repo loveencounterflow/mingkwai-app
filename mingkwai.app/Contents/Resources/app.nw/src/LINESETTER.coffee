@@ -33,22 +33,242 @@ glyph_replacements        = require './glyph-replacements'
 #...........................................................................................................
 ### https://github.com/meryn/performance-now ###
 now                       = require 'performance-now'
+#...........................................................................................................
+### The module-globals become available when `demo` is called with `app` argument ###
+jQuery                    = null
+MKTS                      = null
+window                    = null
+document                  = null
 
 
-  # #---------------------------------------------------------------------------------------------------------
-  # has_hanging_margin = ( hotml ) ->
-  #   # debug '©mnhYJ',  ( CND.last_of ( CND.last_of hotml )[ 1 ] ), ( CND.last_of ( CND.last_of hotml )[ 1 ] ) in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ]
-  #   last_chr = CND.last_of ( CND.last_of hotml )[ 1 ].replace /\s+$/, ''
-  #   return last_chr in [ '\u00ad', '-', ',', '.', '!', '—', '–', ':', ';', '(', ')', '‘', '’', '“', '”', ]
+#-----------------------------------------------------------------------------------------------------------
+_get_slugs_container = ( gcolumn ) ->
+  R = jQuery 'container'
+  if R.length is 0
+    R = jQuery "<container style='display:block'></container>"
+    gcolumn.append R
+  return R
 
-  # #---------------------------------------------------------------------------------------------------------
-  # get_class = ( is_first, is_last ) ->
-  #   if is_first
-  #     return 'is-lone' if is_last
-  #     return 'is-first'
-  #   return 'is-last' if is_last
-  #   return 'is-middle'
 
+###
+V1
+###
+
+#-----------------------------------------------------------------------------------------------------------
+try_slug_v1 = ( container, block_hotml, line_nr, start_idx, stop_idx ) =>
+  slug_hotml                  = HOTMETAL.slice block_hotml, start_idx, stop_idx + 1
+  block_tag                   = slug_hotml[ 0 ][ 0 ][ 0 ]
+  HOTMETAL.TAG.set block_tag, 'line-nr', line_nr
+  if line_nr is 1
+    # HOTMETAL.TAG.remove_class  block_tag, 'middle'
+    HOTMETAL.TAG.add_class     block_tag, 'first'
+  else
+    # HOTMETAL.TAG.remove_class  block_tag, 'first'
+    HOTMETAL.TAG.add_class     block_tag, 'middle'
+  slug_html                   = HOTMETAL.as_html slug_hotml
+  slug_jq                     = jQuery slug_html
+  line_counter                = slug_jq.children()[ 0 ]
+  container.append slug_jq
+  client_rectangles           = line_counter.getClientRects()
+  container_width             = container.width()
+  client_rectangle            = client_rectangles[ 0 ]
+  client_width                = client_rectangle[ 'right' ] - container.offset()[ 'left' ]
+  excess                      = Math.max 0, Math.floor client_width - container_width
+  ### TAINT arbitrary precision limit ###
+  excess                      = 0 if excess < 3
+  if excess > 0
+    warn slug_html
+    warn "exceeding container by #{excess.toFixed 1}px"
+  line_count                  = client_rectangles.length
+  return [ slug_hotml, slug_html, line_count, excess, ]
+
+#-----------------------------------------------------------------------------------------------------------
+$get_slugs_v1 = ( gcolumn ) ->
+  container = _get_slugs_container gcolumn
+  #.........................................................................................................
+  return $ ( block_hotml, send ) =>
+    start_idx       = 0
+    stop_idx        = 0
+    trial_count     = 0
+    last_start_idx  = block_hotml.length - 1
+    html_lines      = []
+    slices          = []
+    excesses        = []
+    slug_html       = null
+    good_slug_html  = null
+    is_finished     = no
+    line_nr         = 0
+    #.......................................................................................................
+    until is_finished
+      trial_count    += +1
+      good_slug_html  = slug_html
+      line_nr         = html_lines.length + 1
+      [ slice_hotml
+        slug_html
+        line_count
+        excess      ] = try_slug_v1 container, block_hotml, line_nr, start_idx, stop_idx
+      #.....................................................................................................
+      if stop_idx >= last_start_idx
+        # warn '2', "stop_idx > last_start_idx"
+        excesses.push   excess
+        slices.push     slice_hotml
+        html_lines.push slug_html
+        is_finished = yes
+        continue
+      #.....................................................................................................
+      if line_count > 1
+        if trial_count is 1
+          throw new Error "not yet implemented"
+        excesses.push   excess
+        slices.push     slice_hotml
+        html_lines.push good_slug_html
+        start_idx = stop_idx
+        stop_idx  = start_idx - 1
+      #.....................................................................................................
+      stop_idx     += +1
+      #.....................................................................................................
+      if start_idx >= last_start_idx
+        throw new Error "not yet implemented"
+    #.......................................................................................................
+    excess              = excesses[ excesses.length - 1 ]
+    new_class           = if slices.length is 1 then 'single' else 'last'
+    last_line_hotml     = slices[ slices.length - 1 ]
+    last_line_block_tag = last_line_hotml[ 0 ][ 0 ][ 0 ]
+    HOTMETAL.TAG.remove_class  last_line_block_tag, 'middle'
+    HOTMETAL.TAG.remove_class  last_line_block_tag, 'first'
+    HOTMETAL.TAG.add_class     last_line_block_tag, new_class
+    HOTMETAL.TAG.add_class     last_line_block_tag, 'excess' if excess > 0
+    last_line_html                      = HOTMETAL.as_html last_line_hotml
+    html_lines[ html_lines.length - 1 ] = last_line_html
+    #.......................................................................................................
+    container.empty()
+    send html_lines
+    help "#{( trial_count / html_lines.length ).toFixed 2} trials per line"
+
+###
+V2
+###
+
+#-----------------------------------------------------------------------------------------------------------
+try_slug_hotml_v2 = ( container, slug_hotml, line_nr ) =>
+  block_tag                   = slug_hotml[ 0 ][ 0 ][ 0 ]
+  HOTMETAL.TAG.set block_tag, 'line-nr', line_nr
+  if line_nr?
+    if line_nr is 1
+      # HOTMETAL.TAG.remove_class  block_tag, 'middle'
+      HOTMETAL.TAG.add_class     block_tag, 'first'
+    else
+      # HOTMETAL.TAG.remove_class  block_tag, 'first'
+      HOTMETAL.TAG.add_class     block_tag, 'middle'
+  slug_html                   = HOTMETAL.as_html slug_hotml
+  slug_jq                     = jQuery slug_html
+  line_counter                = slug_jq.children()[ 0 ]
+  container.append slug_jq
+  client_rectangles           = line_counter.getClientRects()
+  container_width             = container.width()
+  client_rectangle            = client_rectangles[ 0 ]
+  client_width                = client_rectangle[ 'right' ] - container.offset()[ 'left' ]
+  excess                      = Math.max 0, Math.floor client_width - container_width
+  ### TAINT arbitrary precision limit ###
+  excess                      = 0 if excess < 3
+  if excess > 0
+    warn slug_html
+    warn "exceeding container by #{excess.toFixed 1}px"
+  line_count                  = client_rectangles.length
+  return [ slug_html, line_count, excess, ]
+
+#-----------------------------------------------------------------------------------------------------------
+$get_slugs_v2 = ( gcolumn ) ->
+  container   = _get_slugs_container gcolumn
+  #.........................................................................................................
+  return $ ( block_hotml, send ) =>
+    html_lines          = []
+    slugs_hotml         = []
+    excesses            = []
+    #.......................................................................................................
+    ### Typeset entire block to determine overall metrics: ###
+    [ slug_html
+      line_count
+      excess          ] = try_slug_hotml_v2 container, block_hotml, null
+    #.......................................................................................................
+    ### Adjust line count, assuming last line is approx. half full: ###
+    estimate_line_count = if line_count is 1 then 1 else line_count - 0.5
+    parts_count         = block_hotml.length
+    parts_per_line      = parts_count / estimate_line_count
+    urge 'parts_per_line:', parts_per_line
+    #.......................................................................................................
+    ### Try to slice block so that it is approx. one line long: ###
+    start_idx           = 0
+    stop_idx_delta      = Math.floor parts_per_line + 0.5
+    stop_idx            = start_idx + stop_idx_delta
+    line_nr             = 1
+    ### !!!!!!!!! ###
+    stop_idx = 7
+    ### !!!!!!!!! ###
+    slug_hotml          = HOTMETAL.slice block_hotml, start_idx, stop_idx + 1
+    [ slug_html
+      line_count
+      excess          ] = try_slug_hotml_v2 container, slug_hotml, line_nr
+    debug '©qSCez', stop_idx, slug_html
+    debug '©qSCez', line_count
+    #.......................................................................................................
+    switch ( mode = if line_count is 1 then 'growing' else 'shrinking' )
+      #.....................................................................................................
+      when 'growing'
+        trial_count     = 0
+        last_start_idx  = block_hotml.length - 1
+        slug_html       = null
+        good_slug_html  = null
+        is_finished     = no
+        #...................................................................................................
+        until is_finished
+          stop_idx       += +1
+          trial_count    += +1
+          good_slug_html  = slug_html
+          line_nr         = html_lines.length + 1
+          slug_hotml      = HOTMETAL.slice block_hotml, start_idx, stop_idx + 1
+          [ slug_html
+            line_count
+            excess      ] = try_slug_hotml_v2 container, slug_hotml, line_nr
+          debug '©V9DYQ', trial_count, start_idx, stop_idx, slug_html
+          #.................................................................................................
+          if stop_idx >= last_start_idx
+            # warn '2', "stop_idx > last_start_idx"
+            excesses.push     excess
+            slugs_hotml.push  slug_hotml
+            html_lines.push   slug_html
+            is_finished = yes
+            continue
+          #.................................................................................................
+          if line_count > 1
+            if trial_count is 1
+              throw new Error "not yet implemented"
+            excesses.push     excess
+            slugs_hotml.push  slug_hotml
+            html_lines.push   good_slug_html
+            start_idx = stop_idx
+            stop_idx  = start_idx - 1
+          #.................................................................................................
+          if start_idx >= last_start_idx
+            throw new Error "not yet implemented"
+      #.....................................................................................................
+      when 'shrinking'
+        throw new Error "not yet implemented"
+    #.......................................................................................................
+    excess              = excesses[ excesses.length - 1 ]
+    new_class           = if slugs_hotml.length is 1 then 'single' else 'last'
+    last_line_hotml     = slugs_hotml[ slugs_hotml.length - 1 ]
+    last_line_block_tag = last_line_hotml[ 0 ][ 0 ][ 0 ]
+    HOTMETAL.TAG.remove_class  last_line_block_tag, 'middle'
+    HOTMETAL.TAG.remove_class  last_line_block_tag, 'first'
+    HOTMETAL.TAG.add_class     last_line_block_tag, new_class
+    HOTMETAL.TAG.add_class     last_line_block_tag, 'excess' if excess > 0
+    last_line_html                      = HOTMETAL.as_html last_line_hotml
+    html_lines[ html_lines.length - 1 ] = last_line_html
+    #.......................................................................................................
+    container.empty()
+    send html_lines
+    help "#{( trial_count / html_lines.length ).toFixed 2} trials per line"
 
 
 #===========================================================================================================
@@ -97,34 +317,6 @@ now                       = require 'performance-now'
   ƒ           = ( x, precision = 2 ) -> x.toFixed precision
 
   #---------------------------------------------------------------------------------------------------------
-  try_slug = ( container, block_hotml, line_nr, start_idx, stop_idx ) =>
-    slug_hotml                  = HOTMETAL.slice block_hotml, start_idx, stop_idx + 1
-    block_tag                   = slug_hotml[ 0 ][ 0 ][ 0 ]
-    HOTMETAL.TAG.set block_tag, 'line-nr', line_nr
-    if line_nr is 1
-      HOTMETAL.TAG.remove_class  block_tag, 'middle'
-      HOTMETAL.TAG.add_class     block_tag, 'first'
-    else
-      HOTMETAL.TAG.remove_class  block_tag, 'first'
-      HOTMETAL.TAG.add_class     block_tag, 'middle'
-    slug_html                   = HOTMETAL.as_html slug_hotml
-    slug_jq                     = jQuery slug_html
-    line_counter                = slug_jq.children()[ 0 ]
-    container.append slug_jq
-    client_rectangles           = line_counter.getClientRects()
-    container_width             = container.width()
-    client_rectangle            = client_rectangles[ 0 ]
-    client_width                = client_rectangle[ 'right' ] - container.offset()[ 'left' ]
-    excess                      = Math.max 0, Math.floor client_width - container_width
-    ### TAINT arbitrary precision limit ###
-    excess                      = 0 if excess < 3
-    if excess > 0
-      warn slug_html
-      warn "exceeding container by #{excess.toFixed 1}px"
-    line_count                  = client_rectangles.length
-    return [ slug_hotml, slug_html, line_count, excess, ]
-
-  #---------------------------------------------------------------------------------------------------------
   mark_chrs           = yes
   mark_lines          = no
   XXX_t0              = +new Date()
@@ -144,10 +336,10 @@ now                       = require 'performance-now'
     .pipe $ ( hotml, send ) =>
       ### split document into blocks ###
       send block_hotml for block_hotml in HOTMETAL.slice_toplevel_tags hotml
-    # #.......................................................................................................
-    # .pipe $async ( data, done ) =>
-    #   later =>
-    #     done data
+    #.......................................................................................................
+    .pipe $async ( data, done ) =>
+      later =>
+        done data
     #.......................................................................................................
     .pipe $ ( block_hotml, send ) =>
       ### Wrap block contents in `line-counter`; method analoguous to `jQuery.wrapInner` ###
@@ -155,77 +347,15 @@ now                       = require 'performance-now'
       block_hotml[ block_hotml.length - 1 ][ 2 ].unshift  [ 'line-counter', ]
       send block_hotml
     #.......................................................................................................
-    .pipe $ ( block_hotml, send ) =>
-      start_idx       = 0
-      stop_idx        = 0
-      trial_count     = 0
-      last_start_idx  = block_hotml.length - 1
-      html_lines      = []
-      slices          = []
-      excesses        = []
-      slug_html       = null
-      good_slug_html  = null
-      is_finished     = no
-      line_nr         = 0
-      container       = jQuery 'container'
-      container       = jQuery "<container style='display:block'></container>" if container.length is 0
-      gcolumn.append container
-      #.....................................................................................................
-      until is_finished
-        trial_count    += +1
-        good_slug_html  = slug_html
-        line_nr         = html_lines.length + 1
-        [ slice_hotml
-          slug_html
-          line_count
-          excess      ] = try_slug container, block_hotml, line_nr, start_idx, stop_idx
-        #...................................................................................................
-        if stop_idx >= last_start_idx
-          warn '2', "stop_idx > last_start_idx"
-          excesses.push   excess
-          slices.push     slice_hotml
-          html_lines.push slug_html
-          is_finished = yes
-          continue
-        #...................................................................................................
-        if line_count > 1
-          if trial_count is 1
-            throw new Error "not yet implemented"
-          excesses.push   excess
-          slices.push     slice_hotml
-          html_lines.push good_slug_html
-          start_idx = stop_idx
-          stop_idx  = start_idx - 1
-        #...................................................................................................
-        stop_idx     += +1
-        #...................................................................................................
-        if start_idx >= last_start_idx
-          throw new Error "not yet implemented"
-      #.....................................................................................................
-      excess              = excesses[ excesses.length - 1 ]
-      new_class           = if slices.length is 1 then 'single' else 'last'
-      last_line_hotml     = slices[ slices.length - 1 ]
-      last_line_block_tag = last_line_hotml[ 0 ][ 0 ][ 0 ]
-      HOTMETAL.TAG.remove_class  last_line_block_tag, 'middle'
-      HOTMETAL.TAG.remove_class  last_line_block_tag, 'first'
-      HOTMETAL.TAG.add_class     last_line_block_tag, new_class
-      HOTMETAL.TAG.add_class     last_line_block_tag, 'excess' if excess > 0
-      last_line_html                      = HOTMETAL.as_html last_line_hotml
-      html_lines[ html_lines.length - 1 ] = last_line_html
-      #.....................................................................................................
-      container.empty()
-      send html_lines
-    .pipe D.$show()
+    # .pipe $get_slugs_v1 gcolumn
+    .pipe $get_slugs_v2 gcolumn
     #.......................................................................................................
     .pipe $ ( html_lines, send ) =>
-      # ### According to http://stackoverflow.com/a/8840703/256361, the below *should* trigger a repaint /
-      # reflow: ###
-      # ( jQuery 'body' ).hide().show 0
-      whisper html_line for html_line in html_lines
       target_column.append html_line for html_line in html_lines
       send html_lines
   #.........................................................................................................
     .pipe D.$on_end ->
+      XXX_times.push [ "finished", new Date() - XXX_t0, ]
       for [ description, dt, ] in XXX_times
         debug '©1enOB', description, ( dt / 1000 ).toFixed 3
       handler()

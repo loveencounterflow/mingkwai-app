@@ -310,150 +310,34 @@ MKTS.demo = ( me ) ->
   # source = "Just as shé said this, she fluffi *noticed* that abc def ghi jkl mno pqr stu vwx xy"
   source = """
 
-    supercalifragilisticexpialigoricalsupercalifragilisticexpialigorical
 
-    # Behind the Looking-Glass
 
     'But everything's curious today. I think I may as well go in at once.' And in
     she went.
-
-    The King and Queen of Hearts were <xbig>seated</xbig> on their throne when they
-    arrived, with a great crowd assembled about them--all sorts of little
-    birds and beasts.
-
-    There was nothing so VERY remarkable in that; nor did Alice think it so
-    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
-    Oh dear! I shall be late!' (when she thought it over afterwards, it
-    occurred to her that she ought to have wondered at this, but at the time
-    it all seemed quite natural); but when the Rabbit actually TOOK A WATCH
-    OUT OF ITS WAISTCOAT-POCKET, and looked at it, and then hurried on,
-    Alice started to her feet, for it flashed across her mind that she had
-    never before seen a rabbit with either a waistcoat-pocket, or a watch
-    to take out of it, and burning with curiosity, she ran across the field
-    after it, and fortunately was just in time to see it pop down a large
-    rabbit-hole under the hedge.
-
-    There was nothing so VERY remarkable in that; nor did Alice think it so
-    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
-    Oh dear! I shall be late!' (when she thought it over afterwards, it
-    occurred to her that she ought to have wondered at this, but at the time
-    it all seemed quite natural); but when the Rabbit actually *TOOK **A** WATCH
-    OUT OF ITS WAISTCOAT-POCKET*, and looked at it, and then hurried on,
-    Alice started to her feet, *King **and** Queen* for it flashed across her mind that she had
-    never before seen a rabbit with either a waistcoat-pocket, or a watch
-    to take out of it, and burning with curiosity, she ran across the field
-    after it, and fortunately was just in time to see it pop down a large
-    rabbit-hole under the hedge.
-
-    Short paragraph.
-
-    # Behind the Looking-Glass
-
-    'But everything's curious today. I think I may as well go in at once.' And in
-    she went.
-
-    The King and Queen of Hearts were <xbig>seated</xbig> on their throne when they
-    arrived, with a great crowd assembled about them--all sorts of little
-    birds and beasts.
-
-    There was nothing so VERY remarkable in that; nor did Alice think it so
-    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
-    Oh dear! I shall be late!' (when she thought it over afterwards, it
-    occurred to her that she ought to have wondered at this, but at the time
-    it all seemed quite natural); but when the Rabbit actually TOOK A WATCH
-    OUT OF ITS WAISTCOAT-POCKET, and looked at it, and then hurried on,
-    Alice started to her feet, for it flashed across her mind that she had
-    never before seen a rabbit with either a waistcoat-pocket, or a watch
-    to take out of it, and burning with curiosity, she ran across the field
-    after it, and fortunately was just in time to see it pop down a large
-    rabbit-hole under the hedge.
-
-    There was nothing so VERY remarkable in that; nor did Alice think it so
-    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
-    Oh dear! I shall be late!' (when she thought it over afterwards, it
-    occurred to her that she ought to have wondered at this, but at the time
-    it all seemed quite natural); but when the Rabbit actually *TOOK **A** WATCH
-    OUT OF ITS WAISTCOAT-POCKET*, and looked at it, and then hurried on,
-    Alice started to her feet, *King **and** Queen* for it flashed across her mind that she had
-    never before seen a rabbit with either a waistcoat-pocket, or a watch
-    to take out of it, and burning with curiosity, she ran across the field
-    after it, and fortunately was just in time to see it pop down a large
-    rabbit-hole under the hedge.
-
-    Short paragraph.
-
-    # Behind the Looking-Glass
-
-    'But everything's curious today. I think I may as well go in at once.' And in
-    she went.
-
-    The King and Queen of Hearts were <xbig>seated</xbig> on their throne when they
-    arrived, with a great crowd assembled about them--all sorts of little
-    birds and beasts.
-
-    There was nothing so VERY remarkable in that; nor did Alice think it so
-    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
-    Oh dear! I shall be late!' (when she thought it over afterwards, it
-    occurred to her that she ought to have wondered at this, but at the time
-    it all seemed quite natural); but when the Rabbit actually TOOK A WATCH
-    OUT OF ITS WAISTCOAT-POCKET, and looked at it, and then hurried on,
-    Alice started to her feet, for it flashed across her mind that she had
-    never before seen a rabbit with either a waistcoat-pocket, or a watch
-    to take out of it, and burning with curiosity, she ran across the field
-    after it, and fortunately was just in time to see it pop down a large
-    rabbit-hole under the hedge.
-
-    There was nothing so VERY remarkable in that; nor did Alice think it so
-    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
-    Oh dear! I shall be late!' (when she thought it over afterwards, it
-    occurred to her that she ought to have wondered at this, but at the time
-    it all seemed quite natural); but when the Rabbit actually *TOOK **A** WATCH
-    OUT OF ITS WAISTCOAT-POCKET*, and looked at it, and then hurried on,
-    Alice started to her feet, *King **and** Queen* for it flashed across her mind that she had
-    never before seen a rabbit with either a waistcoat-pocket, or a watch
-    to take out of it, and burning with curiosity, she ran across the field
-    after it, and fortunately was just in time to see it pop down a large
-    rabbit-hole under the hedge.
-
-    Short paragraph.
-
-    # Behind the Looking-Glass
-
-    'But everything's curious today. I think I may as well go in at once.' And in
-    she went.
-
-    The King and Queen of Hearts were <xbig>seated</xbig> on their throne when they
-    arrived, with a great crowd assembled about them--all sorts of little
-    birds and beasts.
-
-    There was nothing so VERY remarkable in that; nor did Alice think it so
-    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
-    Oh dear! I shall be late!' (when she thought it over afterwards, it
-    occurred to her that she ought to have wondered at this, but at the time
-    it all seemed quite natural); but when the Rabbit actually TOOK A WATCH
-    OUT OF ITS WAISTCOAT-POCKET, and looked at it, and then hurried on,
-    Alice started to her feet, for it flashed across her mind that she had
-    never before seen a rabbit with either a waistcoat-pocket, or a watch
-    to take out of it, and burning with curiosity, she ran across the field
-    after it, and fortunately was just in time to see it pop down a large
-    rabbit-hole under the hedge.
-
-    There was nothing so VERY remarkable in that; nor did Alice think it so
-    VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
-    Oh dear! I shall be late!' (when she thought it over afterwards, it
-    occurred to her that she ought to have wondered at this, but at the time
-    it all seemed quite natural); but when the Rabbit actually *TOOK **A** WATCH
-    OUT OF ITS WAISTCOAT-POCKET*, and looked at it, and then hurried on,
-    Alice started to her feet, *King **and** Queen* for it flashed across her mind that she had
-    never before seen a rabbit with either a waistcoat-pocket, or a watch
-    to take out of it, and burning with curiosity, she ran across the field
-    after it, and fortunately was just in time to see it pop down a large
-    rabbit-hole under the hedge.
-
-    Short paragraph.
 
 
   """
+    # # Behind the Looking-Glass
+
+    # supercalifragilisticexpialigoricalsupercalifragilisticexpialigorical
+
+    # The King and Queen of Hearts were <xbig>seated</xbig> on their throne when they
+    # arrived, with a great crowd assembled about them--all sorts of little
+    # birds and beasts.
+
+    # There was nothing so VERY remarkable in that; nor did Alice think it so
+    # VERY much out of the way to hear the Rabbit say to itself, 'Oh dear!
+    # Oh dear! I shall be late!' (when she thought it over afterwards, it
+    # occurred to her that she ought to have wondered at this, but at the time
+    # it all seemed quite natural); but when the Rabbit actually TOOK A WATCH
+    # OUT OF ITS WAISTCOAT-POCKET, and looked at it, and then hurried on,
+    # Alice started to her feet, for it flashed across her mind that she had
+    # never before seen a rabbit with either a waistcoat-pocket, or a watch
+    # to take out of it, and burning with curiosity, she ran across the field
+    # after it, and fortunately was just in time to see it pop down a large
+    # rabbit-hole under the hedge.
+
+    # Short paragraph.
 
   # source = """
   #   <kwic-lineup>1 中國皇帝</kwic-lineup>
