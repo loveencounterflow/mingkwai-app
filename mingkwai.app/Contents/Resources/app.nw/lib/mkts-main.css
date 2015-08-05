@@ -392,12 +392,12 @@ bottommargin {
   flex-grow: 0;
 }
 topmargin {
-  min-height: 11mm;
-  max-height: 11mm;
+  min-height: 7mm;
+  max-height: 7mm;
 }
 bottommargin {
-  min-height: 5mm;
-  max-height: 5mm;
+  min-height: 13mm;
+  max-height: 13mm;
 }
 @media screen {
   leftmargin,
