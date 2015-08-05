@@ -39,13 +39,14 @@ jQuery                    = null
 MKTS                      = null
 window                    = null
 document                  = null
+BD                        = require './BLAIDDDRWG'
 
 
 #-----------------------------------------------------------------------------------------------------------
 _get_slugs_container = ( gcolumn ) ->
   R = jQuery 'container'
   if R.length is 0
-    R = jQuery "<container style='display:block'></container>"
+    R = jQuery "<container style='display:block;width:100%;height:30mm;outline:1px solid red'></container>"
     gcolumn.append R
   return R
 
@@ -59,6 +60,7 @@ try_slug_v1 = ( container, block_hotml, line_nr, start_idx, stop_idx ) =>
   slug_hotml                  = HOTMETAL.slice block_hotml, start_idx, stop_idx + 1
   block_tag                   = slug_hotml[ 0 ][ 0 ][ 0 ]
   HOTMETAL.TAG.set block_tag, 'line-nr', line_nr
+  HOTMETAL.TAG.add_class block_tag, 'slug'
   if line_nr is 1
     # HOTMETAL.TAG.remove_class  block_tag, 'middle'
     HOTMETAL.TAG.add_class     block_tag, 'first'
@@ -145,6 +147,14 @@ $get_slugs_v1 = ( gcolumn ) ->
     send html_lines
     help "#{( trial_count / html_lines.length ).toFixed 2} trials per line"
 
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
 ###
 V2
 ###
@@ -200,28 +210,28 @@ $get_slugs_v2 = ( gcolumn ) ->
     ### Try to slice block so that it is approx. one line long: ###
     start_idx           = 0
     stop_idx_delta      = Math.floor parts_per_line + 0.5
-    stop_idx            = start_idx + stop_idx_delta
-    line_nr             = 1
-    ### !!!!!!!!! ###
-    stop_idx = 7
-    ### !!!!!!!!! ###
-    slug_hotml          = HOTMETAL.slice block_hotml, start_idx, stop_idx + 1
-    [ slug_html
-      line_count
-      excess          ] = try_slug_hotml_v2 container, slug_hotml, line_nr
-    debug '©qSCez', stop_idx, slug_html
-    debug '©qSCez', line_count
-    #.......................................................................................................
-    switch ( mode = if line_count is 1 then 'growing' else 'shrinking' )
-      #.....................................................................................................
-      when 'growing'
-        trial_count     = 0
-        last_start_idx  = block_hotml.length - 1
-        slug_html       = null
-        good_slug_html  = null
-        is_finished     = no
-        #...................................................................................................
-        until is_finished
+    #...................................................................................................
+    until is_finished
+      stop_idx            = start_idx + stop_idx_delta
+      line_nr             = 1
+      ### !!!!!!!!! ###
+      stop_idx = 7
+      ### !!!!!!!!! ###
+      slug_hotml          = HOTMETAL.slice block_hotml, start_idx, stop_idx + 1
+      [ slug_html
+        line_count
+        excess          ] = try_slug_hotml_v2 container, slug_hotml, line_nr
+      debug '©qSCez', stop_idx, slug_html
+      debug '©qSCez', line_count
+      #.......................................................................................................
+      switch ( mode = if line_count is 1 then 'growing' else 'shrinking' )
+        #.....................................................................................................
+        when 'growing'
+          trial_count     = 0
+          last_start_idx  = block_hotml.length - 1
+          slug_html       = null
+          good_slug_html  = null
+          is_finished     = no
           stop_idx       += +1
           trial_count    += +1
           good_slug_html  = slug_html
@@ -251,9 +261,9 @@ $get_slugs_v2 = ( gcolumn ) ->
           #.................................................................................................
           if start_idx >= last_start_idx
             throw new Error "not yet implemented"
-      #.....................................................................................................
-      when 'shrinking'
-        throw new Error "not yet implemented"
+        #.....................................................................................................
+        when 'shrinking'
+          throw new Error "not yet implemented"
     #.......................................................................................................
     excess              = excesses[ excesses.length - 1 ]
     new_class           = if slugs_hotml.length is 1 then 'single' else 'last'
@@ -270,6 +280,14 @@ $get_slugs_v2 = ( gcolumn ) ->
     send html_lines
     help "#{( trial_count / html_lines.length ).toFixed 2} trials per line"
 
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
 
 #===========================================================================================================
 #
@@ -304,7 +322,8 @@ $get_slugs_v2 = ( gcolumn ) ->
   gcolumn_offset      = gcolumn.offset()
   gcolumn_left        = gcolumn_offset[ 'left' ]
   gcolumn_top         = gcolumn_offset[ 'top'  ]
-  target_column       = ( jQuery 'galley column' ).eq 1
+  target_columns      = jQuery 'page column'
+  target_column       = target_columns.eq 0
   zoomer              = jQuery 'zoomer'
   # window.gcolumn      = gcolumn # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   input               = D.create_throughstream()
@@ -347,18 +366,39 @@ $get_slugs_v2 = ( gcolumn ) ->
       block_hotml[ block_hotml.length - 1 ][ 2 ].unshift  [ 'line-counter', ]
       send block_hotml
     #.......................................................................................................
-    # .pipe $get_slugs_v1 gcolumn
-    .pipe $get_slugs_v2 gcolumn
+    .pipe $get_slugs_v1 gcolumn
+    # .pipe $get_slugs_v2 gcolumn
     #.......................................................................................................
     .pipe $ ( html_lines, send ) =>
-      target_column.append html_line for html_line in html_lines
+      ### TAINT no need to recompute on each paragraph ###
+      column_rectangle  = BD.get_rectangle target_column
+      delta_y_px        = column_rectangle[ 'top' ]
+      column_height_mm  = mm_from_npx column_rectangle[ 'height' ]
+      ### TAINT arbitrary precision ###
+      epsilon_mm  = 0.5
+      for html_line, line_idx in html_lines
+        line          = jQuery html_line
+        target_column.append line
+        rectangle     = BD.get_rectangle line
+        width_px      = rectangle[ 'width'  ]
+        height_px     = rectangle[ 'height' ]
+        top_px        = rectangle[ 'top'    ] - delta_y_px
+        bottom_px     = rectangle[ 'bottom' ] - delta_y_px
+        width_mm      = mm_from_npx width_px
+        height_mm     = mm_from_npx height_px
+        top_mm        = mm_from_npx top_px
+        bottom_mm     = mm_from_npx bottom_px
+        overshoot_mm  = bottom_mm - column_height_mm
+        is_off        = overshoot_mm >= epsilon_mm
+        debug '©bPew4', line_idx, ( ƒ bottom_mm, 1 ), ( ƒ column_height_mm, 1 ), ( ƒ overshoot_mm, 1 ), is_off, line.text()[ .. 20 ]
       send html_lines
   #.........................................................................................................
     .pipe D.$on_end ->
-      XXX_times.push [ "finished", new Date() - XXX_t0, ]
-      for [ description, dt, ] in XXX_times
-        debug '©1enOB', description, ( dt / 1000 ).toFixed 3
-      handler()
+        ### !!! ###
+        XXX_times.push [ "finished", new Date() - XXX_t0, ]
+        for [ description, dt, ] in XXX_times
+          debug '©1enOB', description, ( dt / 1000 ).toFixed 3
+        handler()
   #.........................................................................................................
   input.write md
   input.end()

@@ -220,20 +220,20 @@ module.exports = ( _app ) ->
 #-----------------------------------------------------------------------------------------------------------
 @VIEW.show_galley = ( handler = null ) =>
   window          = app[ 'window' ]
-  q               = app[ 'jQuery' ]
+  jQuery          = app[ 'jQuery' ]
+  ( jQuery 'artboard.galley'  ).css 'z-index', +1
+  ( jQuery 'artboard.pages'   ).css 'z-index', -1
   app[ 'view' ]   = 'galley'
-  ( q 'artboard.pages' ).animate opacity: 0, =>
-    ( q 'artboard.pages' ).css 'display', 'none'
-    handler null if handler?
+  handler null if handler?
 
 #-----------------------------------------------------------------------------------------------------------
 @VIEW.show_pages = ( handler = null ) =>
   window          = app[ 'window' ]
-  q               = app[ 'jQuery' ]
+  jQuery          = app[ 'jQuery' ]
+  ( jQuery 'artboard.pages'   ).css 'z-index', +1
+  ( jQuery 'artboard.galley'  ).css 'z-index', -1
   app[ 'view' ]   = 'pages'
-  ( q 'artboard.pages' ).css 'display', 'block'
-  ( q 'artboard.pages' ).animate opacity: 1, =>
-    handler null if handler?
+  handler null if handler?
 
 #-----------------------------------------------------------------------------------------------------------
 @VIEW.test_page = =>

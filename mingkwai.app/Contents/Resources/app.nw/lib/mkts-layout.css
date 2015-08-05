@@ -38,6 +38,7 @@ ruler.vertical {
 /* ### NOTE `chase` must *not* have `display: flex` to avoid strange bug when producing printout PDF.
 Generally speaking, it looks like there should be no nested `display: flex` elements. ### */
 chase {
+  height: 280mm;
   position: relative;
   left: 4.5mm;
   top: 8mm;
@@ -219,6 +220,9 @@ p.last {
 }
 p.excess {
   background-color: #d40066;
+}
+p.slug {
+  height: 5mm;
 }
 /* ------------------------------------------------------------------------------------------------------ */
 xbig {

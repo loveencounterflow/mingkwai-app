@@ -535,7 +535,7 @@
               return ZOOMER(function() {
                 var j, page_nr, results;
                 results = [];
-                for (page_nr = j = 1; j <= 1; page_nr = ++j) {
+                for (page_nr = j = 1; j <= 5; page_nr = ++j) {
                   results.push(PAGE(function() {
                     OVERLAY(page_nr);
                     RULER('.horizontal');

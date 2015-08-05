@@ -5,7 +5,8 @@
 /* Experimentally detected that `$paper-height = 297mm - 0.13mm` is not enough but
   `297mm - 0.15mm` is enough to avoid intervening blank pages in the PDF. */
 $paper-width                = 210mm
-$paper-height               = 297mm - 0.15mm
+$nominal-paper-height       = 297mm
+$real-paper-height          = $nominal-paper-height - 0.15mm
 // $paper-width                = 210mm
 // $paper-height               = 297mm
 /* ...................................................................................................... */
@@ -13,7 +14,7 @@ $paper-height               = 297mm - 0.15mm
 $gutter-left                = 4.5mm
 $gutter-right               = $gutter-left
 $gutter-top                 = 8mm
-$gutter-bottom              = 10mm
+$gutter-bottom              = 9mm
 /* ...................................................................................................... */
 // 'margins' in typographic terms (areas outside the main content) become 'paddings' in CSS:
 $margin-left                = 15mm
@@ -22,8 +23,8 @@ $margin-top                 = 11mm
 $margin-bottom              = 5mm
 /* ...................................................................................................... */
 // the chase represents the printable area; inside, flanked by the margins, is the main content area:
-$chase-width                = $paper-width  - $gutter-left  - $gutter-right
-$chase-height               = $paper-height - $gutter-top   - $gutter-bottom
+$chase-width                = $paper-width          - $gutter-left  - $gutter-right
+$chase-height               = $nominal-paper-height - $gutter-top   - $gutter-bottom
 /* ...................................................................................................... */
 $galley-width               = $paper-width
 
@@ -31,7 +32,7 @@ $galley-width               = $paper-width
 paper
 page
   width:                  $paper-width
-  height:                 $paper-height
+  height:                 $real-paper-height
   display:                flex
 
 /* ------------------------------------------------------------------------------------------------------ */
@@ -63,7 +64,7 @@ Generally speaking, it looks like there should be no nested `display: flex` elem
 //   height:                 $chase-height
 
 chase
-  // height:                 $chase-height
+  height:                 $chase-height
   position:               relative
   left:                   $gutter-left
   top:                    $gutter-top
@@ -257,6 +258,9 @@ p.last
 
 p.excess
   background-color:       #d40066
+
+p.slug
+  height:                 5mm
 
 /* ------------------------------------------------------------------------------------------------------ */
 

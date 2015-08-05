@@ -182,41 +182,35 @@
 
   this.VIEW.show_galley = (function(_this) {
     return function(handler) {
-      var q, window;
+      var jQuery, window;
       if (handler == null) {
         handler = null;
       }
       window = app['window'];
-      q = app['jQuery'];
+      jQuery = app['jQuery'];
+      (jQuery('artboard.galley')).css('z-index', +1);
+      (jQuery('artboard.pages')).css('z-index', -1);
       app['view'] = 'galley';
-      return (q('artboard.pages')).animate({
-        opacity: 0
-      }, function() {
-        (q('artboard.pages')).css('display', 'none');
-        if (handler != null) {
-          return handler(null);
-        }
-      });
+      if (handler != null) {
+        return handler(null);
+      }
     };
   })(this);
 
   this.VIEW.show_pages = (function(_this) {
     return function(handler) {
-      var q, window;
+      var jQuery, window;
       if (handler == null) {
         handler = null;
       }
       window = app['window'];
-      q = app['jQuery'];
+      jQuery = app['jQuery'];
+      (jQuery('artboard.pages')).css('z-index', +1);
+      (jQuery('artboard.galley')).css('z-index', -1);
       app['view'] = 'pages';
-      (q('artboard.pages')).css('display', 'block');
-      return (q('artboard.pages')).animate({
-        opacity: 1
-      }, function() {
-        if (handler != null) {
-          return handler(null);
-        }
-      });
+      if (handler != null) {
+        return handler(null);
+      }
     };
   })(this);
 

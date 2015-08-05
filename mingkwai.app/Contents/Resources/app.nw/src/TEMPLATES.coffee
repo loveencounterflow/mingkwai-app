@@ -405,7 +405,7 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
                 BOTTOMMARGIN =>
         ARTBOARD '.pages', =>
           ZOOMER =>
-            for page_nr in [ 1 .. 1 ] # [ 1 .. 5 ]
+            for page_nr in [ 1 .. 5 ]
               PAGE =>
                 OVERLAY page_nr
                 RULER '.horizontal'

@@ -293,6 +293,7 @@ ruler.vertical {
   border-left: 1px solid #f00;
 }
 chase {
+  height: 280mm;
   position: relative;
   left: 4.5mm;
   top: 8mm;
@@ -456,6 +457,9 @@ p.last {
 }
 p.excess {
   background-color: #d40066;
+}
+p.slug {
+  height: 5mm;
 }
 xbig {
   font-size: 200%;
