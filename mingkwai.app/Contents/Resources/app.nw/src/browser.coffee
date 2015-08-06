@@ -479,7 +479,7 @@ bindings =
   # 'meta+r':               -> MKTS.reload()
   # 'meta+q':               -> MKTS.take_screenshot()
   # 'meta+y':               -> MKTS.demo()
-  # 'meta+s':               -> MKTS.save()
+  'meta+x':               -> LINESETTER._demo_pop_over()
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.on_keydown = ( event ) ->

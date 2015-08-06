@@ -120,17 +120,25 @@
 
   COLUMN = {};
 
-  COLUMN.new_column = function(substrate) {
-    var R;
-    return R = {
+  COLUMN.new_column = function(substrate, selector) {
+    var R, elements, i, idx, lines, ref;
+    R = {
       '~isa': 'LINESETTER/column',
       '%self': substrate,
-      'lines': [],
+      'lines': lines = [],
       'length': 0
     };
+    if (selector != null) {
+      elements = substrate.find(selector);
+      for (idx = i = 0, ref = elements.length; 0 <= ref ? i < ref : i > ref; idx = 0 <= ref ? ++i : --i) {
+        lines.push(elements.eq(idx));
+      }
+      R['length'] = elements.length;
+    }
+    return R;
   };
 
-  COLUMN.push(function(me, line) {
+  COLUMN.push = function(me, line) {
     if (CND.isa_text(line)) {
       line = jQuery(line);
     }
@@ -138,9 +146,9 @@
     me['%self'].append(line);
     me['length'] = me['lines'].length;
     return me;
-  });
+  };
 
-  COLUMN.pop(function(me) {
+  COLUMN.pop = function(me) {
     var R;
     if (me['length'] < 1) {
       throw new Error("unable to pop from empty list");
@@ -149,9 +157,9 @@
     R.detach();
     me['length'] = me['lines'].length;
     return R;
-  });
+  };
 
-  COLUMN.insert(function(me, line, idx) {
+  COLUMN.insert = function(me, line, idx) {
     if (CND.isa_text(line)) {
       line = jQuery(line);
     }
@@ -164,29 +172,32 @@
     }
     me['length'] = me['lines'].length;
     return me;
-  });
+  };
 
-  COLUMN.pull(function(me) {
+  COLUMN.pull = function(me) {
     var R;
     R = me['%lines'].shift();
     R.detach();
     me['length'] = me['lines'].length;
     return R;
-  });
+  };
 
-  COLUMN.pop_over(function(me, count, other) {
-    var length;
+  COLUMN.pop_over = function(me, other, count) {
+    var _, i, length, ref;
+    if (count == null) {
+      count = 1;
+    }
     if ((length = me['length']) < me['length']) {
       throw new Error("unable to divide with count " + count + " and length " + length);
     }
     if (!CND.isa(other, 'LINESETTER/column')) {
       other = this.new_column(substrate);
     }
-    while (me['length'] > count) {
+    for (_ = i = 1, ref = count; 1 <= ref ? i <= ref : i >= ref; _ = 1 <= ref ? ++i : --i) {
       this.insert(other, this.pop(me));
     }
     return [me, other];
-  });
+  };
 
   this.try_slug = (function(_this) {
     return function(container, block_hotml, line_nr, start_idx, stop_idx) {
@@ -432,6 +443,18 @@
     }));
     input.write(md);
     return input.end();
+  };
+
+  this._demo_pop_over = function() {
+    var columns, i, idx, target_columns;
+    target_columns = jQuery('page column');
+    columns = [];
+    for (idx = i = 0; i <= 2; idx = ++i) {
+      columns.push(COLUMN.new_column(target_columns.eq(idx), 'p.slug'));
+    }
+    debug('©1rmzT', columns[0].length, columns[1].length, columns[2].length);
+    COLUMN.pop_over(columns[0], columns[1], 1);
+    return debug('©1rmzT', columns[0].length, columns[1].length);
   };
 
 }).call(this);

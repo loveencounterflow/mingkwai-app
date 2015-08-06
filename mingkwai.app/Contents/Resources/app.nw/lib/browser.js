@@ -392,6 +392,9 @@
     },
     'meta+right': function() {
       return MKTS.scroll_to_bottom();
+    },
+    'meta+x': function() {
+      return LINESETTER._demo_pop_over();
     }
   };
 

@@ -80,15 +80,22 @@ npx_from_mm = ( d ) -> MKTS.GAUGE.npx_from_mm app, d
 COLUMN = {}
 
 #-----------------------------------------------------------------------------------------------------------
-COLUMN.new_column = ( substrate ) ->
+COLUMN.new_column = ( substrate, selector ) ->
   R =
     '~isa':         'LINESETTER/column'
     '%self':        substrate
-    'lines':        []
+    'lines':        lines = []
     'length':       0
+  #.........................................................................................................
+  if selector?
+    elements = substrate.find selector
+    lines.push ( elements.eq idx ) for idx in [ 0 ... elements.length ]
+    R[ 'length' ] = elements.length
+  #.........................................................................................................
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
-COLUMN.push ( me, line ) ->
+COLUMN.push = ( me, line ) ->
   line = jQuery line if CND.isa_text line
   me[ 'lines' ].push line
   me[ '%self' ].append line
@@ -96,7 +103,7 @@ COLUMN.push ( me, line ) ->
   return me
 
 #-----------------------------------------------------------------------------------------------------------
-COLUMN.pop ( me ) ->
+COLUMN.pop = ( me ) ->
   throw new Error "unable to pop from empty list" if me[ 'length' ] < 1
   R = me[ 'lines' ].pop()
   R.detach()
@@ -104,7 +111,7 @@ COLUMN.pop ( me ) ->
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-COLUMN.insert ( me, line, idx ) ->
+COLUMN.insert = ( me, line, idx ) ->
   line = jQuery line if CND.isa_text line
   if idx?
     me[ 'lines' ].splice idx, 0, line
@@ -116,19 +123,19 @@ COLUMN.insert ( me, line, idx ) ->
   return me
 
 #-----------------------------------------------------------------------------------------------------------
-COLUMN.pull ( me ) ->
+COLUMN.pull = ( me ) ->
   R = me[ '%lines' ].shift()
   R.detach()
   me[ 'length' ] = me[ 'lines' ].length
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-COLUMN.pop_over ( me, count, other ) ->
+COLUMN.pop_over = ( me, other, count = 1 ) ->
   if ( length = me[ 'length' ] ) < me[ 'length' ]
     throw new Error "unable to divide with count #{count} and length #{length}"
   other = @new_column substrate unless CND.isa other, 'LINESETTER/column'
   # for line, idx in me[ 'lines' ].splice length - count, count
-  while me[ 'length' ] > count
+  for _ in [ 1 .. count ]
     @insert other, @pop me
   return [ me, other, ]
 
@@ -356,6 +363,24 @@ COLUMN.pop_over ( me, count, other ) ->
   #.........................................................................................................
   input.write md
   input.end()
+
+#-----------------------------------------------------------------------------------------------------------
+@_demo_pop_over = ->
+  target_columns      = jQuery 'page column'
+  columns             = []
+  for idx in [ 0 .. 2 ]
+    columns.push COLUMN.new_column ( target_columns.eq idx ), 'p.slug'
+  debug '©1rmzT', columns[ 0 ].length, columns[ 1 ].length, columns[ 2 ].length
+  COLUMN.pop_over columns[ 0 ], columns[ 1 ], 1
+  debug '©1rmzT', columns[ 0 ].length, columns[ 1 ].length
+
+
+
+
+
+
+
+
 
 
 
