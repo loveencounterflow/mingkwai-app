@@ -130,14 +130,36 @@ COLUMN.pull = ( me ) ->
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-COLUMN.pop_over = ( me, other, count = 1 ) ->
+COLUMN.pop_over = ( me, other, count = 1, handler = null ) ->
+  switch arity = arguments.length
+    when 2, 4 then null
+    when 3
+      if CND.isa_function count
+        handler = count
+        count   = 1
+    else
+      throw new Error "expected between 2 and 4 arguments, got #{arity}"
+  #.........................................................................................................
+  return @pop_over_async me, other, count handler if handler?
+  #.........................................................................................................
   if ( length = me[ 'length' ] ) < me[ 'length' ]
     throw new Error "unable to divide with count #{count} and length #{length}"
   other = @new_column substrate unless CND.isa other, 'LINESETTER/column'
-  # for line, idx in me[ 'lines' ].splice length - count, count
   for _ in [ 1 .. count ]
     @insert other, @pop me
   return [ me, other, ]
+
+#-----------------------------------------------------------------------------------------------------------
+COLUMN.pop_over_async = ( me, other, count, handler ) ->
+  if ( length = me[ 'length' ] ) < me[ 'length' ]
+    throw new Error "unable to divide with count #{count} and length #{length}"
+  other = @new_column substrate unless CND.isa other, 'LINESETTER/column'
+  step ( resume ) =>
+    for _ in [ 1 .. count ]
+      line = @pop me
+      yield after 0.001, resume
+      @insert other, line
+    handler null, [ me, other, ]
 
 #===========================================================================================================
 #
@@ -238,8 +260,6 @@ COLUMN.pop_over = ( me, other, count = 1 ) ->
   target_columns      = jQuery 'page column'
   target_column_idx   = 0
   target_column       = target_columns.eq target_column_idx
-  ### TAINT arbitrary constant ###
-  columns_per_page    = 3
   line_count          = 0
   lines               = []
   #.........................................................................................................
@@ -279,8 +299,8 @@ COLUMN.pop_over = ( me, other, count = 1 ) ->
       send html_lines
     #.......................................................................................................
     if end?
-      debug '©nGQHo', line_count
-      debug '©bgs63', @get_column_linecounts 'even', line_count, columns_per_page
+      # debug '©nGQHo', line_count
+      # debug '©bgs63', @get_column_linecounts 'even', line_count, columns_per_page
       end()
 
 
@@ -369,10 +389,33 @@ COLUMN.pop_over = ( me, other, count = 1 ) ->
   target_columns      = jQuery 'page column'
   columns             = []
   for idx in [ 0 .. 2 ]
-    columns.push COLUMN.new_column ( target_columns.eq idx ), 'p.slug'
+    columns.push COLUMN.new_column ( target_columns.eq idx ), '.slug'
   debug '©1rmzT', columns[ 0 ].length, columns[ 1 ].length, columns[ 2 ].length
   COLUMN.pop_over columns[ 0 ], columns[ 1 ], 1
   debug '©1rmzT', columns[ 0 ].length, columns[ 1 ].length
+
+#-----------------------------------------------------------------------------------------------------------
+@_demo_pop_over_async = ->
+  target_columns      = jQuery 'page column'
+  columns             = []
+  ### TAINT arbitrary constant ###
+  columns_per_page    = 3
+  line_count          = 0
+  #.........................................................................................................
+  for column_idx in [ 0 ... columns_per_page ]
+    column      = COLUMN.new_column ( target_columns.eq column_idx ), '.slug'
+    line_count += column[ 'length' ]
+    columns.push column
+  #.........................................................................................................
+  column_linecounts   = @get_column_linecounts 'even', line_count, columns_per_page
+  debug '©rnC7h', column_linecounts
+  step ( resume ) =>
+    for column_idx in [ 0 ... columns_per_page ]
+      column = columns[ column_idx ]
+      while column[ 'length' ] > column_linecounts[ column_idx ]
+        ### TAINT invalid last column idx ###
+        yield COLUMN.pop_over_async columns[ column_idx ], columns[ column_idx + 1 ], 1, resume
+      # handler null
 
 
 

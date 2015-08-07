@@ -33,7 +33,7 @@
         selector = selectors[i];
         targets = $(selector);
         targets.draggable();
-        results.push(help("found " + targets.length + " targets for `" + selector + " { " + property + ": " + value + "; }"));
+        results.push(help("found " + targets.length + " targets for `" + selector + " { " + property + ": " + value + "; }`  "));
       }
       return results;
     },

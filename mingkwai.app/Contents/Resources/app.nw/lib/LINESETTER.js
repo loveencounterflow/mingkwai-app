@@ -182,10 +182,30 @@
     return R;
   };
 
-  COLUMN.pop_over = function(me, other, count) {
-    var _, i, length, ref;
+  COLUMN.pop_over = function(me, other, count, handler) {
+    var _, arity, i, length, ref;
     if (count == null) {
       count = 1;
+    }
+    if (handler == null) {
+      handler = null;
+    }
+    switch (arity = arguments.length) {
+      case 2:
+      case 4:
+        null;
+        break;
+      case 3:
+        if (CND.isa_function(count)) {
+          handler = count;
+          count = 1;
+        }
+        break;
+      default:
+        throw new Error("expected between 2 and 4 arguments, got " + arity);
+    }
+    if (handler != null) {
+      return this.pop_over_async(me, other, count(handler));
     }
     if ((length = me['length']) < me['length']) {
       throw new Error("unable to divide with count " + count + " and length " + length);
@@ -197,6 +217,27 @@
       this.insert(other, this.pop(me));
     }
     return [me, other];
+  };
+
+  COLUMN.pop_over_async = function(me, other, count, handler) {
+    var length;
+    if ((length = me['length']) < me['length']) {
+      throw new Error("unable to divide with count " + count + " and length " + length);
+    }
+    if (!CND.isa(other, 'LINESETTER/column')) {
+      other = this.new_column(substrate);
+    }
+    return step((function(_this) {
+      return function*(resume) {
+        var _, i, line, ref;
+        for (_ = i = 1, ref = count; 1 <= ref ? i <= ref : i >= ref; _ = 1 <= ref ? ++i : --i) {
+          line = _this.pop(me);
+          (yield after(0.001, resume));
+          _this.insert(other, line);
+        }
+        return handler(null, [me, other]);
+      };
+    })(this));
   };
 
   this.try_slug = (function(_this) {
@@ -298,13 +339,10 @@
   };
 
   this.$xxx = function() {
-    var columns_per_page, line_count, lines, target_column, target_column_idx, target_columns;
+    var line_count, lines, target_column, target_column_idx, target_columns;
     target_columns = jQuery('page column');
     target_column_idx = 0;
     target_column = target_columns.eq(target_column_idx);
-
-    /* TAINT arbitrary constant */
-    columns_per_page = 3;
     line_count = 0;
     lines = [];
     return $((function(_this) {
@@ -349,8 +387,6 @@
           send(html_lines);
         }
         if (end != null) {
-          debug('©nGQHo', line_count);
-          debug('©bgs63', _this.get_column_linecounts('even', line_count, columns_per_page));
           return end();
         }
       };
@@ -450,11 +486,48 @@
     target_columns = jQuery('page column');
     columns = [];
     for (idx = i = 0; i <= 2; idx = ++i) {
-      columns.push(COLUMN.new_column(target_columns.eq(idx), 'p.slug'));
+      columns.push(COLUMN.new_column(target_columns.eq(idx), '.slug'));
     }
     debug('©1rmzT', columns[0].length, columns[1].length, columns[2].length);
     COLUMN.pop_over(columns[0], columns[1], 1);
     return debug('©1rmzT', columns[0].length, columns[1].length);
+  };
+
+  this._demo_pop_over_async = function() {
+    var column, column_idx, column_linecounts, columns, columns_per_page, i, line_count, ref, target_columns;
+    target_columns = jQuery('page column');
+    columns = [];
+
+    /* TAINT arbitrary constant */
+    columns_per_page = 3;
+    line_count = 0;
+    for (column_idx = i = 0, ref = columns_per_page; 0 <= ref ? i < ref : i > ref; column_idx = 0 <= ref ? ++i : --i) {
+      column = COLUMN.new_column(target_columns.eq(column_idx), '.slug');
+      line_count += column['length'];
+      columns.push(column);
+    }
+    column_linecounts = this.get_column_linecounts('even', line_count, columns_per_page);
+    debug('©rnC7h', column_linecounts);
+    return step((function(_this) {
+      return function*(resume) {
+        var j, ref1, results;
+        results = [];
+        for (column_idx = j = 0, ref1 = columns_per_page; 0 <= ref1 ? j < ref1 : j > ref1; column_idx = 0 <= ref1 ? ++j : --j) {
+          column = columns[column_idx];
+          results.push((yield* (function*() {
+            var results1;
+            results1 = [];
+            while (column['length'] > column_linecounts[column_idx]) {
+
+              /* TAINT invalid last column idx */
+              results1.push((yield COLUMN.pop_over_async(columns[column_idx], columns[column_idx + 1], 1, resume)));
+            }
+            return results1;
+          })()));
+        }
+        return results;
+      };
+    })(this));
   };
 
 }).call(this);

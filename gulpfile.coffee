@@ -84,7 +84,7 @@ gulp.task 'build-stylus', ->
 gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ( handler ) ->
   RWP                   = require join __dirname, module_root, './lib/rework-plugins'
   input_route           = join module_root, 'lib/mkts-main.css'
-  output_route          = join module_root, 'lib/mkts-reworked-main.css'
+  output_route          = join module_root, 'lib/mkts-main.rework.css'
   extras_route          = join module_root, 'lib/xcss-rules.json'
   xcss_rules_json       = null
   #.........................................................................................................
@@ -92,10 +92,10 @@ gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ( handler ) -
     return handler error if error?
     #.......................................................................................................
     rw  = rework css, { source: input_route, }
-    # rw  = rw.use RWP.foobar_super()
+    rw  = rw.use RWP.foobar_super()
     rw  = rw.use RWP.collect /^-mkts-/, ( error, xcss_rules ) =>
       return handler error if error?
-      # debug '©tf4Fg', xcss_rules
+      debug '©tf4Fg', xcss_rules
       help "found #{xcss_rules[ 'rules' ].length} xCSS rules"
       xcss_rules_json = JSON.stringify xcss_rules, null, '  '
     #.......................................................................................................
@@ -103,6 +103,7 @@ gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ( handler ) -
     #.......................................................................................................
     njs_fs.writeFile output_route, css, encoding: 'utf-8', ( error ) =>
       return handler error if error?
+      help "wrote xCSS rules to #{output_route}"
       njs_fs.writeFile extras_route, xcss_rules_json, encoding: 'utf-8', ( error ) =>
         return handler error if error?
         help "wrote xCSS rules to #{extras_route}"

@@ -351,13 +351,26 @@ MKTS.demo = ( me ) ->
     'But it's no use now,' thought poor Alice, 'to pretend to be two people!
     Why, there's hardly enough of me left to make ONE respectable person!'
 
-    Short paragraph.
+    'But everything's curious today. I think I may as well go in at once.' And in
+    she went.
+
+    # Behind the Looking-Glass
+
+    'Come, there's no use in crying like that!' said Alice to herself,
+    rather sharply; 'I advise you to leave off this minute!' She generally
+    gave herself very good advice, (though she very seldom followed it),
+    and sometimes she scolded herself so severely as to bring tears into
+    her eyes; and once she remembered trying to box her own ears for having
+    cheated herself in a game of croquet she was playing against herself,
+    for this curious child was very fond of pretending to be two people.
+    'But it's no use now,' thought poor Alice, 'to pretend to be two people!
+    Why, there's hardly enough of me left to make ONE respectable person!'
+
+
 
   """
-    # 'But everything's curious today. I think I may as well go in at once.' And in
-    # she went.
+    # Short paragraph.
 
-    # # Behind the Looking-Glass
 
     # supercalifragilisticexpialigoricalsupercalifragilisticexpialigorical
 
@@ -479,7 +492,8 @@ bindings =
   # 'meta+r':               -> MKTS.reload()
   # 'meta+q':               -> MKTS.take_screenshot()
   # 'meta+y':               -> MKTS.demo()
-  'meta+x':               -> LINESETTER._demo_pop_over()
+  # 'meta+x':               -> LINESETTER._demo_pop_over()
+  'meta+x':               -> LINESETTER._demo_pop_over_async()
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.on_keydown = ( event ) ->
