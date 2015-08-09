@@ -240,9 +240,30 @@
     })(this));
   };
 
+  this.$add_column_formatting_signals = function() {
+    var last_columns_setting;
+    last_columns_setting = null;
+    return $((function(_this) {
+      return function(block_hotml, send) {
+
+        /* TAINT inefficient because we convert to HTML and then to jQuery merely to see whether an XCSS
+        selector matches the block element
+         */
+        var columns_setting, node;
+        node = jQuery(HOTMETAL.as_html(block_hotml));
+        if ((columns_setting = (XCSS.rules_from_node(app, node))['-mkts-columns']) != null) {
+          if (columns_setting !== last_columns_setting) {
+            send(['columns', columns_setting]);
+          }
+        }
+        return send(['block', block_hotml]);
+      };
+    })(this));
+  };
+
   this.try_slug = (function(_this) {
     return function(container, block_hotml, line_nr, start_idx, stop_idx) {
-      var block_tag, client_rectangle, client_rectangles, client_width, container_width, excess, line_count, line_counter, slug_hotml, slug_html, slug_jq;
+      var block_tag, client_rectangle, client_rectangles, client_width, container_width, excess, is_too_long, line_count, slug_hotml, slug_html, slug_jq, width_gauge;
       slug_hotml = HOTMETAL.slice(block_hotml, start_idx, stop_idx + 1);
       block_tag = slug_hotml[0][0][0];
       HOTMETAL.TAG.set(block_tag, 'line-nr', line_nr);
@@ -254,9 +275,9 @@
       }
       slug_html = HOTMETAL.as_html(slug_hotml);
       slug_jq = jQuery(slug_html);
-      line_counter = slug_jq.children()[0];
+      width_gauge = slug_jq.children()[0];
       container.append(slug_jq);
-      client_rectangles = line_counter.getClientRects();
+      client_rectangles = width_gauge.getClientRects();
       container_width = container.width();
       client_rectangle = client_rectangles[0];
       client_width = client_rectangle['right'] - container.offset()['left'];
@@ -266,12 +287,9 @@
       if (excess < 3) {
         excess = 0;
       }
-      if (excess > 0) {
-        warn(slug_html);
-        warn("exceeding container by " + (excess.toFixed(1)) + "px");
-      }
+      is_too_long = excess > 0;
       line_count = client_rectangles.length;
-      return [slug_hotml, slug_html, line_count, excess];
+      return [slug_hotml, slug_html, is_too_long, excess];
     };
   })(this);
 
@@ -280,7 +298,7 @@
     container = this._get_slugs_container(gcolumn);
     return $((function(_this) {
       return function(block_hotml, send) {
-        var excess, excesses, good_slug_html, html_lines, is_finished, last_line_block_tag, last_line_hotml, last_line_html, last_start_idx, line_count, line_nr, new_class, ref, slice_hotml, slices, slug_html, start_idx, stop_idx, trial_count;
+        var excess, excesses, good_excess, good_slice_hotml, good_slug_html, html_lines, i, is_finished, is_too_long, last_line_block_tag, last_line_hotml, last_start_idx, len, line_nr, new_class, ref, slice_hotml, slices, slug_hotml, slug_html, slug_idx, start_idx, stop_idx, tag_hotml, trial_count;
         start_idx = 0;
         stop_idx = 0;
         trial_count = 0;
@@ -290,47 +308,94 @@
         excesses = [];
         slug_html = null;
         good_slug_html = null;
+        good_slice_hotml = null;
+        good_excess = null;
         is_finished = false;
         line_nr = 0;
+        debug('©Wo0m7', HOTMETAL.as_html(block_hotml));
         while (!is_finished) {
           trial_count += +1;
           good_slug_html = slug_html;
+          good_slice_hotml = slice_hotml;
+          good_excess = excess;
           line_nr = html_lines.length + 1;
-          ref = _this.try_slug(container, block_hotml, line_nr, start_idx, stop_idx), slice_hotml = ref[0], slug_html = ref[1], line_count = ref[2], excess = ref[3];
+
+          /* --------------------- */
+
+          /* TAINT arbitrary limit */
+          if (trial_count > 25) {
+            urge("#########################");
+            warn("too many trials; aborting");
+            urge("#########################");
+            break;
+          }
+          if (line_nr > 25) {
+            urge("#########################");
+            warn("too many lines; aborting");
+            urge("#########################");
+            break;
+          }
+
+          /* --------------------- */
+          ref = _this.try_slug(container, block_hotml, line_nr, start_idx, stop_idx), slice_hotml = ref[0], slug_html = ref[1], is_too_long = ref[2], excess = ref[3];
+          urge('©uaDsn', start_idx, stop_idx, slug_html);
           if (stop_idx >= last_start_idx) {
+            debug('©xeQQw', '(1)');
             excesses.push(excess);
             slices.push(slice_hotml);
             html_lines.push(slug_html);
             is_finished = true;
             continue;
           }
-          if (line_count > 1) {
+          if (is_too_long) {
+            debug('©xeQQw', '(2)');
+            warn(slug_html);
+            warn("exceeding container by " + (excess.toFixed(1)) + "px");
+            debug('©hBuvs', good_slug_html);
             if (trial_count === 1) {
-              throw new Error("not yet implemented");
+              help('©wxSPj', slug_html);
+              excesses.push(excess);
+              slices.push(slice_hotml);
+              html_lines.push(slug_html);
+              debug('©TmJFr', excesses.length, slices.length, html_lines.length, excesses);
+              start_idx = stop_idx + 1;
+              stop_idx = start_idx - 1;
+              trial_count = 0;
+            } else {
+              debug('©xeQQw', '(3)');
+              excesses.push(good_excess);
+              slices.push(good_slice_hotml);
+              html_lines.push(good_slug_html);
+              start_idx = stop_idx;
+              stop_idx = start_idx - 1;
+              trial_count = 0;
             }
-            excesses.push(excess);
-            slices.push(slice_hotml);
-            html_lines.push(good_slug_html);
-            start_idx = stop_idx;
-            stop_idx = start_idx - 1;
           }
+          debug('©xeQQw', '(4)');
           stop_idx += +1;
           if (start_idx >= last_start_idx) {
-            throw new Error("not yet implemented");
+            throw new Error("not yet implemented (2)");
           }
         }
-        excess = excesses[excesses.length - 1];
         new_class = slices.length === 1 ? 'single' : 'last';
         last_line_hotml = slices[slices.length - 1];
         last_line_block_tag = last_line_hotml[0][0][0];
         HOTMETAL.TAG.remove_class(last_line_block_tag, 'middle');
         HOTMETAL.TAG.remove_class(last_line_block_tag, 'first');
         HOTMETAL.TAG.add_class(last_line_block_tag, new_class);
-        if (excess > 0) {
-          HOTMETAL.TAG.add_class(last_line_block_tag, 'excess');
+        for (slug_idx = i = 0, len = slices.length; i < len; slug_idx = ++i) {
+          slug_hotml = slices[slug_idx];
+          tag_hotml = slug_hotml[0][0][0];
+          excess = excesses[slug_idx];
+          if (excess > 0) {
+            HOTMETAL.TAG.add_class(tag_hotml, 'excess');
+          }
+          HOTMETAL.TAG.set(tag_hotml, 'excess', excess.toFixed(2));
+          slug_html = HOTMETAL.as_html(slug_hotml);
+          html_lines[slug_idx] = slug_html;
         }
-        last_line_html = HOTMETAL.as_html(last_line_hotml);
-        html_lines[html_lines.length - 1] = last_line_html;
+
+        /* deactivate this to keep seeing lines in the galley */
         container.empty();
         send(html_lines);
         return help(((trial_count / html_lines.length).toFixed(2)) + " trials per line");
@@ -382,7 +447,6 @@
               line.detach();
               target_column.append(line);
             }
-            debug('©bPew4', line_idx, ƒ(bottom_mm, 1), ƒ(column_height_mm, 1), ƒ(overshoot_mm, 1), is_off, line.text().slice(0, 21));
           }
           send(html_lines);
         }
@@ -440,39 +504,47 @@
         return XXX_times.push(["html parsed into hotml", new Date() - XXX_t0]);
       };
     })(this))).pipe($((function(_this) {
-      return function(hotml, send) {
+      return function(document_hotml, send) {
 
         /* split document into blocks */
-        var block_hotml, i, len, ref1, results;
-        ref1 = HOTMETAL.slice_toplevel_tags(hotml);
-        results = [];
-        for (i = 0, len = ref1.length; i < len; i++) {
-          block_hotml = ref1[i];
-          results.push(send(block_hotml));
-        }
-        return results;
-      };
-    })(this))).pipe($async((function(_this) {
-      return function(data, done) {
-        return later(function() {
-          return done(data);
+        return HOTMETAL.slice_toplevel_tags(document_hotml, function(error, block_hotml) {
+          if (error != null) {
+            send.error(error);
+          }
+          return send(block_hotml);
         });
       };
     })(this))).pipe($((function(_this) {
       return function(block_hotml, send) {
 
-        /* Wrap block contents in `line-counter`; method analoguous to `jQuery.wrapInner` */
-        block_hotml[0][0].push(['line-counter', {}]);
-        block_hotml[block_hotml.length - 1][2].unshift(['line-counter']);
+        /* TAINT use HOTMETAL library method */
+
+        /* Wrap block contents in `w` tags used to measure line width;
+        method analoguous to `jQuery.wrapInner`
+         */
+        var first_shred, last_shred;
+        warn('#######################################################################');
+        first_shred = block_hotml[0];
+        last_shred = block_hotml[block_hotml.length - 1];
+        first_shred[0].push(['w', {}]);
+        last_shred[2].unshift(['w']);
         return send(block_hotml);
       };
     })(this))).pipe(this.$get_slugs(gcolumn)).pipe(this.$xxx()).pipe(D.$on_end(function() {
 
+      /* show some text metrics */
+      var description, dt, i, j, len, len1, name, names, ref1, style;
+      style = window.getComputedStyle((jQuery('p.slug')).get(0));
+      names = "font fontFamily fontKerning fontSize fontStretch fontStyle fontVariant fontVariantLigatures\nfontWeight wordSpacing letterSpacing".split(/\s+/);
+      for (i = 0, len = names.length; i < len; i++) {
+        name = names[i];
+        help(name, style[name]);
+      }
+
       /* !!! */
-      var description, dt, i, len, ref1;
       XXX_times.push(["finished", new Date() - XXX_t0]);
-      for (i = 0, len = XXX_times.length; i < len; i++) {
-        ref1 = XXX_times[i], description = ref1[0], dt = ref1[1];
+      for (j = 0, len1 = XXX_times.length; j < len1; j++) {
+        ref1 = XXX_times[j], description = ref1[0], dt = ref1[1];
         debug('©1enOB', description, (dt / 1000).toFixed(3));
       }
       return handler();

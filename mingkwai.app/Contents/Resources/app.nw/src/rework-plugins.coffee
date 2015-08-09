@@ -40,7 +40,7 @@ walk_rules = ( ast, handler ) ->
       continue unless declarations?
       for declaration in declarations
         { property, value, } = declaration
-        continue unless /^foobar$/.test property
+        continue unless /^-mkts-foobar$/.test property
         declaration[ 'property' ] = '-moz-supercssyeah'
 
 #-----------------------------------------------------------------------------------------------------------

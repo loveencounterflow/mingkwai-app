@@ -164,6 +164,18 @@ COLUMN.pop_over_async = ( me, other, count, handler ) ->
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
+@$add_column_formatting_signals = ->
+  last_columns_setting = null
+  return $ ( block_hotml, send ) =>
+    ### TAINT inefficient because we convert to HTML and then to jQuery merely to see whether an XCSS
+    selector matches the block element ###
+    node = jQuery HOTMETAL.as_html block_hotml
+    if ( columns_setting = ( XCSS.rules_from_node app, node )[ '-mkts-columns' ] )?
+      if columns_setting isnt last_columns_setting
+        send [ 'columns', columns_setting, ]
+    send [ 'block', block_hotml, ]
+
+#-----------------------------------------------------------------------------------------------------------
 @try_slug = ( container, block_hotml, line_nr, start_idx, stop_idx ) =>
   slug_hotml                  = HOTMETAL.slice block_hotml, start_idx, stop_idx + 1
   block_tag                   = slug_hotml[ 0 ][ 0 ][ 0 ]
@@ -177,48 +189,66 @@ COLUMN.pop_over_async = ( me, other, count, handler ) ->
     HOTMETAL.TAG.add_class     block_tag, 'middle'
   slug_html                   = HOTMETAL.as_html slug_hotml
   slug_jq                     = jQuery slug_html
-  line_counter                = slug_jq.children()[ 0 ]
+  width_gauge                 = slug_jq.children()[ 0 ]
   container.append slug_jq
-  client_rectangles           = line_counter.getClientRects()
+  client_rectangles           = width_gauge.getClientRects()
   container_width             = container.width()
   client_rectangle            = client_rectangles[ 0 ]
   client_width                = client_rectangle[ 'right' ] - container.offset()[ 'left' ]
   excess                      = Math.max 0, Math.floor client_width - container_width
   ### TAINT arbitrary precision limit ###
   excess                      = 0 if excess < 3
-  if excess > 0
-    warn slug_html
-    warn "exceeding container by #{excess.toFixed 1}px"
+  is_too_long                 = excess > 0
   line_count                  = client_rectangles.length
-  return [ slug_hotml, slug_html, line_count, excess, ]
+  return [ slug_hotml, slug_html, is_too_long, excess, ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$get_slugs = ( gcolumn ) ->
   container = @_get_slugs_container gcolumn
   #.........................................................................................................
   return $ ( block_hotml, send ) =>
-    start_idx       = 0
-    stop_idx        = 0
-    trial_count     = 0
-    last_start_idx  = block_hotml.length - 1
-    html_lines      = []
-    slices          = []
-    excesses        = []
-    slug_html       = null
-    good_slug_html  = null
-    is_finished     = no
-    line_nr         = 0
+    start_idx         = 0
+    stop_idx          = 0
+    trial_count       = 0
+    last_start_idx    = block_hotml.length - 1
+    html_lines        = []
+    slices            = []
+    excesses          = []
+    slug_html         = null
+    good_slug_html    = null
+    good_slice_hotml  = null
+    good_excess       = null
+    is_finished       = no
+    line_nr           = 0
+    debug '©Wo0m7', HOTMETAL.as_html block_hotml
     #.......................................................................................................
     until is_finished
-      trial_count    += +1
-      good_slug_html  = slug_html
-      line_nr         = html_lines.length + 1
+      trial_count += +1
+      good_slug_html    = slug_html
+      good_slice_hotml  = slice_hotml
+      good_excess       = excess
+      line_nr           = html_lines.length + 1
+      ### --------------------- ###
+      ### TAINT arbitrary limit ###
+      if trial_count > 25
+        urge "#########################"
+        warn "too many trials; aborting"
+        urge "#########################"
+        break
+      if line_nr > 25
+        urge "#########################"
+        warn "too many lines; aborting"
+        urge "#########################"
+        break
+      ### --------------------- ###
       [ slice_hotml
         slug_html
-        line_count
+        is_too_long
         excess      ] = @try_slug container, block_hotml, line_nr, start_idx, stop_idx
+      urge '©uaDsn', start_idx, stop_idx, slug_html
       #.....................................................................................................
       if stop_idx >= last_start_idx
+        debug '©xeQQw', '(1)'
         # warn '2', "stop_idx > last_start_idx"
         excesses.push   excess
         slices.push     slice_hotml
@@ -226,31 +256,51 @@ COLUMN.pop_over_async = ( me, other, count, handler ) ->
         is_finished = yes
         continue
       #.....................................................................................................
-      if line_count > 1
+      if is_too_long
+        debug '©xeQQw', '(2)'
+        warn slug_html
+        warn "exceeding container by #{excess.toFixed 1}px"
+        debug '©hBuvs', good_slug_html
         if trial_count is 1
-          throw new Error "not yet implemented"
-        excesses.push   excess
-        slices.push     slice_hotml
-        html_lines.push good_slug_html
-        start_idx = stop_idx
-        stop_idx  = start_idx - 1
+          help '©wxSPj', slug_html
+          excesses.push   excess
+          slices.push     slice_hotml
+          html_lines.push slug_html
+          debug '©TmJFr', excesses.length, slices.length, html_lines.length, excesses
+          start_idx   = stop_idx  + 1
+          stop_idx    = start_idx - 1
+          trial_count = 0
+        else
+          debug '©xeQQw', '(3)'
+          excesses.push   good_excess
+          slices.push     good_slice_hotml
+          html_lines.push good_slug_html
+          start_idx   = stop_idx
+          stop_idx    = start_idx - 1
+          trial_count = 0
       #.....................................................................................................
+      debug '©xeQQw', '(4)'
       stop_idx     += +1
       #.....................................................................................................
       if start_idx >= last_start_idx
-        throw new Error "not yet implemented"
+        throw new Error "not yet implemented (2)"
     #.......................................................................................................
-    excess              = excesses[ excesses.length - 1 ]
     new_class           = if slices.length is 1 then 'single' else 'last'
     last_line_hotml     = slices[ slices.length - 1 ]
     last_line_block_tag = last_line_hotml[ 0 ][ 0 ][ 0 ]
     HOTMETAL.TAG.remove_class  last_line_block_tag, 'middle'
     HOTMETAL.TAG.remove_class  last_line_block_tag, 'first'
     HOTMETAL.TAG.add_class     last_line_block_tag, new_class
-    HOTMETAL.TAG.add_class     last_line_block_tag, 'excess' if excess > 0
-    last_line_html                      = HOTMETAL.as_html last_line_hotml
-    html_lines[ html_lines.length - 1 ] = last_line_html
     #.......................................................................................................
+    for slug_hotml, slug_idx in slices
+      tag_hotml               = slug_hotml[ 0 ][ 0 ][ 0 ]
+      excess                  = excesses[ slug_idx ]
+      HOTMETAL.TAG.add_class tag_hotml, 'excess' if excess > 0
+      HOTMETAL.TAG.set tag_hotml, 'excess', excess.toFixed 2
+      slug_html               = HOTMETAL.as_html slug_hotml
+      html_lines[ slug_idx ]  = slug_html
+    #.......................................................................................................
+    ### deactivate this to keep seeing lines in the galley ###
     container.empty()
     send html_lines
     help "#{( trial_count / html_lines.length ).toFixed 2} trials per line"
@@ -295,7 +345,7 @@ COLUMN.pop_over_async = ( me, other, count, handler ) ->
           target_column       = target_columns.eq target_column_idx
           line.detach()
           target_column.append line
-        debug '©bPew4', line_idx, ( ƒ bottom_mm, 1 ), ( ƒ column_height_mm, 1 ), ( ƒ overshoot_mm, 1 ), is_off, line.text()[ .. 20 ]
+        # debug '©bPew4', line_idx, ( ƒ bottom_mm, 1 ), ( ƒ column_height_mm, 1 ), ( ƒ overshoot_mm, 1 ), is_off, line.text()[ .. 20 ]
       send html_lines
     #.......................................................................................................
     if end?
@@ -351,22 +401,41 @@ COLUMN.pop_over_async = ( me, other, count, handler ) ->
     # .pipe D.TYPO.$quotes()
     # .pipe D.TYPO.$dashes()
     .pipe as_html
+    #.......................................................................................................
+    # .pipe $ ( html, send ) =>
+    #   ### TAINT Q & D method to insert leading, trailing block stuff ###
+    #   ### Definition of these must go to document CSS, ###
+    #   ### should then be applied by XCSS (?) and / or MD parser ###
+    #   html = html.replace /(<p loc="[0-9,]+">)/gi, '$1###'
+    #   # html = html.replace /(<\/p>)/gi, """&nbsp;<span style='white-space:nowrap;'>&nbsp;x&nbsp;x&nbsp;x&nbsp;x&nbsp;x&nbsp;x&nbsp;x&nbsp;x&nbsp;x&nbsp;x&nbsp;x</span>$1"""
+    #   debug '©4QPHJ', html
+    #   send html
+    #.......................................................................................................
     .pipe $ ( html, send ) =>
       XXX_times.push [ "html from markdown", new Date() - XXX_t0, ]
       send HOTMETAL.HTML.parse html
       XXX_times.push [ "html parsed into hotml", new Date() - XXX_t0, ]
     # .pipe make character replacements
     #.......................................................................................................
-    .pipe $ ( hotml, send ) =>
+    .pipe $ ( document_hotml, send ) =>
       ### split document into blocks ###
-      send block_hotml for block_hotml in HOTMETAL.slice_toplevel_tags hotml
+      HOTMETAL.slice_toplevel_tags document_hotml, ( error, block_hotml ) =>
+        send.error error if error?
+        send block_hotml
     #.......................................................................................................
-    .pipe $async ( data, done ) => later => done data
+    # .pipe $async ( data, done ) => later => done data
+    #.......................................................................................................
+    # .pipe @$add_column_formatting_signals()
     #.......................................................................................................
     .pipe $ ( block_hotml, send ) =>
-      ### Wrap block contents in `line-counter`; method analoguous to `jQuery.wrapInner` ###
-      block_hotml[ 0                      ][ 0 ].push     [ 'line-counter', {}, ]
-      block_hotml[ block_hotml.length - 1 ][ 2 ].unshift  [ 'line-counter', ]
+      ### TAINT use HOTMETAL library method ###
+      ### Wrap block contents in `w` tags used to measure line width;
+      method analoguous to `jQuery.wrapInner` ###
+      warn '#######################################################################'
+      first_shred = block_hotml[ 0                      ]
+      last_shred  = block_hotml[ block_hotml.length - 1 ]
+      first_shred[ 0 ].push     [ 'w', {}, ]
+      last_shred[  2 ].unshift  [ 'w', ]
       send block_hotml
     #.......................................................................................................
     .pipe @$get_slugs gcolumn
@@ -375,11 +444,19 @@ COLUMN.pop_over_async = ( me, other, count, handler ) ->
     .pipe @$xxx()
     #.......................................................................................................
       .pipe D.$on_end ->
-          ### !!! ###
-          XXX_times.push [ "finished", new Date() - XXX_t0, ]
-          for [ description, dt, ] in XXX_times
-            debug '©1enOB', description, ( dt / 1000 ).toFixed 3
-          handler()
+        ### show some text metrics ###
+        style = window.getComputedStyle ( jQuery 'p.slug' ).get 0
+        # debug '©8Rnxi', ( name for name of style )
+        names = """
+          font fontFamily fontKerning fontSize fontStretch fontStyle fontVariant fontVariantLigatures
+          fontWeight wordSpacing letterSpacing""".split /\s+/
+        for name in names
+          help name, style[ name ]
+        ### !!! ###
+        XXX_times.push [ "finished", new Date() - XXX_t0, ]
+        for [ description, dt, ] in XXX_times
+          debug '©1enOB', description, ( dt / 1000 ).toFixed 3
+        handler()
   #.........................................................................................................
   input.write md
   input.end()

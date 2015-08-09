@@ -45,5 +45,7 @@
 
 * http://pollenpub.com/
 * http://www.sile-typesetter.org/
-
+* http://bowman.infotech.monash.edu.au/~pmoulder/line-breaking/
+  * http://bowman.infotech.monash.edu.au/~pmoulder/line-breaking/holkner-multiobjective-linebreaking-paper.pdf
+  * http://bowman.infotech.monash.edu.au/~pmoulder/line-breaking/ciancarini-line-breaking-pagination.pdf
 

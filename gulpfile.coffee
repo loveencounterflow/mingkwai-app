@@ -99,7 +99,7 @@ gulp.task 'build-css-rework', [ 'build-coffee', 'build-stylus', ], ( handler ) -
       help "found #{xcss_rules[ 'rules' ].length} xCSS rules"
       xcss_rules_json = JSON.stringify xcss_rules, null, '  '
     #.......................................................................................................
-    css = rw.toString { sourcemap: true }
+    css = rw.toString { sourcemap: false, }
     #.......................................................................................................
     njs_fs.writeFile output_route, css, encoding: 'utf-8', ( error ) =>
       return handler error if error?

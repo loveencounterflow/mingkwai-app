@@ -27,13 +27,14 @@ handler_by_properties =
     for selector in selectors
       targets = $ selector
       targets.draggable()
-      help "found #{targets.length} targets for `#{selector} { #{property}: #{value}; }`  "
+      help "found #{targets.length} targets for `#{selector} { #{property}: #{value}; }`"
 
   #---------------------------------------------------------------------------------------------------------
   '-mkts-columns': ( rule ) ->
     { media, selectors, property, value, } = rule
     unless value in [ 'all', '1', ]
       throw new Error "unknown value for xCSS property #{property}: #{value}"
+    debug '©zpmvr', rule
 
   #---------------------------------------------------------------------------------------------------------
   '-mkts-foobar': ( rule ) ->

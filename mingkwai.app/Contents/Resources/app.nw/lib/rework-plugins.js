@@ -74,7 +74,7 @@
             for (j = 0, len1 = declarations.length; j < len1; j++) {
               declaration = declarations[j];
               property = declaration.property, value = declaration.value;
-              if (!/^foobar$/.test(property)) {
+              if (!/^-mkts-foobar$/.test(property)) {
                 continue;
               }
               results1.push(declaration['property'] = '-moz-supercssyeah');

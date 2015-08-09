@@ -33,7 +33,7 @@
         selector = selectors[i];
         targets = $(selector);
         targets.draggable();
-        results.push(help("found " + targets.length + " targets for `" + selector + " { " + property + ": " + value + "; }`  "));
+        results.push(help("found " + targets.length + " targets for `" + selector + " { " + property + ": " + value + "; }`"));
       }
       return results;
     },
@@ -43,6 +43,7 @@
       if (value !== 'all' && value !== '1') {
         throw new Error("unknown value for xCSS property " + property + ": " + value);
       }
+      return debug('©zpmvr', rule);
     },
     '-mkts-foobar': function(rule) {
       var property, selectors, value;
