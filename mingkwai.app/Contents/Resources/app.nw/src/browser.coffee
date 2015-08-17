@@ -149,19 +149,22 @@ build_menu = ->
   view_menu_entry = new NW.MenuItem label: 'View', 'submenu': view_menu
   #.........................................................................................................
   win_menu  = new NW.Menu type: 'menubar'
-  # win_menu.append new NW.MenuItem label: '眀快排字机', 'submenu': app_menu
-  win_menu.createMacBuiltin 'mingkwai'
-  # win_menu.createMacBuiltin '眀快排字机'
-  win_menu.insert file_menu_entry, 1
-  win_menu.insert view_menu_entry, 3
-  win_menu.append help_menu_entry
-  win.menu  = win_menu
-  # win_menu.items.push new NW.MenuItem label: 'Help', 'submenu': help_menu
-  edit_menu_item = win.menu.items[ 2 ]
-  # CND.dir edit_menu_item
-  # CND.dir edit_menu_item.submenu
-  edit_menu_item.submenu.insert ( new NW.MenuItem label: 'xxxxxxxxx' ), 1
-  # debug '©RsQep', edit_menu_item.type
+  switch platform = process[ 'platform' ]
+    when 'darwin'
+      win_menu.createMacBuiltin 'mingkwai'
+      # win_menu.createMacBuiltin '眀快排字机'
+      win_menu.insert file_menu_entry, 1
+      win_menu.insert view_menu_entry, 3
+      win_menu.append help_menu_entry
+      win.menu  = win_menu
+      # win_menu.items.push new NW.MenuItem label: 'Help', 'submenu': help_menu
+      edit_menu_item = win.menu.items[ 2 ]
+      # CND.dir edit_menu_item
+      # CND.dir edit_menu_item.submenu
+      edit_menu_item.submenu.insert ( new NW.MenuItem label: 'xxxxxxxxx' ), 1
+      # debug '©RsQep', edit_menu_item.type
+    else
+      warn "platform menus not supported for #{rpr platform}"
   #.........................................................................................................
   # edit_menu_item = win.menu.items[ 2 ]
   #.........................................................................................................
