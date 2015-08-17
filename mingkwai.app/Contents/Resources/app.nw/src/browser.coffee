@@ -27,7 +27,7 @@ immediately               = suspend.immediately
 after                     = suspend.after
 sleep                     = suspend.sleep
 #...........................................................................................................
-D                         = require 'pipedreams2'
+D                         = require 'pipedreams'
 D$                        = D.remit.bind D
 CHR                       = require 'coffeenode-chr'
 #...........................................................................................................
@@ -623,7 +623,7 @@ win.on 'document-end', ->
     "coffeenode-suspend": "^0.1.4",
     "coffeenode-teacup": "^0.1.2",
     "linear-interpolator": "^1.0.2",
-    "pipedreams2": "^0.2.8",
+    "pipedreams": "^0.2.8",
     "stylus": "^0.49.3"
   }
 }

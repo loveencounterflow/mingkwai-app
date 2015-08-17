@@ -23,17 +23,17 @@ after                     = suspend.after
 later                     = setImmediate
 sleep                     = suspend.sleep
 #...........................................................................................................
-D                         = require 'pipedreams2'
+D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 # LODASH                    = D.LODASH
-HOTMETAL                  = D.HOTMETAL
+HOTMETAL                  = require 'hotmetal'
 XCSS                      = require './XCSS'
 BD                        = require './BLAIDDDRWG'
 glyph_replacements        = require './glyph-replacements'
 #...........................................................................................................
-### https://github.com/meryn/performance-now ###
-now                       = require 'performance-now'
+# ### https://github.com/meryn/performance-now ###
+# now                       = require 'performance-now'
 #...........................................................................................................
 ### The module-globals become available when `demo` is called with `app` argument ###
 jQuery                    = null
@@ -369,7 +369,7 @@ COLUMN.pop_over_async = ( me, other, count, handler ) ->
   #---------------------------------------------------------------------------------------------------------
   switch format = settings[ 'format' ] ? 'md'
     when 'md'
-      as_html = D.MD.$as_html()
+      as_html = HOTMETAL.MARKDOWN.$as_html()
     when 'html'
       as_html = D.$pass_through()
     else
@@ -493,6 +493,8 @@ COLUMN.pop_over_async = ( me, other, count, handler ) ->
         ### TAINT invalid last column idx ###
         yield COLUMN.pop_over_async columns[ column_idx ], columns[ column_idx + 1 ], 1, resume
       # handler null
+  #.........................................................................................................
+  return null
 
 
 
