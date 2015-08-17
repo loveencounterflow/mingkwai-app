@@ -32,8 +32,8 @@ XCSS                      = require './XCSS'
 BD                        = require './BLAIDDDRWG'
 glyph_replacements        = require './glyph-replacements'
 #...........................................................................................................
-### https://github.com/meryn/performance-now ###
-now                       = require 'performance-now'
+# ### https://github.com/meryn/performance-now ###
+# now                       = require 'performance-now'
 #...........................................................................................................
 ### The module-globals become available when `demo` is called with `app` argument ###
 jQuery                    = null
