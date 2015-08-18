@@ -6,11 +6,11 @@ keycode_by_keynames =
   'shift':                  16
   'ctrl':                   17
   'alt':                    18
-  'pause/break':            19
-  'caps lock':              20
+  'pause':                  19
+  'capslock':               20
   'escape':                 27
-  'page up':                33
-  'page down':              34
+  'page-up':                33
+  'page-down':              34
   'end':                    35
   'home':                   36
   'left':                   37
@@ -55,23 +55,23 @@ keycode_by_keynames =
   'x':                      88
   'y':                      89
   'z':                      90
-  'meta':                   91 # left
-  'meta':                   92 # right
-  'select key':             93
-  'numpad 0':               96
-  'numpad 1':               97
-  'numpad 2':               98
-  'numpad 3':               99
-  'numpad 4':               100
-  'numpad 5':               101
-  'numpad 6':               102
-  'numpad 7':               103
-  'numpad 8':               104
-  'numpad 9':               105
+  'meta':                   91 # left  ?????
+  'meta':                   92 # right ?????
+  'select':                 93 # ??????
+  'numpad-0':               96
+  'numpad-1':               97
+  'numpad-2':               98
+  'numpad-3':               99
+  'numpad-4':               100
+  'numpad-5':               101
+  'numpad-6':               102
+  'numpad-7':               103
+  'numpad-8':               104
+  'numpad-9':               105
   'multiply':               106
   'add':                    107
   'subtract':               109
-  'decimal point':          110
+  'decimal-point':          110
   'divide':                 111
   'f1':                     112
   'f2':                     113
@@ -85,8 +85,8 @@ keycode_by_keynames =
   'f10':                    121
   'f11':                    122
   'f12':                    123
-  'num lock':               144
-  'scroll lock':            145
+  'num-lock':               144
+  'scrolllock':             145
   'semicolon':              186
   'comma':                  188
   'minus':                  189
@@ -117,7 +117,23 @@ keycode_by_keynames =
 
 
 module.exports = map = new Map()
-for name, code of keycode_by_keynames
-  map.set name, code
-  map.set code, name
+do ->
+  for name, code of keycode_by_keynames
+    if ( value = map.get name )
+      warn "key name #{rpr name} already set to key code #{rpr value}"
+    else if ( value = map.get code )
+      warn "key code #{rpr code} already set to key name #{rpr value}"
+    else
+      map.set name, code
+      map.set code, name
+      # console.log '©VcC8t', name, code
+
+map[ 'os-translations' ] =
+  'keys':
+    'plus':         '+'
+    'minus':        '-'
+  'modifiers':
+    'meta':         'cmd'
+
+
 

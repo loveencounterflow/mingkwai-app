@@ -19,6 +19,7 @@ coffee                    = require 'gulp-coffee'
 stylus                    = require 'gulp-stylus'
 shell                     = require 'gulp-shell'
 zip                       = require 'gulp-zip'
+# newer                     = require 'gulp-newer'
 rework                    = require 'rework'
 #...........................................................................................................
 sourcemaps                = require 'gulp-sourcemaps'
@@ -65,10 +66,11 @@ gulp.task 'build', [
 gulp.task 'build-coffee', ->
   return gulp.src join module_root, 'src/*.coffee'
     # .pipe D.$show()
+    # .pipe newer 'lib'
     .pipe sourcemaps.init()
     .pipe coffee().on 'error', ( error ) -> throw error
     # .pipe coffee().on 'error', warn
-    .pipe sourcemaps.write()
+    .pipe sourcemaps.write '../sourcemaps'
     .pipe gulp.dest join module_root, 'lib'
 
 #-----------------------------------------------------------------------------------------------------------
@@ -77,7 +79,7 @@ gulp.task 'build-stylus', ->
     .pipe sourcemaps.init()
     .pipe stylus().on 'error', ( error ) -> throw error
     # .pipe stylus().on 'error', warn
-    .pipe sourcemaps.write()
+    .pipe sourcemaps.write '../sourcemaps'
     .pipe gulp.dest join module_root, 'lib'
 
 #-----------------------------------------------------------------------------------------------------------

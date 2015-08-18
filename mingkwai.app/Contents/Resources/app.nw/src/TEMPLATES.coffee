@@ -388,6 +388,7 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
       BODY =>
         # A style: "display:block;position:absolute;top:0;z-index:1000;", href: './font-test.html', => "font-test"
         #...............................................................................................
+        DIV '#mkts-top'
         ARTBOARD '.galley', =>
           ZOOMER =>
             GALLEY =>
@@ -433,6 +434,7 @@ STYLUS      = ( source ) -> STYLE {}, _STYLUS.render source
           I '.small.mdi-action-cached',         action: 'action-cached'
           I '.small.mdi-content-content-cut',   action: 'content-content-cut'
           I '.small.mdi-content-content-copy',  action: 'content-content-copy'
+        DIV '#mkts-bottom'
 
 
 

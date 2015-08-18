@@ -31,7 +31,7 @@
   "js-flags": "--harmony",
   "dependencies": {
     "applescript": "^1.0.0",
-    "cnd": "^0.1.5",
+    "cnd": "^1.0.8",
     "coffeenode-chr": "^0.1.4",
     "coffeenode-suspend": "^0.1.4",
     "coffeenode-teacup": "^0.1.2",

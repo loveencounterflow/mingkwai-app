@@ -511,6 +511,7 @@
             });
           });
           return BODY(function() {
+            DIV('#mkts-top');
             ARTBOARD('.galley', function() {
               return ZOOMER(function() {
                 return GALLEY(function() {
@@ -558,7 +559,7 @@
                 return results;
               });
             });
-            return HRIBBON('.draggable', {
+            HRIBBON('.draggable', {
               style: 'height:20mm;'
             }, function() {
               I('.small.mkts-tool-hand', {
@@ -589,6 +590,7 @@
                 action: 'content-content-copy'
               });
             });
+            return DIV('#mkts-bottom');
           });
         });
       };

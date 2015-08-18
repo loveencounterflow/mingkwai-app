@@ -112,65 +112,6 @@ app[ 'MKTS' ]   = MKTS
 app[ 'gauge' ]  = MKTS.GAUGE.new app
 
 
-#-----------------------------------------------------------------------------------------------------------
-on_file_menu_what_you_should_know_C = ->
-  ( $ '#content' ).text "Some kind of interesting stuff."
-
-#-----------------------------------------------------------------------------------------------------------
-build_menu = ->
-  #.........................................................................................................
-  help_menu = new NW.Menu()
-  help_menu.append new NW.MenuItem label: 'about mingkwai'
-  # help_menu.append new NW.MenuItem label: 'about 眀快排字机'
-  help_menu.append new NW.MenuItem label: 'what you should know A'
-  help_menu_entry = new NW.MenuItem label: 'Help', 'submenu': help_menu
-  #.........................................................................................................
-  file_menu = new NW.Menu()
-  file_menu.append new NW.MenuItem label: 'New'
-  file_menu.append new NW.MenuItem label: 'Open...', click: on_file_menu_what_you_should_know_C
-  file_menu.append new NW.MenuItem label: 'Save',                   key: 's', modifiers: 'cmd',       click: -> urge "saving..."
-  file_menu.append new NW.MenuItem label: 'Take Screenshot',        key: 's', modifiers: 'cmd-shift', click: -> MKTS.take_screenshot app
-  file_menu.append new NW.MenuItem label: 'Typeset Demo',           key: 'y', modifiers: 'cmd',       click: -> MKTS.demo app
-  # file_menu.append new NW.MenuItem label: 'Print...',               key: 'p', modifiers: 'cmd-shift', click: -> MKTS.open_print_dialog app
-  file_menu.append new NW.MenuItem label: 'Open Print Preview...',  key: 'p', modifiers: 'cmd',       click: -> MKTS.open_print_preview app
-  file_menu_entry = new NW.MenuItem label: 'File', 'submenu': file_menu
-  #.........................................................................................................
-  view_menu = new NW.Menu()
-  # view_menu.append new NW.MenuItem label: 'Toggle Dev / Print View',  key: 't', modifiers: 'cmd',     click: -> MKTS.toggle_view app
-  view_menu.append new NW.MenuItem label: 'Toggle Galley',            key: 't', modifiers: 'cmd',     click: -> MKTS.VIEW.toggle_galley()
-  view_menu.append new NW.MenuItem label: 'View Test Page',                                           click: -> MKTS.VIEW.test_page()
-  view_menu.append new NW.MenuItem label: 'Zoom In',   key: '+', modifiers: 'cmd', click: -> debug '©yVRqU', "Zoom In";  MKTS.ZOOM.by 1 * app[ 'zoom-delta-factor' ]
-  view_menu.append new NW.MenuItem label: 'Zoom 100%', key: '0', modifiers: 'cmd', click: -> debug '©AINX1', "Zoom 100"; MKTS.ZOOM.to 1
-  view_menu.append new NW.MenuItem label: 'Zoom Out',  key: '-', modifiers: 'cmd', click: -> debug '©KO8qN', "Zoom Out"; MKTS.ZOOM.by 1 / app[ 'zoom-delta-factor' ]
-  # 'meta+plus':
-  # 'meta+0':
-  # 'meta+minus':
-  # view_menu.append new NW.MenuItem label: 'Toggle Galley',            key: 't', modifiers: 'cmd',     click: -> console.log 'XXXXXXXXXXXX'
-  view_menu_entry = new NW.MenuItem label: 'View', 'submenu': view_menu
-  #.........................................................................................................
-  win_menu  = new NW.Menu type: 'menubar'
-  switch platform = process[ 'platform' ]
-    when 'darwin'
-      win_menu.createMacBuiltin 'mingkwai'
-      # win_menu.createMacBuiltin '眀快排字机'
-      win_menu.insert file_menu_entry, 1
-      win_menu.insert view_menu_entry, 3
-      win_menu.append help_menu_entry
-      win.menu  = win_menu
-      # win_menu.items.push new NW.MenuItem label: 'Help', 'submenu': help_menu
-      edit_menu_item = win.menu.items[ 2 ]
-      # CND.dir edit_menu_item
-      # CND.dir edit_menu_item.submenu
-      edit_menu_item.submenu.insert ( new NW.MenuItem label: 'xxxxxxxxx' ), 1
-      # debug '©RsQep', edit_menu_item.type
-    else
-      warn "platform menus not supported for #{rpr platform}"
-  #.........................................................................................................
-  # edit_menu_item = win.menu.items[ 2 ]
-  #.........................................................................................................
-  return null
-
-build_menu()
 # win.zoomLevel = 0 # 100%
 # win.setResizable yes
 # win.resizeTo 1500, 1500
@@ -456,50 +397,6 @@ MKTS.demo = ( me ) ->
 ### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
 ###  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
 
-### TAINT should live in its own module ###
-### TAINT consider using e.g. https://www.npmjs.com/package/combokeys ###
-#-----------------------------------------------------------------------------------------------------------
-keycodes = require './BLAIDDDRWG-keycodes'
-
-#-----------------------------------------------------------------------------------------------------------
-bindings =
-  # 'meta+plus':            -> MKTS.ZOOM.by 1 * app[ 'zoom-delta-factor' ]
-  # 'meta+minus':           -> MKTS.ZOOM.by 1 / app[ 'zoom-delta-factor' ]
-  # 'meta+0':               -> MKTS.ZOOM.to 1
-  'h':                    -> MKTS.toggle_tool_mode 'hand'
-  # 'g':                    -> MKTS.VIEW.toggle_galley()
-  # 'meta+shift+asterisk':  -> MKTS.zoom app, +0.1
-  # 'meta+shift+minus':     -> MKTS.zoom app, -0.1
-  'meta+left':            -> MKTS.scroll_to_top()
-  'meta+right':           -> MKTS.scroll_to_bottom()
-  #.........................................................................................................
-  # 'meta+p':               -> MKTS.print()
-  # 'meta+shift+p':         -> MKTS.open_print_dialog()
-  # 'meta+r':               -> MKTS.reload()
-  # 'meta+q':               -> MKTS.take_screenshot()
-  # 'meta+y':               -> MKTS.demo()
-  # 'meta+x':               -> LINESETTER._demo_pop_over()
-  'meta+x':               -> LINESETTER._demo_pop_over_async()
-
-#-----------------------------------------------------------------------------------------------------------
-MKTS.on_keydown = ( event ) ->
-  code      = event.keyCode ? event.which
-  key_name  = []
-  #.........................................................................................................
-  key_name.push 'alt'   if event.altKey
-  key_name.push 'ctrl'  if event.ctrlKey
-  key_name.push 'meta'  if event.metaKey
-  key_name.push 'shift' if event.shiftKey
-  key_name.push ( keycodes.get code ) ? code
-  key_name  = key_name.join '+'
-  #.........................................................................................................
-  echo ( rpr key_name ), code
-  if ( binding = bindings[ key_name ] )?
-    binding()
-    return false
-  #.........................................................................................................
-  else
-    return true
 
 #-----------------------------------------------------------------------------------------------------------
 MKTS.toggle_tool_mode = ( mode ) ->
@@ -582,14 +479,17 @@ win.on 'document-end', ->
     yield step.wrap ( $ document ).ready, resume
     help "document ready"
     #.......................................................................................................
-    ( $ document ).keydown MKTS.on_keydown.bind MKTS
+    ### TAINT should be implicitly performed by MKTS.KEYS ###
+    ( $ document ).keydown MKTS.KEYS.on_key.bind MKTS
+    MKTS.INTERFACE.build()
   #.........................................................................................................
   return null
 
 ###
 
 {
-  "name": "mingkwai",
+  "name": "mingkwai"
+
   "main": "lib/index.html",
   "version": "0.1.0",
   "keywords": [
